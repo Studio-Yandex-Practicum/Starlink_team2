@@ -1,1 +1,3 @@
 # Основные зависимости здесь
+pyTelegramBotAPI==4.24.0
+python-dotenv==1.0.1
