@@ -1,5 +1,3 @@
-# Это основной запускаемый файл.
-# Заменить содержимое своим кодом.
 from loader import bot
 from commands import *
 
