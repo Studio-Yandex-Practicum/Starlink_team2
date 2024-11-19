@@ -1,15 +1,7 @@
 # Это основной запускаемый файл.
 # Заменить содержимое своим кодом.
-import telebot
-import os
-
-from dotenv import load_dotenv
-
-load_dotenv()
-
-BOT_TOKEN = os.getenv("BOT_TOKEN")
-
-bot = telebot.TeleBot(BOT_TOKEN)
+from loader import bot
+from commands import *
 
 if __name__ == '__main__':
-    bot.polling()
+    bot.polling(none_stop=True)
