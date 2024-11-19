@@ -1,10 +1,12 @@
 from math import ceil
 from typing import Any, Dict, List
 
-from telegram import (InlineKeyboardMarkup,
-                      InlineKeyboardButton,
-                      KeyboardButton,
-                      ReplyKeyboardMarkup)
+from telegram import (
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    KeyboardButton,
+    ReplyKeyboardMarkup,
+)
 
 
 def build_reply_keyboard(
@@ -13,10 +15,10 @@ def build_reply_keyboard(
         parent_id: int = None,
         page: int = 1,
         items_per_page: int = 10,
-        buttons_per_row: int = 2
+        buttons_per_row: int = 2,
 ) -> ReplyKeyboardMarkup:
-    """
-    Создает ReplyKeyboardMarkup с поддержкой иерархии и пагинации.
+    """Создает ReplyKeyboardMarkup с поддержкой иерархии и пагинации.
+
     :param menu_items: Список словарей с ключами 'UniqueID',
     'Name', 'Parent', 'Is_folder' и 'Roles'.
     :param user_roles: Список ролей пользователя.
@@ -24,7 +26,6 @@ def build_reply_keyboard(
     :param page: Текущая страница.
     :param items_per_page: Максимальное количество кнопок на странице.
     :param buttons_per_row: Количество кнопок в одной строке.
-    :return: Объект ReplyKeyboardMarkup.
     """
     accessible_items = [
         item for item in menu_items
@@ -65,10 +66,10 @@ def build_inline_keyboard(
         page: int = 1,
         items_per_page: int = 10,
         buttons_per_row: int = 2,
-        callback_prefix: str = 'menu_page_'
+        callback_prefix: str = 'menu_page_',
 ) -> InlineKeyboardMarkup:
-    """
-    Создает InlineKeyboardMarkup с поддержкой иерархии и пагинации.
+    """Создает InlineKeyboardMarkup с поддержкой иерархии и пагинации.
+
     :param menu_items: Список словарей с ключами 'UniqueID',
     'Name', 'Parent', 'Is_folder' и 'Roles'.
     :param user_roles: Список ролей пользователя.
@@ -93,7 +94,7 @@ def build_inline_keyboard(
         InlineKeyboardButton(
             text=item['Name'],
             callback_data=f"select_{item['UniqueID']}" if not item[
-                'Is_folder'] else f"open_{item['UniqueID']}"
+                'Is_folder'] else f"open_{item['UniqueID']}",
         )
         for item in current_items
     ]
