@@ -3,12 +3,10 @@ from uuid import uuid4
 
 from sqlalchemy import CheckConstraint, Column, DateTime, String
 from sqlalchemy.dialects.postgresql import UUID as pg_UUID
-from sqlalchemy.orm import declarative_base
-
-Base = declarative_base()
+from core.db import preBase
 
 
-class Email(Base):
+class Email(preBase):
     """Модель Email."""
     __tablename__ = "emails"
 

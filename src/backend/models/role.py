@@ -2,12 +2,10 @@ from uuid import uuid4
 
 from sqlalchemy import CheckConstraint, Column, String
 from sqlalchemy.dialects.postgresql import UUID as pg_UUID
-from sqlalchemy.orm import declarative_base
-
-Base = declarative_base()
+from core.db import preBase
 
 
-class Role(Base):
+class Role(preBase):
     """Модель ролей."""
     __tablename__ = "roles"
 

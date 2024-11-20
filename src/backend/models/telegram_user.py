@@ -4,12 +4,10 @@ from uuid import uuid4
 from sqlalchemy import (Boolean, CheckConstraint, Column, Date, ForeignKey,
                         String)
 from sqlalchemy.dialects.postgresql import UUID as pg_UUID
-from sqlalchemy.orm import declarative_base
-
-Base = declarative_base()
+from core.db import preBase
 
 
-class TelegramUser(Base):
+class TelegramUser(preBase):
     """Модель пользователей телеграма."""
     __tablename__ = "telegram_users"
 
