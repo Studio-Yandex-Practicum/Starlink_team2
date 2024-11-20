@@ -1,7 +1,8 @@
 from math import ceil
-from typing import Any, Dict, List
+from typing import List, Optional, TypedDict
 
-from telegram import (
+import telebot
+from telebot.types import (
     InlineKeyboardButton,
     InlineKeyboardMarkup,
     KeyboardButton,
@@ -9,13 +10,23 @@ from telegram import (
 )
 
 
+class MenuItem(TypedDict):
+    """Определяет структуру данных для каждого элемента меню."""
+
+    UniqueID: int
+    Name: str
+    Parent: Optional[int]
+    Is_folder: bool
+    Roles: List[str]
+
+
 def build_reply_keyboard(
-        menu_items: List[Dict[str, Any]],
-        user_roles: List[str],
-        parent_id: int = None,
-        page: int = 1,
-        items_per_page: int = 10,
-        buttons_per_row: int = 2,
+    menu_items: List[MenuItem],
+    user_roles: List[str],
+    parent_id: Optional[int] = None,
+    page: int = 1,
+    items_per_page: int = 10,
+    buttons_per_row: int = 2,
 ) -> ReplyKeyboardMarkup:
     """Создает ReplyKeyboardMarkup с поддержкой иерархии и пагинации.
 
@@ -29,21 +40,20 @@ def build_reply_keyboard(
     """
     accessible_items = [
         item for item in menu_items
-        if item.get('Parent') == parent_id and any(
-            role in user_roles for role in item.get('Roles', [])
-        )
+        if item['Parent'] == parent_id and any(
+            role in user_roles for role in item['Roles'])
     ]
     total_items = len(accessible_items)
-    total_pages = ceil(total_items / items_per_page)
-    page = max(1, min(page, total_pages)) if total_pages > 0 else 1
+    total_pages = ceil(total_items / items_per_page) if items_per_page else 1
+    page = max(1, min(page, total_pages))
     start = (page - 1) * items_per_page
     end = start + items_per_page
     current_items = accessible_items[start:end]
     buttons = [KeyboardButton(item['Name']) for item in current_items]
     keyboard = [
-        buttons[i:i + buttons_per_row] for i in range(0, len(
-            buttons), buttons_per_row)]
-
+        buttons[i:i + buttons_per_row] for i in
+        range(0, len(buttons), buttons_per_row)
+    ]
     nav_buttons = []
     if total_pages > 1:
         if page > 1:
@@ -54,15 +64,14 @@ def build_reply_keyboard(
             keyboard.append(nav_buttons)
     if parent_id is not None:
         keyboard.append([KeyboardButton("⬅ Назад")])
-    return ReplyKeyboardMarkup(keyboard,
-                               resize_keyboard=True,
+    return ReplyKeyboardMarkup(resize_keyboard=True,
                                one_time_keyboard=False)
 
 
 def build_inline_keyboard(
-        menu_items: List[Dict[str, Any]],
+        menu_items: List[MenuItem],
         user_roles: List[str],
-        parent_id: int = None,
+        parent_id: Optional[int] = None,
         page: int = 1,
         items_per_page: int = 10,
         buttons_per_row: int = 2,
@@ -81,8 +90,8 @@ def build_inline_keyboard(
     """
     accessible_items = [
         item for item in menu_items
-        if item.get('Parent') == parent_id and any(
-            role in user_roles for role in item.get('Roles', []))
+        if item['Parent'] == parent_id and any(
+            role in user_roles for role in item['Roles'])
     ]
     total_items = len(accessible_items)
     total_pages = ceil(total_items / items_per_page)
@@ -117,4 +126,4 @@ def build_inline_keyboard(
     if parent_id is not None:
         keyboard.append([InlineKeyboardButton(
             "⬅ Назад", callback_data=f"back_{parent_id}")])
-    return InlineKeyboardMarkup(keyboard)
+    return telebot.types.InlineKeyboardMarkup(keyboard=keyboard)
