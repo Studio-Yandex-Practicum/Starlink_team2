@@ -8,7 +8,7 @@ Base = declarative_base()
 
 
 class Role(Base):
-    '''Модель ролей.'''
+    """Модель ролей."""
     __tablename__ = "roles"
 
     unique_id = Column(pg_UUID(as_uuid=True), primary_key=True, default=uuid4)

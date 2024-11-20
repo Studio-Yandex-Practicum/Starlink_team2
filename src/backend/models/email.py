@@ -9,7 +9,7 @@ Base = declarative_base()
 
 
 class Email(Base):
-    '''Модель Email.'''
+    """Модель Email."""
     __tablename__ = "emails"
 
     unique_id = Column(pg_UUID(as_uuid=True), primary_key=True, default=uuid4)

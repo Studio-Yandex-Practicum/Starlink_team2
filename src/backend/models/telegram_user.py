@@ -10,7 +10,7 @@ Base = declarative_base()
 
 
 class TelegramUser(Base):
-    '''Модель пользователей телеграма.'''
+    """Модель пользователей телеграма."""
     __tablename__ = "telegram_users"
 
     unique_id = Column(pg_UUID(as_uuid=True), primary_key=True, default=uuid4)
