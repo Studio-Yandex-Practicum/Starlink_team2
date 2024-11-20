@@ -1,5 +1,4 @@
 from datetime import date
-from uuid import uuid4
 
 from sqlalchemy import (Boolean, CheckConstraint, Column, Date, ForeignKey,
                         String)
@@ -9,9 +8,7 @@ from core.db import preBase
 
 class TelegramUser(preBase):
     """Модель пользователей телеграма."""
-    __tablename__ = "telegram_users"
 
-    unique_id = Column(pg_UUID(as_uuid=True), primary_key=True, default=uuid4)
     username = Column(String(length=256), unique=True, nullable=False)
     role_id = Column(pg_UUID(as_uuid=True), ForeignKey("roles.unique_id"),
                      nullable=True)
