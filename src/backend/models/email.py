@@ -1,12 +1,14 @@
 from datetime import datetime
 
 from sqlalchemy import Column, DateTime
-from core.db import preBase
 from sqlalchemy_utils import EmailType
+
+from core.db import preBase
+from core.config import EMAIL_LENGTH
 
 
 class Email(preBase):
     """Модель Email."""
 
-    email = Column(EmailType(length=256), unique=True, nullable=False)
+    email = Column(EmailType(length=EMAIL_LENGTH), unique=True, nullable=False)
     created_at = Column(DateTime, default=datetime.today)
