@@ -13,5 +13,8 @@ class Settings(BaseSettings):
     postgres_host: str
     postgres_db_name: str
 
+    quiz_name_length: int = 256
+    menu_name_length: int = 256
+    menu_image_link_length: int = 256
 
 settings = Settings()
