@@ -1,13 +1,14 @@
 import asyncio
-import os
 from logging.config import fileConfig
+import os
 
 from alembic import context
-from core.base import Base
 from dotenv import load_dotenv
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
+
+from core.base import Base
 
 load_dotenv()
 # this is the Alembic Config object, which provides
@@ -63,6 +64,16 @@ def run_migrations_offline() -> None:
 
 
 def do_run_migrations(connection: Connection) -> None:
+    """Функция do_run_migrations выполняет миграции базы данных.
+
+    Параметры:
+    - connection: соединение с базой данных.
+    - target_metadata: метаданные целевой базы данных.
+
+    Пример использования:
+    with engine.connect() as connection:
+    do_run_migrations(connection)
+    """
     context.configure(connection=connection, target_metadata=target_metadata)
 
     with context.begin_transaction():
@@ -70,7 +81,8 @@ def do_run_migrations(connection: Connection) -> None:
 
 
 async def run_async_migrations() -> None:
-    """In this scenario we need to create an Engine
+    """In this scenario we need to create an Engine.
+
     and associate a connection with the context.
 
     """

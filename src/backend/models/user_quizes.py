@@ -25,7 +25,7 @@ class UserQuize(AbstractModelForTime):
     finished_time = Column(DateTime)
     telegram_user = relationship('TelegramUser')
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return (
             f'{self.user_id=}; {self.quize_id=}; '
             f'{self.status=}; {self.started_time=}; '

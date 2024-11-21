@@ -1,11 +1,11 @@
 from datetime import datetime
 
-from core.config import settings
 from sqlalchemy import Column, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy_utils import EmailType
 
-from .base import AbstractModelForTime
+from core.config import settings
+from models.base import AbstractModelForTime
 
 
 class Email(AbstractModelForTime):

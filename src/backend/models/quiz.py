@@ -1,8 +1,8 @@
-from core.config import settings
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import relationship
 
-from .base import AbstractModelForTime
+from core.config import settings
+from models.base import AbstractModelForTime
 
 
 class Quiz(AbstractModelForTime):
@@ -16,6 +16,6 @@ class Quiz(AbstractModelForTime):
     edited = relationship('Users')
     created = relationship('Users')
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return (f'{self.name=}; {self.description=}; {self.active=}; '
                 f'{self.edited_by=}; {self.created=}; {super().__repr__()}')

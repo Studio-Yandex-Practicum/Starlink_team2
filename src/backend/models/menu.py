@@ -1,4 +1,3 @@
-from core.config import settings
 from sqlalchemy import (
     Boolean,
     CheckConstraint,
@@ -11,6 +10,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import relationship
 
 from .base import AbstractModelForTime
+from core.config import settings
 
 
 class Menu(AbstractModelForTime):
@@ -27,7 +27,7 @@ class Menu(AbstractModelForTime):
     role_access = Column(Integer, ForeignKey('roles.unique_id'))
     role = relationship('Roles')
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return (f'{self.name=}; {self.parent=}; '
                 f'{self.content}; {self.is_folder=}; '
                 f'{self.image_link=}; {self.role_access=}'
