@@ -18,7 +18,7 @@ class UserQuizes(AbstractModelForTime):
 
     __table_args__ = (CheckConstraint('started_time < finished_time'),)
 
-    user_id = Column(Integer, ForeignKey('telegramusers.unique_id'))
+    user_id = Column(Integer, ForeignKey('telegramuser.unique_id'))
     quize_id = Column(Integer, ForeignKey('quiz.unique_id'))
     status = Column(Boolean, default=True)
     started_time = Column(DateTime, default=datetime.now)
@@ -27,7 +27,7 @@ class UserQuizes(AbstractModelForTime):
 
     def __repr__(self):
         return (
-            f'{self.user_id}; {self.quize_id}; '
-            f'{self.status}; {self.started_time}; '
+            f'{self.user_id=}; {self.quize_id=}; '
+            f'{self.status=}; {self.started_time=}; '
             f'{super().__repr__()}'
             )

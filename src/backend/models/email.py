@@ -1,15 +1,17 @@
 from datetime import datetime
 
+from core.config import settings
 from sqlalchemy import Column, DateTime
+from sqlalchemy.orm import relationship
 from sqlalchemy_utils import EmailType
 
-from core.db import preBase
-from core.config import settings
+from .base import AbstractModelForTime
 
 
-class Email(preBase):
+class Emails(AbstractModelForTime):
     """Модель Email."""
 
     email = Column(EmailType(length=settings.email_length), unique=True,
                    nullable=False)
     created_at = Column(DateTime, default=datetime.today)
+    telegram_user = relationship('TelegramUser')

@@ -1,11 +1,11 @@
 from datetime import datetime
 
-from core.db import preBase
+from core.db import Base
 from sqlalchemy import Column, DateTime
 
 
-class AbstractModelForTime(preBase):
-
+class AbstractModelForTime(Base):
+    """Абстрактная модель, в которой включено время создание и изменения."""
     __abstract__ = True
 
     created_at = Column(DateTime, default=datetime.now)

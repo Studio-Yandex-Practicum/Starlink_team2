@@ -1,6 +1,6 @@
 from uuid import uuid4
 
-from sqlalchemy import Column, Integer
+from sqlalchemy import Column
 from sqlalchemy.dialects.postgresql import UUID as pg_UUID
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import declarative_base, declared_attr, sessionmaker
@@ -20,7 +20,7 @@ Base = declarative_base(cls=preBase)
 engine = create_async_engine(
     f'postgresql+asyncpg://{settings.postgres_user}:'
     f'{settings.postgres_password}@{settings.postgres_host}/'
-    f'{settings.postgres_db_name}'
+    f'{settings.postgres_db_name}',
 )
 AsyncSessionLocal = sessionmaker(engine, class_=AsyncSession)
 

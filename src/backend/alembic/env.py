@@ -2,14 +2,12 @@ import asyncio
 import os
 from logging.config import fileConfig
 
+from alembic import context
+from core.base import Base
 from dotenv import load_dotenv
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
-
-from alembic import context
-
-from core.base import Base
 
 load_dotenv()
 # this is the Alembic Config object, which provides
@@ -21,7 +19,7 @@ config.set_main_option(
         f'postgresql+asyncpg://{os.getenv('POSTGRES_USER')}:'
         f'{os.getenv('POSTGRES_PASSWORD')}@{os.getenv('POSTGRES_HOST')}/'
         f'{os.getenv('POSTGRES_DB_NAME')}'
-    )
+    ),
 )
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
@@ -76,7 +74,6 @@ async def run_async_migrations() -> None:
     and associate a connection with the context.
 
     """
-
     connectable = async_engine_from_config(
         config.get_section(config.config_ini_section, {}),
         prefix="sqlalchemy.",
@@ -91,7 +88,6 @@ async def run_async_migrations() -> None:
 
 def run_migrations_online() -> None:
     """Run migrations in 'online' mode."""
-
     asyncio.run(run_async_migrations())
 
 

@@ -1,14 +1,21 @@
 from datetime import date
 
-from sqlalchemy import (Boolean, CheckConstraint, Column, Date, ForeignKey,
-                        String)
-from sqlalchemy.dialects.postgresql import UUID as pg_UUID
-
-from core.db import preBase
 from core.config import settings
+from sqlalchemy import (
+    Boolean,
+    CheckConstraint,
+    Column,
+    Date,
+    ForeignKey,
+    String,
+)
+from sqlalchemy.dialects.postgresql import UUID as pg_UUID
+from sqlalchemy.orm import relationship
+
+from .base import AbstractModelForTime
 
 
-class TelegramUser(preBase):
+class TelegramUser(AbstractModelForTime):
     """Модель пользователей телеграма."""
 
     username = Column(String(length=settings.username_max_length), unique=True,
@@ -21,6 +28,8 @@ class TelegramUser(preBase):
                       nullable=True)
     active = Column(Boolean, default=True)
     created_at = Column(Date, default=date.today)
+    user_quiz = relationship('Quiz')
+    email = relationship('Email')
 
     __table_args__ = (CheckConstraint(
         'email_id IS NULL OR email_id IN (SELECT unique_id FROM emails)',
