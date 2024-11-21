@@ -1,11 +1,8 @@
-from datetime import date
-
 from core.config import settings
 from sqlalchemy import (
     Boolean,
     CheckConstraint,
     Column,
-    Date,
     ForeignKey,
     String,
 )
@@ -27,7 +24,6 @@ class TelegramUser(AbstractModelForTime):
     email_id = Column(pg_UUID(as_uuid=True), ForeignKey("emails.unique_id"),
                       nullable=True)
     active = Column(Boolean, default=True)
-    created_at = Column(Date, default=date.today)
     user_quiz = relationship('Quiz')
     email = relationship('Email')
 
