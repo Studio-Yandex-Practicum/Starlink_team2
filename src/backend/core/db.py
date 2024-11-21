@@ -1,4 +1,7 @@
+from uuid import uuid4
+
 from sqlalchemy import Column, Integer
+from sqlalchemy.dialects.postgresql import UUID as pg_UUID
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import declarative_base, declared_attr, sessionmaker
 
@@ -10,7 +13,7 @@ class preBase:
     def __tablename__(cls):
         return cls.__name__.lower()
 
-    id = Column(Integer, primary_key=True)
+    unique_id = Column(pg_UUID(as_uuid=True), primary_key=True, default=uuid4)
 
 
 Base = declarative_base(cls=preBase)
