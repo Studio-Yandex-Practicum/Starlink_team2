@@ -1,10 +1,10 @@
 from datetime import datetime
 
-from core.db import Base
+from core.db import preBase
 from sqlalchemy import Column, DateTime
 
 
-class AbstractModelForTime(Base):
+class AbstractModelForTime(preBase):
 
     __abstract__ = True
 
