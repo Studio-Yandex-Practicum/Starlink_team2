@@ -8,7 +8,7 @@ from sqlalchemy_utils import EmailType
 from .base import AbstractModelForTime
 
 
-class Emails(AbstractModelForTime):
+class Email(AbstractModelForTime):
     """Модель Email."""
 
     email = Column(EmailType(length=settings.email_length), unique=True,

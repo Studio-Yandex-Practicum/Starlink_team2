@@ -5,7 +5,7 @@ from sqlalchemy.orm import relationship
 from .base import AbstractModelForTime
 
 
-class Roles(AbstractModelForTime):
+class Role(AbstractModelForTime):
     """Модель ролей."""
 
     __table_args__ = (CheckConstraint(

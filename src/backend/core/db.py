@@ -11,7 +11,7 @@ from core.config import settings
 class preBase:
     @declared_attr
     def __tablename__(cls):
-        return cls.__name__.lower()
+        return f'{cls.__name__.lower()}s'
 
     unique_id = Column(pg_UUID(as_uuid=True), primary_key=True, default=uuid4)
 

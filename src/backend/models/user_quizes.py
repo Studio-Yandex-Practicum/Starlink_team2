@@ -13,13 +13,13 @@ from sqlalchemy.orm import relationship
 from .base import AbstractModelForTime
 
 
-class UserQuizes(AbstractModelForTime):
+class UserQuize(AbstractModelForTime):
     """Модель участника квиза."""
 
     __table_args__ = (CheckConstraint('started_time < finished_time'),)
 
-    user_id = Column(Integer, ForeignKey('telegramuser.unique_id'))
-    quize_id = Column(Integer, ForeignKey('quiz.unique_id'))
+    user_id = Column(Integer, ForeignKey('telegramusers.unique_id'))
+    quize_id = Column(Integer, ForeignKey('quizs.unique_id'))
     status = Column(Boolean, default=True)
     started_time = Column(DateTime, default=datetime.now)
     finished_time = Column(DateTime)
