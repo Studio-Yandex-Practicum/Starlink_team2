@@ -30,17 +30,6 @@ class TelegramUser(AbstractModelForTime):
     user_quiz = relationship('Quiz')
     email = relationship('EmployeeEmail')
 
-    #  sqlalchemy.exc.DBAPIError: cannot use subquery in check constraint
-    # __table_args__ = (
-    #     CheckConstraint(
-    #         (
-    #             'email_id IS NULL OR email_id IN'
-    #             ' (SELECT unique_id FROM employee_emails)'
-    #         ),
-    #         name='check_email_id',
-    #     ),
-    # )
-
     def __repr__(self) -> str:
         return (
             f'{self.username=}; {self.role_id=}; '
