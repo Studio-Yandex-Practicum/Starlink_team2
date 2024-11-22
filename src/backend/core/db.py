@@ -23,8 +23,8 @@ class PreBase:
     """
 
     @declared_attr
-    def __tablename__(self) -> str:
-        return f'{self.__name__.lower()}s'
+    def __tablename__(cls) -> str:
+        return f'{cls.__name__.lower()}s'
 
     unique_id = Column(pg_UUID(as_uuid=True), primary_key=True, default=uuid4)
 
