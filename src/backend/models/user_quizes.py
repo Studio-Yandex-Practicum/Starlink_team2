@@ -6,8 +6,8 @@ from sqlalchemy import (
     Column,
     DateTime,
     ForeignKey,
-    Integer,
 )
+from sqlalchemy.dialects.postgresql import UUID as pg_UUID  # noqa
 from sqlalchemy.orm import relationship
 
 from .base import AbstractModelForTime
@@ -18,8 +18,8 @@ class UserQuize(AbstractModelForTime):
 
     __table_args__ = (CheckConstraint('started_time < finished_time'),)
 
-    user_id = Column(Integer, ForeignKey('telegramusers.unique_id'))
-    quize_id = Column(Integer, ForeignKey('quizs.unique_id'))
+    user_id = Column(pg_UUID, ForeignKey('telegramusers.unique_id'))
+    quize_id = Column(pg_UUID, ForeignKey('quizs.unique_id'))
     status = Column(Boolean, default=True)
     started_time = Column(DateTime, default=datetime.now)
     finished_time = Column(DateTime)
@@ -30,4 +30,4 @@ class UserQuize(AbstractModelForTime):
             f'{self.user_id=}; {self.quize_id=}; '
             f'{self.status=}; {self.started_time=}; '
             f'{super().__repr__()}'
-            )
+        )
