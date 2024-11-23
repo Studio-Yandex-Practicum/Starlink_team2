@@ -5,3 +5,7 @@ from models.user_quizes import UserQuize  # noqa
 from models.employee_email import EmployeeEmail  # noqa
 from models.role import Role  # noqa
 from models.telegram_user import TelegramUser  # noqa
+from models.user import User  # noqa
+from models.quiz_answer import QuizAnswer  # noqa
+from models.quiz_question import QuizQuestion  # noqa
+from models.taken_answer import TakenAnswer  # noqa

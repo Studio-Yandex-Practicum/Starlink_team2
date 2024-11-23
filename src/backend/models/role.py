@@ -10,9 +10,9 @@ class Role(AbstractModelForTime):
 
     __table_args__ = (
         CheckConstraint(
-            f"length(role_name) BETWEEN "
-            f"{settings.role_name_min_length} "
-            f"AND {settings.role_name_max_length}",
+            f'length(role_name) BETWEEN '
+            f'{settings.role_name_min_length} '
+            f'AND {settings.role_name_max_length}',
         ),
     )
 

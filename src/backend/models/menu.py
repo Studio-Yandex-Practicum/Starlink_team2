@@ -26,14 +26,14 @@ class Menu(AbstractModelForTime):
     parent = Column(Integer)
     content = Column(Text)
     is_folder = Column(Boolean, default=False)
-    image_link = Column(String(settings.menu_image_link_length))
+    image_link = Column(String(settings.image_link_max_length))
     role_access = Column(pg_UUID, ForeignKey('roles.unique_id'))
     role = relationship('Roles')
 
     def __repr__(self) -> str:
         return (
             f'{self.name=}; {self.parent=}; '
-            f'{self.content}; {self.is_folder=}; '
+            f'{self.content=}; {self.is_folder=}; '
             f'{self.image_link=}; {self.role_access=}'
             f'{super().__repr__()}'
         )
