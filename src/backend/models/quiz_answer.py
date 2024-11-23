@@ -7,7 +7,9 @@ from core.config import settings
 
 
 class QuizAnswer(AbstractModelForTime):
-    """Модель ответа на вопрос квиза содержит:
+    """Модель ответа на вопрос квиза.
+
+    Модель содержит:
     - quiz_id: идентификатор квиза, к которому относится ответ;
     - question_id: идентификатор вопроса;
     - correct_answer: является ли ответ правильным;

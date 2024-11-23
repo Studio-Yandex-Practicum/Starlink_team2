@@ -14,7 +14,9 @@ from core.config import settings
 
 
 class QuizQuestion(AbstractModelForTime):
-    """Модель вопроса в квизе содержит в себе:
+    """Модель вопроса в квизе.
+
+    Модель содержит:
     - quiz_id: идентификатор квиза, к которому относится вопрос;
     - image_link: ссылка на картинку вопроса;
     - number: номер вопроса;

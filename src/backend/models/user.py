@@ -8,8 +8,9 @@ from core.config import settings
 
 
 class User(SQLAlchemyBaseUserTable[pg_UUID], AbstractModelForTime):
-    """Модель администратора содержит:
+    """Модель администратора.
 
+    Модель содержит:
     - username: псевдоним пользователя;
     - name: имя пользователя;
     - email: электронная почта пользователя;
@@ -26,10 +27,10 @@ class User(SQLAlchemyBaseUserTable[pg_UUID], AbstractModelForTime):
 
     __table_args__ = (
         CheckConstraint(
-            f"name !=''",
+            "name !=''",
         ),
         CheckConstraint(
-            f"last_name != ''",
+            "last_name != ''",
         ),
     )
 

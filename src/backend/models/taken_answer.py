@@ -1,13 +1,16 @@
 from sqlalchemy import Column, ForeignKey
-from sqlalchemy.dialects.postgresql import UUID as pg_UUID
+from sqlalchemy.dialects.postgresql import UUID as pg_UUID  # noqa
 
 from .base import AbstractModelForTime
 
 
 class TakenAnswer(AbstractModelForTime):
-    """Модель полученного ответа от пользователя, содержит:
+    """Модель полученного ответа от пользователя.
+
+    Модель содержит:
     - quiz_id: идентификатор квиза, к которому относится ответ пользователя;
-    - question_id: идентификатор вопроса, к которому относится ответ пользователя;
+    - question_id: идентификатор вопроса,
+            к которому относится ответ пользователя;
     - answer_id: идентификатор ответа, к которому относится ответ пользователя;
     - user_id: идентификатор пользователя, который ответил на вопрос;
     - created_at: дата и время создания;
