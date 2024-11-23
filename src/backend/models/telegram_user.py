@@ -16,7 +16,7 @@ class TelegramUser(AbstractModelForTime):
     )
     role_id = Column(
         pg_UUID(as_uuid=True),
-        ForeignKey("roles.unique_id"),
+        ForeignKey('roles.unique_id'),
         nullable=True,
     )
     name = Column(String(length=settings.username_max_length))

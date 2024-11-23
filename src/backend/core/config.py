@@ -39,7 +39,10 @@ class Settings(BaseSettings):
 
     quiz_name_length: int = 256
     menu_name_length: int = 256
-    menu_image_link_length: int = 256
+    image_link_min_length: int = 10
+    image_link_max_length: int = 256
+    content_min_length: int = 10
+    content_max_length: int = 256
 
 
 settings = Settings()
