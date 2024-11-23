@@ -1,30 +1,50 @@
+from typing import AsyncGenerator
 from uuid import uuid4
 
-from sqlalchemy import Column, Integer
-from sqlalchemy.dialects.postgresql import UUID as pg_UUID
+from sqlalchemy import Column
+from sqlalchemy.dialects.postgresql import UUID as pg_UUID  # noqa
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import declarative_base, declared_attr, sessionmaker
 
 from core.config import settings
 
 
-class preBase:
+class PreBase:
+    """Класс PreBase является базовым классом для всех моделей в приложении.
+
+    Атрибуты:
+    - __tablename__: имя таблицы в базе данных, которое формируется из имени
+    класса в нижнем регистре с добавлением 's'.
+    - unique_id: уникальный идентификатор модели, который генерируется
+    автоматически при создании экземпляра модели.
+
+    Методы:
+    - __tablename__: возвращает имя таблицы в базе данных.
+    """
+
     @declared_attr
-    def __tablename__(cls):
-        return cls.__name__.lower()
+    def __tablename__(cls) -> str:
+        return f'{cls.__name__.lower()}s'
 
     unique_id = Column(pg_UUID(as_uuid=True), primary_key=True, default=uuid4)
 
 
-Base = declarative_base(cls=preBase)
+Base = declarative_base(cls=PreBase)
 engine = create_async_engine(
     f'postgresql+asyncpg://{settings.postgres_user}:'
     f'{settings.postgres_password}@{settings.postgres_host}/'
-    f'{settings.postgres_db_name}'
+    f'{settings.postgres_db_name}',
 )
 AsyncSessionLocal = sessionmaker(engine, class_=AsyncSession)
 
 
-async def get_async_session():
+async def get_async_session() -> AsyncGenerator:
+    """Функция get_async_session возвращает асинхронный генератор.
+
+    Который предоставляет доступ к асинхронной сессии.
+    Возвращаемое значение:
+    - AsyncGenerator: асинхронный генератор, который предоставляет доступ
+    к асинхронной сессии.
+    """
     async with AsyncSessionLocal() as async_session:
         yield async_session
