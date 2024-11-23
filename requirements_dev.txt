@@ -49,3 +49,4 @@ typing_extensions==4.12.2
 urllib3==2.2.3
 uvicorn==0.32.0
 virtualenv==20.27.1
+fastapi-users-db-sqlalchemy==6.0.1
