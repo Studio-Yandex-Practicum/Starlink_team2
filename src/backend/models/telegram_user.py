@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, ForeignKey, String
+from sqlalchemy import Boolean, BigInteger, Column, ForeignKey, String
 from sqlalchemy.dialects.postgresql import UUID as pg_UUID  # noqa
 from sqlalchemy.orm import relationship
 
@@ -29,6 +29,11 @@ class TelegramUser(AbstractModelForTime):
     active = Column(Boolean, default=True)
     user_quiz = relationship('Quiz')
     email = relationship('EmployeeEmail')
+    telegram_id: Column[int] = Column(
+        BigInteger,
+        unique=True,
+        nullable=False
+    )
 
     def __repr__(self) -> str:
         return (
