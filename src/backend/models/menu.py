@@ -10,8 +10,8 @@ from sqlalchemy import (
 from sqlalchemy.dialects.postgresql import UUID as pg_UUID  # noqa
 from sqlalchemy.orm import relationship
 
-from .base import AbstractModelForTime
-from core.config import settings
+from backend.models.base import AbstractModelForTime
+from backend.core.config import settings
 
 
 class Menu(AbstractModelForTime):
@@ -28,7 +28,7 @@ class Menu(AbstractModelForTime):
     is_folder = Column(Boolean, default=False)
     image_link = Column(String(settings.image_link_max_length))
     role_access = Column(pg_UUID, ForeignKey('roles.unique_id'))
-    role = relationship('Roles')
+    # role = relationship('Roles')
 
     def __repr__(self) -> str:
         return (

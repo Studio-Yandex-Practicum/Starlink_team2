@@ -5,6 +5,8 @@ from sqlalchemy.orm import relationship
 from backend.core.config import settings
 from backend.models.base import AbstractModelForTime
 from backend.models.quiz import Quiz
+from backend.models.employee_email import EmployeeEmail
+from backend.models.role import Role
 
 
 class TelegramUser(AbstractModelForTime):
@@ -17,14 +19,14 @@ class TelegramUser(AbstractModelForTime):
     )
     role_id = Column(
         pg_UUID(as_uuid=True),
-        ForeignKey('roles.unique_id'),
+        ForeignKey(Role.unique_id),
         nullable=True,
     )
     name = Column(String(length=settings.username_max_length))
     last_name = Column(String(length=settings.username_max_length))
     email_id = Column(
         pg_UUID(as_uuid=True),
-        ForeignKey("employee_emails.unique_id"),
+        ForeignKey(EmployeeEmail.unique_id),
         nullable=True,
     )
     active = Column(Boolean, default=True)

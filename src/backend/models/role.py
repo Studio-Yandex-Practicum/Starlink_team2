@@ -1,8 +1,9 @@
 from sqlalchemy import CheckConstraint, Column, String
 from sqlalchemy.orm import relationship
 
-from core.config import settings
-from models.base import AbstractModelForTime
+from backend.core.config import settings
+from backend.models.base import AbstractModelForTime
+from backend.models.menu import Menu
 
 
 class Role(AbstractModelForTime):
@@ -21,7 +22,7 @@ class Role(AbstractModelForTime):
         unique=True,
         nullable=False,
     )
-    menu = relationship('Menu')
+    menu = relationship(Menu)
 
     def __repr__(self) -> str:
         return f'{self.role_name=}; {super().__repr__()}'
