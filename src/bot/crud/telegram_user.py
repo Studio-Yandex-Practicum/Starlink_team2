@@ -1,5 +1,5 @@
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 
 from backend.models.telegram_user import TelegramUser
 
@@ -9,20 +9,21 @@ class CRUDTelegramUsers:
         self.model = model
 
     async def check_user_exists(
-        self, telegram_id: int, session: AsyncSession
+        self, telegram_id: int, session: async_sessionmaker[AsyncSession]
     ):
-        user_check = (
-            (
-                await session.execute(
-                    select(self.model).where(
-                        self.model.telegram_id == telegram_id
+        async with session() as asession:
+            user_check = (
+                (
+                    await asession.execute(
+                        select(self.model).where(
+                            self.model.telegram_id == str(telegram_id)
+                        )
                     )
                 )
+                .scalars()
+                .first()
             )
-            .scalars()
-            .first()
-        )
-        return user_check
+            return user_check
 
 
 telegram_users_crud = CRUDTelegramUsers(TelegramUser)

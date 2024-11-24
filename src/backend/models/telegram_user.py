@@ -4,6 +4,7 @@ from sqlalchemy.orm import relationship
 
 from backend.core.config import settings
 from backend.models.base import AbstractModelForTime
+from backend.models.quiz import Quiz
 
 
 class TelegramUser(AbstractModelForTime):
@@ -27,10 +28,10 @@ class TelegramUser(AbstractModelForTime):
         nullable=True,
     )
     active = Column(Boolean, default=True)
-    user_quiz = relationship('Quiz')
-    email = relationship('EmployeeEmail')
-    telegram_id: Column[int] = Column(
-        BigInteger,
+    # user_quiz = relationship(Quiz)
+    # email = relationship('EmployeeEmail')
+    telegram_id: Column[str] = Column(
+        String,
         unique=True,
         nullable=False
     )
