@@ -1,122 +1,95 @@
+from typing import List, Optional
+
 from sqlalchemy import select
-
-import constants
-import keyboard
-
+from sqlalchemy.ext.asyncio import AsyncSession
 from src.backend.models.menu import Menu
 from src.backend.models.telegram_user import TelegramUser
 
 
-async def check_user_email(session, user_id):
-    """
-    Проверяет, есть ли у пользователя email.
+async def get_child_menu_for_role(session: AsyncSession,
+                                  parent_id: int,
+                                  role_id: Optional[str] = None) -> List[Menu]:
+    """Получает дочерние элементы меню для inlineKeyboard с учетом роли.
 
-    :param session: Сессия базы данных.
-    :param user_id: Идентификатор пользователя.
-    :return: True, если у пользователя есть email, иначе False.
-    """
-    result = await session.execute(
-        select(TelegramUser)
-        .where(TelegramUser.id == user_id)
-        .where(TelegramUser.email_id.isnot(None))
-    )
-    return result.scalar() is not None
-
-
-async def check_user_role(session, user_id):
-    """
-    Проверяет, есть ли у пользователя роль.
-
-    :param session: Сессия базы данных.
-    :param user_id: Идентификатор пользователя.
-    :return: True, если у пользователя есть роль, иначе False.
-    """
-    result = await session.execute(
-        select(TelegramUser)
-        .where(TelegramUser.id == user_id)
-        .where(TelegramUser.role_id.isnot(None))
-    )
-    return result.scalar() is not None
-
-
-async def fetch_menu_items(session, parent_id=None, role_access=None):
-    """
-    Получает элементы меню на основе родительского ID и доступности по роли.
-
-    :param session: Сессия базы данных.
-    :param parent_id: Идентификатор родительского элемента меню (по
-        умолчанию None).
-    :param role_access: Список ролей для фильтрации доступных элементов меню
-        (по умолчанию None).
-    :return: Список элементов меню в формате словарей.
+    :param session: Асинхронная сессия базы данных.
+    :param parent_id: Идентификатор родительского элемента меню.
+    :param role_id: Идентификатор роли пользователя.
+        Если None, то возвращаются элементы без учета роли.
+    :return: Список дочерних элементов меню.
     """
     query = select(Menu).where(Menu.parent == parent_id)
-    if role_access is not None:
-        query = query.where(Menu.role_access.in_(role_access))
-    else:
-        query = query.where(Menu.role_access.is_(None))
+    if role_id:
+        query = query.where(Menu.role_access == role_id)
     result = await session.execute(query)
-    return [
-        {
-            constants.UNIQUE_ID_KEY: menu.unique_id,
-            constants.NAME_KEY: menu.name,
-            constants.PARENT_KEY: menu.parent,
-            constants.IS_FOLDER_KEY: menu.is_folder,
-            constants.ROLES_KEY: [menu.role_access] if menu.role_access else []
-        }
-        for menu in result.scalars().all()
-    ]
+    return result.scalars().all()
 
 
-async def fetch_and_build_inline_keyboard(session, user_roles, parent_id=None):
+async def get_child_menu_for_guest(session: AsyncSession,
+                                   parent_id: int) -> List[Menu]:
+    """Получает дочерние элементы меню для inlineKeyboard для гостей.
+
+    :param session: Асинхронная сессия базы данных.
+    :param parent_id: Идентификатор родительского элемента меню.
+    :return: Список дочерних элементов меню для гостей.
     """
-    Получение дочернего меню для сотрудников с учетом доступности по роли.
+    query = select(Menu).where(Menu.parent == parent_id,
+                               Menu.role_access.is_(None))
+    result = await session.execute(query)
+    return result.scalars().all()
 
-    :param session: Сессия базы данных.
-    :param user_roles: Список ролей пользователя.
-    :param parent_id: Идентификатор родительского элемента меню (по
-        умолчанию None).
-    :return: InlineKeyboard клавиатура с дочерними элементами меню.
+
+async def get_parent_menu_for_role(
+        session: AsyncSession,
+        role_id: Optional[str] = None) -> List[Menu]:
+    """Получает родительские элементы меню для replyKeyboard с учетом роли.
+
+    :param session: Асинхронная сессия базы данных.
+    :param role_id: Идентификатор роли пользователя.
+        Если None, то возвращаются элементы без учета роли.
+    :return: Список родительских элементов меню.
     """
-    menu_items = await fetch_menu_items(session, parent_id, user_roles)
-    return await keyboard.build_inline_keyboard(menu_items, user_roles,
-                                                parent_id)
+    query = select(Menu).where(Menu.parent == 0)
+    if role_id:
+        query = query.where(Menu.role_access == role_id)
+    result = await session.execute(query)
+    return result.scalars().all()
 
 
-async def fetch_and_build_guest_inline_keyboard(session, parent_id=None):
+async def get_parent_menu_for_guest(session: AsyncSession) -> List[Menu]:
+    """Получает родительские элементы меню для replyKeyboard для гостей.
+
+    :param session: Асинхронная сессия базы данных.
+    :return: Список родительских элементов меню для гостей.
     """
-    Получение дочернего меню для гостей.
+    query = select(Menu).where(Menu.parent == 0, Menu.role_access.is_(None))
+    result = await session.execute(query)
+    return result.scalars().all()
 
-    :param session: Сессия базы данных.
-    :param parent_id: Идентификатор родительского элемента меню (по
-        умолчанию None).
-    :return:InlineKeyboard клавиатура с дочерними элементами меню
-        для гостей.
+
+async def check_user_email(session: AsyncSession,
+                           username: str) -> bool:
+    """Проверяет наличие email у пользователя.
+
+    :param session: Асинхронная сессия базы данных.
+    :param username: Имя пользователя Telegram.
+    :return: True, если у пользователя есть email, иначе False.
     """
-    menu_items = await fetch_menu_items(session, parent_id)
-    return await keyboard.build_inline_keyboard(menu_items, [], parent_id)
+    query = select(TelegramUser).where(TelegramUser.username == username)
+    result = await session.execute(query)
+    user = result.scalar_one_or_none()
+    return user.email_id is not None if user else False
 
 
-async def fetch_and_build_reply_keyboard(session, user_roles):
+async def check_user_role(session: AsyncSession,
+                          username: str) -> Optional[str]:
+    """Проверяет роль пользователя.
+
+    :param session: Асинхронная сессия базы данных.
+    :param username: Имя пользователя Telegram.
+    :return: Идентификатор роли пользователя,
+        если пользователь найден, иначе None.
     """
-    Получение родительского меню для сотрудников с учетом доступности по роли.
-
-    :param session: Сессия базы данных.
-    :param user_roles: Список ролей пользователя.
-    :return: ReplyKeyboard клавиатура с родительскими элементами меню для
-        сотрудников.
-    """
-    menu_items = await fetch_menu_items(session, 0, user_roles)
-    return await keyboard.build_reply_keyboard(menu_items, user_roles)
-
-
-async def fetch_and_build_guest_reply_keyboard(session):
-    """
-    Получение родительского меню для гостей.
-
-    :param session: Сессия базы данных.
-    :return: ReplyKeyboard клавиатура с родительскими элементами меню для
-        гостей.
-    """
-    menu_items = await fetch_menu_items(session, 0)
-    return await keyboard.build_reply_keyboard(menu_items, [])
+    query = select(TelegramUser).where(TelegramUser.username == username)
+    result = await session.execute(query)
+    user = result.scalar_one_or_none()
+    return user.role_id if user else None
