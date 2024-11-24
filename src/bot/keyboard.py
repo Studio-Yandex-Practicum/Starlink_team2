@@ -1,14 +1,13 @@
 from math import ceil
 from typing import List, Optional, Tuple, TypedDict, Union
 
+import constants
 from telebot.types import (
     InlineKeyboardButton,
     InlineKeyboardMarkup,
     KeyboardButton,
     ReplyKeyboardMarkup,
 )
-
-import constants
 
 
 class MenuItem(TypedDict):
@@ -26,8 +25,7 @@ async def filter_accessible_items(
         user_roles: List[str],
         parent_id: Optional[int],
 ) -> List[MenuItem]:
-    """Фильтрует список элементов меню по доступности
-    для пользователя и по указанному родительскому идентификатору.
+    """Фильтрует список элементов меню по доступности.
 
     :param menu_items: Список всех элементов меню.
     :param user_roles: Список ролей пользователя.
@@ -47,14 +45,12 @@ async def paginate_items(
         page: int,
         items_per_page: int,
 ) -> Tuple[List[MenuItem], int]:
-    """Разбивает список элементов на страницы и возвращает элементы
-    текущей страницы вместе с общим количеством страниц.
+    """Разбивает список элементов на страницы и возвращает элементы страницы.
 
     :param items: Полный список элементов для пагинации.
     :param page: Номер текущей страницы (начиная с 1).
     :param items_per_page: Количество элементов на одной странице.
-    :return: Кортеж из списка элементов текущей страницы и
-        общего количества страниц.
+    :return: Кортеж из списка элементов текущей и общего количества страниц.
     """
     total_pages = max(1, ceil(len(items) / items_per_page))
     current_page = max(1, min(page, total_pages))
@@ -69,8 +65,7 @@ async def build_navigation_buttons(
         parent_id: Optional[int] = None,
         is_inline: bool = False,
 ) -> list:
-    """Создаёт кнопки навигации для клавиатуры (Reply или Inline)
-    с учётом текущей страницы и общего количества страниц.
+    """Создаёт кнопки навигации для клавиатуры (Reply или Inline).
 
     :param page: Номер текущей страницы.
     :param total_pages: Общее количество страниц.
@@ -116,8 +111,7 @@ async def build_menu_buttons(
         buttons_per_row: int = constants.BUTTONS_PER_ROW,
         is_inline: bool = False,
 ) -> list:
-    """Создаёт список кнопок для меню с учётом
-    пагинации и доступности элементов.
+    """Создаёт список кнопок меню с учётом пагинации и доступности элементов.
 
     :param menu_items: Список всех элементов меню.
     :param user_roles: Список ролей пользователя.
@@ -141,10 +135,10 @@ async def build_menu_buttons(
         if is_inline:
             return [[InlineKeyboardButton(constants.NO_ITEMS_TEXT,
                                           callback_data=constants.NOOP)]]
-        else:
-            return [[KeyboardButton(constants.NO_ITEMS_TEXT)]]
+        return [[KeyboardButton(constants.NO_ITEMS_TEXT)]]
 
-    def create_button(item):
+    def create_button(item: MenuItem) -> Union[InlineKeyboardButton,
+    KeyboardButton]:
         if is_inline:
             if item[constants.IS_FOLDER_KEY]:
                 callback_data = (f"{constants.OPEN_CALLBACK_PREFIX}"
@@ -154,8 +148,7 @@ async def build_menu_buttons(
                                  f"{item[constants.UNIQUE_ID_KEY]}")
             return InlineKeyboardButton(text=item[constants.NAME_KEY],
                                         callback_data=callback_data)
-        else:
-            return KeyboardButton(item[constants.NAME_KEY])
+        return KeyboardButton(item[constants.NAME_KEY])
 
     buttons = [create_button(item) for item in accessible_items]
     return [buttons[i:i + buttons_per_row] for i in
