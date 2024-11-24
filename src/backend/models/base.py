@@ -2,7 +2,7 @@ from datetime import datetime
 
 from sqlalchemy import Column, DateTime
 
-from core.db import Base
+from backend.core.db import Base
 
 
 class AbstractModelForTime(Base):

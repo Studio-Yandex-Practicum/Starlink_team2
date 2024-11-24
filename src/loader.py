@@ -8,5 +8,4 @@ load_dotenv()
 BOT_TOKEN: Optional[str] = os.getenv("BOT_TOKEN")
 if not BOT_TOKEN:
     raise ValueError("BOT_TOKEN is not set")
-else:
-    bot = AsyncTeleBot(BOT_TOKEN)
+bot_instance = AsyncTeleBot(BOT_TOKEN)

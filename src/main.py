@@ -1,9 +1,9 @@
 import asyncio
 import logging
 
-import handlers  # noqa
-from loader import bot
-from utils.logger import get_logger
+import bot.handlers  # noqa
+from loader import bot_instance
+from bot.utils.logger import get_logger
 
 
 async def main() -> None:
@@ -11,7 +11,7 @@ async def main() -> None:
     log = get_logger(__name__)
     try:
         log.info('Bot started')
-        await bot.infinity_polling(
+        await bot_instance.infinity_polling(
             skip_pending=True,
             logger_level=logging.INFO,
         )
