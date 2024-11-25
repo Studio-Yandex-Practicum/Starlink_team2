@@ -14,8 +14,7 @@ class Quiz(AbstractModelForTime):
     active = Column(Boolean, default=False)
     edited_by = Column(pg_UUID, ForeignKey('users.unique_id'))
     created_by = Column(pg_UUID, ForeignKey('users.unique_id'))
-    edited = relationship('Users')
-    created = relationship('Users')
+    user = relationship('Users')
 
     def __repr__(self) -> str:
         return (

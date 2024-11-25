@@ -19,7 +19,7 @@ class UserQuize(AbstractModelForTime):
     __table_args__ = (CheckConstraint('started_time < finished_time'),)
 
     user_id = Column(pg_UUID, ForeignKey('telegramusers.unique_id'))
-    quize_id = Column(pg_UUID, ForeignKey('quizs.unique_id'))
+    quize_id = Column(pg_UUID, ForeignKey('quizs.unique_id'), unique=True)
     status = Column(Boolean, default=True)
     started_time = Column(DateTime, default=datetime.now)
     finished_time = Column(DateTime)

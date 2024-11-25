@@ -18,7 +18,7 @@ class TakenAnswer(AbstractModelForTime):
     - edited_at: дата и время редактирования.
     """
 
-    quiz_id = Column(pg_UUID, ForeignKey('quizs.unique_id'))
+    quiz_id = Column(pg_UUID, ForeignKey('userquizes.unique_id'))
     question_id = Column(pg_UUID, ForeignKey('quizquestions.unique_id'))
     answer_id = Column(pg_UUID, ForeignKey('quizanswers.unique_id'))
     user_id = Column(pg_UUID, ForeignKey('users.unique_id'))

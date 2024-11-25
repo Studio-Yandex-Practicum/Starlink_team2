@@ -6,6 +6,7 @@ from sqlalchemy import (
     Integer,
     String,
     Text,
+    UniqueConstraint,
 )
 from sqlalchemy.dialects.postgresql import UUID as pg_UUID  # noqa
 from sqlalchemy.orm import relationship
@@ -27,7 +28,7 @@ class Menu(AbstractModelForTime):
     content = Column(Text)
     is_folder = Column(Boolean, default=False)
     image_link = Column(String(settings.image_link_max_length))
-    role_access = Column(pg_UUID, ForeignKey('roles.unique_id'))
+    role_access = Column(pg_UUID, ForeignKey('roles.unique_id'), unique=True)
     role = relationship('Roles')
 
     def __repr__(self) -> str:
