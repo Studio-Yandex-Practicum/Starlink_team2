@@ -1,0 +1,62 @@
+[
+    {
+        "username": "edurd.vlasow",
+        "role_id": "67bb8356-739b-4918-9694-11eeb81f577e",
+        "name": "Eduard",
+        "last_name": "Vlasow",
+        "email_id": "fbbe74eb-dc64-4287-9462-c451cf3b83ae",
+        "active": true,
+        "telegram_id": 346516489,
+        "created_at": null,
+        "edited_at": null,
+        "unique_id": "b19ed33f-32a5-42b9-a016-43026f2c4967"
+    },
+    {
+        "username": "gloria.vlasova",
+        "role_id": "2c01f185-dee1-420e-9c73-b193eda0d5ff",
+        "name": "Gloria",
+        "last_name": "Vlasova",
+        "email_id": "57b743f2-e467-4e0d-b2c1-dca3bce3deb1",
+        "active": true,
+        "telegram_id": 344896158,
+        "created_at": null,
+        "edited_at": null,
+        "unique_id": "87cb72bf-a719-4904-8ae8-19681a36b4f1"
+    },
+    {
+        "username": "egortesla",
+        "role_id": "67bb8356-739b-4918-9694-11eeb81f577e",
+        "name": "Egor",
+        "last_name": "Teselkin",
+        "email_id": "4ee20005-fe19-4708-a444-51901757becf",
+        "active": false,
+        "telegram_id": 347894315,
+        "created_at": null,
+        "edited_at": null,
+        "unique_id": "74900b8e-39fc-44da-b95a-7b025bd860f5"
+    },
+    {
+        "username": "KirKill",
+        "role_id": "67bb8356-739b-4918-9694-11eeb81f577e",
+        "name": "Kirill",
+        "last_name": "Melnichuk",
+        "email_id": "3c0a82ff-7e63-4115-b3a6-b42eb2ea94eb",
+        "active": true,
+        "telegram_id": 340548135,
+        "created_at": null,
+        "edited_at": null,
+        "unique_id": "82ede2b8-0521-430a-ad6d-13329360f9ce"
+    },
+    {
+        "username": "QuickLiker",
+        "role_id": "2c01f185-dee1-420e-9c73-b193eda0d5ff",
+        "name": "Eduardinos",
+        "last_name": "Vlasos",
+        "email_id": "8e18875e-bddb-47b3-9755-bd542d9c3f82",
+        "active": true,
+        "telegram_id": 343798461,
+        "created_at": null,
+        "edited_at": null,
+        "unique_id": "91182197-49c1-4c15-a881-119d2a30c7f4"
+    }
+]
