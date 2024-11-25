@@ -1,0 +1,24 @@
+[
+    {
+        "name": "Агенство",
+        "parent": null,
+        "content": "Мы работаем в сфере медийной рекламы с 2002 года. С 2007 года являемся частью коммуникационного холдинга Родная Речь (ex. Pubilcis Russia). Ведем рекламные кампании для 75 брендов и входим в ТОП-10 агентств нашего рекламного рынка.",
+        "is_folder": false,
+        "image_link": null,
+        "role_access": "67bb8356-739b-4918-9694-11eeb81f577e",
+        "created_at": null,
+        "edited_at": null,
+        "unique_id": "970e8661-6a6f-4d05-a6b0-2cd9261a7a09"
+    },
+    {
+        "name": "Данные сотрудников",
+        "parent": null,
+        "content": "Василий Быков - Директор, +7 916 123 45 67\\nАнтонина Безносикова - Главный бухгалтер, +7 977 765 43 21",
+        "is_folder": false,
+        "image_link": null,
+        "role_access": "2c01f185-dee1-420e-9c73-b193eda0d5ff",
+        "created_at": null,
+        "edited_at": null,
+        "unique_id": "5e0810dd-59b0-4d9f-95a5-b860d9fb4388"
+    }
+]
