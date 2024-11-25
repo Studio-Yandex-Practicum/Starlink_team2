@@ -19,21 +19,17 @@ class TelegramUser(AbstractModelForTime):
         ForeignKey('roles.unique_id'),
         nullable=True,
     )
+    role = relationship('Role')
     name = Column(String(length=settings.username_max_length))
     last_name = Column(String(length=settings.username_max_length))
     email_id = Column(
         pg_UUID(as_uuid=True),
-        ForeignKey("employee_emails.unique_id"),
+        ForeignKey('employee_emails.unique_id'),
         nullable=True,
     )
     active = Column(Boolean, default=True)
-    user_quiz = relationship('Quiz')
     email = relationship('EmployeeEmail')
-    telegram_id: Column[int] = Column(
-        BigInteger,
-        unique=True,
-        nullable=False
-    )
+    telegram_id: Column[int] = Column(BigInteger, unique=True, nullable=False)
 
     def __repr__(self) -> str:
         return (

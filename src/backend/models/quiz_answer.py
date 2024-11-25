@@ -29,13 +29,13 @@ class QuizAnswer(AbstractModelForTime):
         ),
     )
 
-    quiz_id = Column(pg_UUID, ForeignKey('users.unique_id'))
+    quiz_id = Column(pg_UUID, ForeignKey('quizs.unique_id'))
     question_id = Column(pg_UUID, ForeignKey('quizquestions.unique_id'))
     correct_answer = Column(Boolean, default=False)
     active = Column(Boolean, default=False)
     content = Column(String(settings.content_max_length))
-    created_by = relationship('User')
-    edited_by = relationship('User')
+    quest = relationship('QuizQuestion')
+    quiz = relationship('Quiz')
 
     def __repr__(self) -> str:
         return (

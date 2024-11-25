@@ -1,5 +1,6 @@
 from sqlalchemy import Column, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID as pg_UUID  # noqa
+from sqlalchemy.orm import relationship
 
 from .base import AbstractModelForTime
 
@@ -21,6 +22,10 @@ class TakenAnswer(AbstractModelForTime):
     question_id = Column(pg_UUID, ForeignKey('quizquestions.unique_id'))
     answer_id = Column(pg_UUID, ForeignKey('quizanswers.unique_id'))
     user_id = Column(pg_UUID, ForeignKey('users.unique_id'))
+    quiz = relationship('Quiz')
+    question = relationship('QuizQuestion')
+    answer = relationship('QuizAnswer')
+    user = relationship('User')
 
     def __repr__(self) -> str:
         return (

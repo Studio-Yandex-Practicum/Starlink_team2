@@ -16,7 +16,6 @@ class EmployeeEmail(AbstractModelForTime):
         unique=True,
         nullable=False,
     )
-    telegram_user = relationship('TelegramUser')
 
     def __repr__(self) -> str:
         return f'{self.email=}; {super().__repr__()}'

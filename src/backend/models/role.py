@@ -21,7 +21,6 @@ class Role(AbstractModelForTime):
         unique=True,
         nullable=False,
     )
-    menu = relationship('Menu')
 
     def __repr__(self) -> str:
         return f'{self.role_name=}; {super().__repr__()}'
