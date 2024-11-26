@@ -8,7 +8,7 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
-from core.base import Base
+from backend.core.base import Base
 
 load_dotenv()
 
@@ -18,9 +18,9 @@ config = context.config
 config.set_main_option(
     'sqlalchemy.url',
     (
-        f'postgresql+asyncpg://{os.getenv('POSTGRES_USER')}:'
-        f'{os.getenv('POSTGRES_PASSWORD')}@{os.getenv('POSTGRES_HOST')}/'
-        f'{os.getenv('POSTGRES_DB_NAME')}'
+        f"postgresql+asyncpg://{os.getenv('POSTGRES_USER')}:"
+        f"{os.getenv('POSTGRES_PASSWORD')}@{os.getenv('POSTGRES_HOST')}/"
+        f"{os.getenv('POSTGRES_DB_NAME')}"
     ),
 )
 # Interpret the config file for Python logging.

@@ -1,2 +1,16 @@
-start_menu = ['О компании', 'Новости', 'Пройти регистрацию']
-start_menu_with_email = ['О компании', 'Новости', 'Quiz']
+from telebot.types import (
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    KeyboardButton,
+    ReplyKeyboardMarkup,
+)
+
+start_menu_keyboard = ReplyKeyboardMarkup().add(KeyboardButton('О компании'),
+                       KeyboardButton('Новости'),
+                       KeyboardButton('Пройти регистрацию'))
+
+
+
+start_menu_with_email = ReplyKeyboardMarkup().add(KeyboardButton('О компании'),
+                       KeyboardButton('Новости'),
+                       KeyboardButton('Quiz'))

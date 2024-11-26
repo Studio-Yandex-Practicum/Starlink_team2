@@ -3,7 +3,7 @@ UNIQUE_ID_KEY = 'UniqueID'
 NAME_KEY = 'Name'
 PARENT_KEY = 'Parent'
 IS_FOLDER_KEY = 'Is_folder'
-ROLES_KEY = 'Roles'
+ROLES_KEY = ['Roles', 'Role 1']
 
 # Константы для навигации и callback_data
 BACK_TEXT = "⬅ Назад"
