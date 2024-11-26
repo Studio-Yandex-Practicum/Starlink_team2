@@ -2,7 +2,6 @@ from datetime import datetime
 
 from sqlalchemy import (
     Boolean,
-    CheckConstraint,
     Column,
     DateTime,
     ForeignKey,
@@ -11,23 +10,34 @@ from sqlalchemy.dialects.postgresql import UUID as pg_UUID  # noqa
 from sqlalchemy.orm import relationship
 
 from .base import AbstractModelForTime
+from .quiz import Quiz
+from .telegram_user import TelegramUser
 
 
 class UserQuize(AbstractModelForTime):
-    """Модель участника квиза."""
+    """Модель участника квиза.
 
-    __table_args__ = (CheckConstraint('started_time < finished_time'),)
+    Модель содержит:
+    - tg_user_id: Идентификатор телеграма пользователя;
+    - quize_id: Идентификатор квиза
+    - status: Статус квиза для пользователя;
+    - started_time: начало прохождения квиза;
+    - finished_time: Когда пользователь закончил квиз;
+    - created_at: Дата и время создания;
+    - edited_at: Дата и время редактирования.
+    """
 
-    user_id = Column(pg_UUID, ForeignKey('telegramusers.unique_id'))
-    quize_id = Column(pg_UUID, ForeignKey('quizs.unique_id'))
+    tg_user_id = Column(pg_UUID, ForeignKey('telegramusers.unique_id'))
+    quize_id = Column(pg_UUID, ForeignKey('quizs.unique_id'), unique=True)
     status = Column(Boolean, default=True)
     started_time = Column(DateTime, default=datetime.now)
-    finished_time = Column(DateTime)
-    telegram_user = relationship('TelegramUser')
+    finished_time = Column(DateTime, nullable=True)
+    telegram_user = relationship(TelegramUser)
+    quiz = relationship(Quiz)
 
     def __repr__(self) -> str:
         return (
-            f'{self.user_id=}; {self.quize_id=}; '
+            f'{self.tg_user_id=}; {self.quize_id=}; '
             f'{self.status=}; {self.started_time=}; '
             f'{super().__repr__()}'
         )

@@ -1,7 +1,6 @@
 from fastapi_users_db_sqlalchemy import SQLAlchemyBaseUserTable
 from sqlalchemy import CheckConstraint, Column, String
 from sqlalchemy.dialects.postgresql import UUID as pg_UUID  # noqa
-from sqlalchemy.orm import relationship
 
 from .base import AbstractModelForTime
 from backend.core.config import settings
@@ -36,10 +35,6 @@ class User(SQLAlchemyBaseUserTable[pg_UUID], AbstractModelForTime):
 
     name = Column(String(settings.username_max_length), nullable=True)
     last_name = Column(String(settings.username_max_length), nullable=True)
-    editer_quiz = relationship('Quiz')
-    created_quiz = relationship('Quiz')
-    editer_quiz_answer = relationship('QuizAnswer')
-    created_quiz_answer = relationship('QuizAnswer')
 
     def __repr__(self) -> str:
         return f'{self.name=}; {self.last_name=}; {super().__repr__()}'

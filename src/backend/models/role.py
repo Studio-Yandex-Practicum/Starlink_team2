@@ -1,12 +1,16 @@
 from sqlalchemy import CheckConstraint, Column, String
-from sqlalchemy.orm import relationship
 
 from backend.core.config import settings
 from backend.models.base import AbstractModelForTime
 
 
 class Role(AbstractModelForTime):
-    """Модель ролей."""
+    """Модель ролей сотрудников.
+
+    - role_name: Название роли.
+    - created_at: Дата и время создания;
+    - edited_at: Дата и время редактирования.
+    """
 
     __table_args__ = (
         CheckConstraint(
@@ -21,7 +25,6 @@ class Role(AbstractModelForTime):
         unique=True,
         nullable=False,
     )
-    menu = relationship('Menu')
 
     def __repr__(self) -> str:
         return f'{self.role_name=}; {super().__repr__()}'
