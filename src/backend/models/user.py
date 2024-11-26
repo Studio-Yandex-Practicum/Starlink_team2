@@ -4,7 +4,7 @@ from sqlalchemy.dialects.postgresql import UUID as pg_UUID  # noqa
 from sqlalchemy.orm import relationship
 
 from .base import AbstractModelForTime
-from core.config import settings
+from backend.core.config import settings
 
 
 class User(SQLAlchemyBaseUserTable[pg_UUID], AbstractModelForTime):
