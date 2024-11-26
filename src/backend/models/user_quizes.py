@@ -16,19 +16,19 @@ from .base import AbstractModelForTime
 class UserQuize(AbstractModelForTime):
     """Модель участника квиза."""
 
-    __table_args__ = (CheckConstraint('started_time < finished_time'),)
+    # __table_args__ = (CheckConstraint('started_time < finished_time'),)
 
-    user_id = Column(pg_UUID, ForeignKey('telegramusers.unique_id'))
+    tg_user_id = Column(pg_UUID, ForeignKey('telegramusers.unique_id'))
     quize_id = Column(pg_UUID, ForeignKey('quizs.unique_id'), unique=True)
     status = Column(Boolean, default=True)
     started_time = Column(DateTime, default=datetime.now)
-    finished_time = Column(DateTime)
+    finished_time = Column(DateTime, nullable=True)
     telegram_user = relationship('TelegramUser')
     quiz = relationship('Quiz')
 
     def __repr__(self) -> str:
         return (
-            f'{self.user_id=}; {self.quize_id=}; '
+            f'{self.tg_user_id=}; {self.quize_id=}; '
             f'{self.status=}; {self.started_time=}; '
             f'{super().__repr__()}'
         )

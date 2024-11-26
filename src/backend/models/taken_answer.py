@@ -18,18 +18,18 @@ class TakenAnswer(AbstractModelForTime):
     - edited_at: дата и время редактирования.
     """
 
-    quiz_id = Column(pg_UUID, ForeignKey('userquizes.unique_id'))
+    user_quiz_id = Column(pg_UUID, ForeignKey('userquizes.unique_id'))
     question_id = Column(pg_UUID, ForeignKey('quizquestions.unique_id'))
     answer_id = Column(pg_UUID, ForeignKey('quizanswers.unique_id'))
-    user_id = Column(pg_UUID, ForeignKey('users.unique_id'))
-    quiz = relationship('Quiz')
+    tg_user_id = Column(pg_UUID, ForeignKey('telegramusers.unique_id'))
+    quiz = relationship('UserQuize')
     question = relationship('QuizQuestion')
     answer = relationship('QuizAnswer')
-    user = relationship('User')
+    user = relationship('TelegramUser')
 
     def __repr__(self) -> str:
         return (
-            f'{self.quiz_id=}; {self.question_id=};'
-            f' {self.answer_id=}; {self.user_id=}; '
+            f'{self.user_quiz_id=}; {self.question_id=};'
+            f' {self.answer_id=}; {self.tg_user_id=}; '
             f'{super().__repr__()}'
         )

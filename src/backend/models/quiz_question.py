@@ -36,7 +36,7 @@ class QuizQuestion(AbstractModelForTime):
     )
 
     quiz_id = Column(pg_UUID, ForeignKey('quizs.unique_id'))
-    image_link = Column(String(settings.image_link_max_length))
+    image_link = Column(String(settings.image_link_max_length), nullable=True)
     content = Column(String(settings.content_max_length))
     number = Column(Integer)
     active = Column(Boolean, default=False)

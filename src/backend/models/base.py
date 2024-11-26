@@ -11,7 +11,7 @@ class AbstractModelForTime(Base):
     __abstract__ = True
 
     created_at = Column(DateTime, default=datetime.now)
-    edited_at = Column(DateTime)
+    edited_at = Column(DateTime, nullable=True)
 
     def __repr__(self) -> str:
         return f'{self.created_at=}; {self.edited_at=}.'
