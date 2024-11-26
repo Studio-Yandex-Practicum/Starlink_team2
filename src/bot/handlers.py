@@ -1,7 +1,9 @@
 from telebot.types import Message
 
+from bot.crud.telegram_menu import telegram_menu_crud
 from bot.crud.telegram_user import telegram_users_crud
 from bot.db import async_session
+from bot.keyboard import build_reply_keyboard
 from bot.test_keyboard import start_menu_keyboard, start_menu_with_email
 from bot.utils.logger import get_logger
 from loader import bot_instance as bot
@@ -43,10 +45,16 @@ async def handle_start(message: Message) -> None:
                 reply_markup=start_menu_with_email,
             )
         else:
+            keyboard = await build_reply_keyboard(
+                await telegram_menu_crud.get_parent_menu_for_guest(
+                    session=async_session,
+                ),
+                user_roles=["Role 1",]
+            )
             await bot.send_message(
                 message.chat.id,
                 f'С возращением {message.from_user.username}!',
-                reply_markup=start_menu_keyboard,
+                reply_markup=keyboard,
             )
 
     logger.info(f'{message.from_user.username} запустил бота')
