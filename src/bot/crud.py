@@ -2,8 +2,9 @@ from typing import List, Optional
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from src.backend.models.menu import Menu
-from src.backend.models.telegram_user import TelegramUser
+
+from backend.models.menu import Menu
+from backend.models.telegram_user import TelegramUser
 
 
 async def get_child_menu_for_role(session: AsyncSession,
@@ -66,30 +67,30 @@ async def get_parent_menu_for_guest(session: AsyncSession) -> List[Menu]:
     return result.scalars().all()
 
 
-async def check_user_email(session: AsyncSession,
-                           username: str) -> bool:
-    """Проверяет наличие email у пользователя.
+# async def check_user_email(session: AsyncSession,
+#                            username: str) -> bool:
+#     """Проверяет наличие email у пользователя.
 
-    :param session: Асинхронная сессия базы данных.
-    :param username: Имя пользователя Telegram.
-    :return: True, если у пользователя есть email, иначе False.
-    """
-    query = select(TelegramUser).where(TelegramUser.username == username)
-    result = await session.execute(query)
-    user = result.scalar_one_or_none()
-    return user.email_id is not None if user else False
+#     :param session: Асинхронная сессия базы данных.
+#     :param username: Имя пользователя Telegram.
+#     :return: True, если у пользователя есть email, иначе False.
+#     """
+#     query = select(TelegramUser).where(TelegramUser.username == username)
+#     result = await session.execute(query)
+#     user = result.scalar_one_or_none()
+#     return user.email_id is not None if user else False
 
 
-async def check_user_role(session: AsyncSession,
-                          username: str) -> Optional[str]:
-    """Проверяет роль пользователя.
+# async def check_user_role(session: AsyncSession,
+#                           username: str) -> Optional[str]:
+#     """Проверяет роль пользователя.
 
-    :param session: Асинхронная сессия базы данных.
-    :param username: Имя пользователя Telegram.
-    :return: Идентификатор роли пользователя,
-        если пользователь найден, иначе None.
-    """
-    query = select(TelegramUser).where(TelegramUser.username == username)
-    result = await session.execute(query)
-    user = result.scalar_one_or_none()
-    return user.role_id if user else None
+#     :param session: Асинхронная сессия базы данных.
+#     :param username: Имя пользователя Telegram.
+#     :return: Идентификатор роли пользователя,
+#         если пользователь найден, иначе None.
+#     """
+#     query = select(TelegramUser).where(TelegramUser.username == username)
+#     result = await session.execute(query)
+#     user = result.scalar_one_or_none()
+#     return user.role_id if user else None

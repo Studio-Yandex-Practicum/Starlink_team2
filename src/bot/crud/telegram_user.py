@@ -1,4 +1,5 @@
 from sqlalchemy import select
+from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from backend.models.telegram_user import TelegramUser
@@ -42,6 +43,51 @@ class CRUDTelegramUsers:
                 .first()
             )
             return True if user_check else False
+
+    async def check_user_email(
+            self,
+            session: async_sessionmaker[AsyncSession],
+            username: str,
+    ) -> bool:
+        """Проверяет наличие email у пользователя.
+
+        Args:
+            username (str): Имя пользователя Telegram
+            session (async_sessionmaker[AsyncSession]): сессия БД
+
+        Returns:
+            bool: True, если у пользователя есть email, иначе False.
+
+        """
+        async with session() as asession:
+            chek_user_email_id = await asession.execute(
+                select(TelegramUser).where(TelegramUser.username == username),
+            )
+        user = chek_user_email_id.scalar_one_or_none()
+        return user.email_id is not None if user else False
+
+    async def check_user_role(
+            self,
+            session: async_sessionmaker[AsyncSession],
+            username: str,
+    ) -> Optional[str]:
+        """Проверяет роль пользователя.
+
+        Args:
+            username (str): Имя пользователя Telegram
+            session (async_sessionmaker[AsyncSession]): сессия БД
+
+        Returns:
+            Идентификатор роли пользователя,
+            если пользователь найден, иначе None.
+
+        """
+        async with session() as asession:
+            chek_user_email_id = await asession.execute(
+                select(TelegramUser).where(TelegramUser.username == username),
+            )
+        user = chek_user_email_id.scalar_one_or_none()
+        return user.role_id is not None if user else False
 
     async def create_user(
         self,

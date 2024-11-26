@@ -28,11 +28,21 @@ async def handle_start(message: Message) -> None:
         )
         await bot.send_message(
             message.chat.id,
-            'Приветственное сообщение для кандидатов',
+            'Приветственное сообщение для новых кандидатов',
         )
     else:
-        await bot.send_message(
-            message.chat.id,
-            'Приветственное сообщение для кандидатов',
-        )
+        if await telegram_users_crud.check_user_email(
+            session=async_session,
+            username=message.from_user.username,
+        ):
+            await bot.send_message(
+                message.chat.id,
+                'Приветственное сообщение для работников с Email',
+            )
+        else:
+            await bot.send_message(
+                message.chat.id,
+                'Приветственное сообщение для бывалых кандидатов без Email',
+            )
+
     logger.info(f'{message.from_user.username} запустил бота')
