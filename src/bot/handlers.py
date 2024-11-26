@@ -2,6 +2,8 @@ from telebot.types import Message
 
 from bot.crud.telegram_user import telegram_users_crud
 from bot.db import async_session
+from bot.keyboard import build_inline_keyboard, build_reply_keyboard
+from bot.test_keyboard import start_menu, start_menu_with_email
 from bot.utils.logger import get_logger
 from loader import bot_instance as bot
 
@@ -29,6 +31,10 @@ async def handle_start(message: Message) -> None:
         await bot.send_message(
             message.chat.id,
             'Приветственное сообщение для новых кандидатов',
+            reply_markup=await build_reply_keyboard(
+                start_menu,
+                [str(await telegram_users_crud.check_user_role(session=async_session, username=message.from_user.username))],
+            ),
         )
     else:
         if await telegram_users_crud.check_user_email(

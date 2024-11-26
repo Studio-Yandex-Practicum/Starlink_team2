@@ -1,13 +1,14 @@
 from math import ceil
 from typing import List, Optional, Tuple, TypedDict, Union
 
-import constants
 from telebot.types import (
     InlineKeyboardButton,
     InlineKeyboardMarkup,
     KeyboardButton,
     ReplyKeyboardMarkup,
 )
+
+import bot.constants as constants
 
 
 class MenuItem(TypedDict):
