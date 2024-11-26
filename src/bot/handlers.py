@@ -4,6 +4,7 @@ from bot.crud.telegram_user import telegram_users_crud
 from bot.db import async_session
 from bot.utils.logger import get_logger
 from loader import bot_instance as bot
+from bot.keyboard import build_keyboard
 
 logger = get_logger(__name__)
 
@@ -29,6 +30,10 @@ async def handle_start(message: Message) -> None:
         await bot.send_message(
             message.chat.id,
             'Приветственное сообщение для новых кандидатов',
+            reply_markup=build_keyboard(
+                ['О компании', 'Регистрация'],
+                user_roles=[0]
+            )
         )
     else:
         if await telegram_users_crud.check_user_email(
