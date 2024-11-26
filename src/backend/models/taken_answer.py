@@ -3,6 +3,10 @@ from sqlalchemy.dialects.postgresql import UUID as pg_UUID  # noqa
 from sqlalchemy.orm import relationship
 
 from .base import AbstractModelForTime
+from .quiz_answer import QuizAnswer
+from .quiz_question import QuizQuestion
+from .telegram_user import TelegramUser
+from .user_quizes import UserQuize
 
 
 class TakenAnswer(AbstractModelForTime):
@@ -22,10 +26,10 @@ class TakenAnswer(AbstractModelForTime):
     question_id = Column(pg_UUID, ForeignKey('quizquestions.unique_id'))
     answer_id = Column(pg_UUID, ForeignKey('quizanswers.unique_id'))
     tg_user_id = Column(pg_UUID, ForeignKey('telegramusers.unique_id'))
-    quiz = relationship('UserQuize')
-    question = relationship('QuizQuestion')
-    answer = relationship('QuizAnswer')
-    user = relationship('TelegramUser')
+    quiz = relationship(UserQuize)
+    question = relationship(QuizQuestion)
+    answer = relationship(QuizAnswer)
+    user = relationship(TelegramUser)
 
     def __repr__(self) -> str:
         return (

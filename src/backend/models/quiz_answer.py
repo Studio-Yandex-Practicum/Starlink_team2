@@ -1,8 +1,10 @@
-from sqlalchemy import Boolean, CheckConstraint, Column, ForeignKey, String
+from sqlalchemy import Boolean, Column, ForeignKey, String
 from sqlalchemy.dialects.postgresql import UUID as pg_UUID  # noqa
 from sqlalchemy.orm import relationship
 
 from .base import AbstractModelForTime
+from .quiz import Quiz
+from .quiz_question import QuizQuestion
 from core.config import settings
 
 
@@ -21,25 +23,17 @@ class QuizAnswer(AbstractModelForTime):
     - edited_at: дата и время редактирования.
     """
 
-    # __table_args__ = (
-    #     CheckConstraint(
-    #         f'length(content) BETWEEN '
-    #         f'{settings.content_min_length} '
-    #         f'AND {settings.content_max_length}',
-    #     ),
-    # )
-
     quiz_id = Column(pg_UUID, ForeignKey('quizs.unique_id'))
     question_id = Column(pg_UUID, ForeignKey('quizquestions.unique_id'))
     correct_answer = Column(Boolean, default=False)
     active = Column(Boolean, default=False)
     content = Column(String(settings.content_max_length))
-    quest = relationship('QuizQuestion')
-    quiz = relationship('Quiz')
+    quest = relationship(QuizQuestion)
+    quiz = relationship(Quiz)
 
     def __repr__(self) -> str:
         return (
             f'{self.quiz_id=}; {self.question_id=}; '
             f'{self.correct_answer=}; {self.active=}; '
-            f'{self.content=}; {super().__repr__()}'
+            f'{self.content[:30]=}; {super().__repr__()}'
         )

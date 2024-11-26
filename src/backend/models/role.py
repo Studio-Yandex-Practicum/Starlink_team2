@@ -1,12 +1,16 @@
 from sqlalchemy import CheckConstraint, Column, String
-from sqlalchemy.orm import relationship
 
 from core.config import settings
 from models.base import AbstractModelForTime
 
 
 class Role(AbstractModelForTime):
-    """Модель ролей."""
+    """Модель ролей сотрудников.
+
+    - role_name: Название роли.
+    - created_at: Дата и время создания;
+    - edited_at: Дата и время редактирования.
+    """
 
     __table_args__ = (
         CheckConstraint(

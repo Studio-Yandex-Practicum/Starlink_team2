@@ -1,7 +1,6 @@
 from fastapi_users_db_sqlalchemy import SQLAlchemyBaseUserTable
 from sqlalchemy import CheckConstraint, Column, String
 from sqlalchemy.dialects.postgresql import UUID as pg_UUID  # noqa
-from sqlalchemy.orm import relationship
 
 from .base import AbstractModelForTime
 from core.config import settings
