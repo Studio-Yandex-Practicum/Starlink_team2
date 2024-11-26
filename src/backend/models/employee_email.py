@@ -1,8 +1,8 @@
 from sqlalchemy import Column
 from sqlalchemy_utils import EmailType
 
-from core.config import settings
-from models.base import AbstractModelForTime
+from backend.core.config import settings
+from backend.models.base import AbstractModelForTime
 
 
 class EmployeeEmail(AbstractModelForTime):

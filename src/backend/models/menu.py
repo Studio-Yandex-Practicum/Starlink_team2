@@ -9,9 +9,9 @@ from sqlalchemy import (
 from sqlalchemy.dialects.postgresql import UUID as pg_UUID  # noqa
 from sqlalchemy.orm import relationship
 
-from .base import AbstractModelForTime
-from .role import Role
-from core.config import settings
+from backend.models.base import AbstractModelForTime
+from backend.models.role import Role
+from backend.core.config import settings
 
 
 class Menu(AbstractModelForTime):

@@ -2,10 +2,10 @@ from sqlalchemy import BigInteger, Boolean, Column, ForeignKey, String
 from sqlalchemy.dialects.postgresql import UUID as pg_UUID  # noqa
 from sqlalchemy.orm import relationship
 
-from core.config import settings
-from models.base import AbstractModelForTime
-from models.employee_email import EmployeeEmail
-from models.role import Role
+from backend.core.config import settings
+from backend.models.base import AbstractModelForTime
+from backend.models.employee_email import EmployeeEmail
+from backend.models.role import Role
 
 
 class TelegramUser(AbstractModelForTime):

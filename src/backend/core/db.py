@@ -6,7 +6,7 @@ from sqlalchemy.dialects.postgresql import UUID as pg_UUID  # noqa
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import declarative_base, declared_attr, sessionmaker
 
-from core.config import settings
+from backend.core.config import settings
 
 
 class PreBase:
@@ -30,11 +30,17 @@ class PreBase:
 
 
 Base = declarative_base(cls=PreBase)
-engine = create_async_engine(
-    f'postgresql+asyncpg://{settings.postgres_user}:'
-    f'{settings.postgres_password}@{settings.postgres_host}/'
-    f'{settings.postgres_db_name}',
-)
+
+user = settings.postgres_user
+password = settings.postgres_password
+host = settings.postgres_host
+port = settings.postgres_port
+db_name = settings.postgres_db
+
+url = f'postgresql+asyncpg://{user}:{password}@{host}:{port}/{db_name}'
+
+engine = create_async_engine(url)
+
 AsyncSessionLocal = sessionmaker(engine, class_=AsyncSession)
 
 

@@ -31,7 +31,8 @@ class Settings(BaseSettings):
     postgres_user: str
     postgres_password: str
     postgres_host: str
-    postgres_db_name: str
+    postgres_port: str
+    postgres_db: str
     email_length: int = 256
     role_name_min_length: int = 1
     role_name_max_length: int = 256

@@ -2,10 +2,10 @@ from sqlalchemy import Boolean, Column, ForeignKey, String
 from sqlalchemy.dialects.postgresql import UUID as pg_UUID  # noqa
 from sqlalchemy.orm import relationship
 
-from .base import AbstractModelForTime
-from .quiz import Quiz
-from .quiz_question import QuizQuestion
-from core.config import settings
+from backend.models.base import AbstractModelForTime
+from backend.models.quiz import Quiz
+from backend.models.quiz_question import QuizQuestion
+from backend.core.config import settings
 
 
 class QuizAnswer(AbstractModelForTime):

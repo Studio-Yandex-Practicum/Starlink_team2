@@ -8,9 +8,9 @@ from sqlalchemy import (
 from sqlalchemy.dialects.postgresql import UUID as pg_UUID  # noqa
 from sqlalchemy.orm import relationship
 
-from .base import AbstractModelForTime
-from .quiz import Quiz
-from core.config import settings
+from backend.models.base import AbstractModelForTime
+from backend.models.quiz import Quiz
+from backend.core.config import settings
 
 
 class QuizQuestion(AbstractModelForTime):
