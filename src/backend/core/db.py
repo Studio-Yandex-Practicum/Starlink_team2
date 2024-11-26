@@ -40,11 +40,6 @@ db_name = settings.postgres_db
 url = f'postgresql+asyncpg://{user}:{password}@{host}:{port}/{db_name}'
 
 engine = create_async_engine(url)
-# engine = create_async_engine(
-#     f'postgresql+asyncpg://{settings.postgres_user}:'
-#     f'{settings.postgres_password}@{settings.postgres_host}/'
-#     f'{settings.postgres_db_name}',
-# )
 
 AsyncSessionLocal = sessionmaker(engine, class_=AsyncSession)
 
