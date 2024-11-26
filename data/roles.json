@@ -1,0 +1,14 @@
+[
+    {
+        "role_name": "Пользователь",
+        "created_at": null,
+        "edited_at": null,
+        "unique_id": "67bb8356-739b-4918-9694-11eeb81f577e"
+    },
+    {
+        "role_name": "Сотрудник",
+        "created_at": null,
+        "edited_at": null,
+        "unique_id": "2c01f185-dee1-420e-9c73-b193eda0d5ff"
+    }
+]
