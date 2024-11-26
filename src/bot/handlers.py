@@ -30,7 +30,7 @@ async def handle_start(message: Message) -> None:
         await bot.send_message(
             message.chat.id,
             'Приветственное сообщение для новых кандидатов',
-            reply_markup=start_menu_keyboard
+            reply_markup=start_menu_keyboard,
             )
     else:
         if await telegram_users_crud.check_user_email(
@@ -40,13 +40,13 @@ async def handle_start(message: Message) -> None:
             await bot.send_message(
                 message.chat.id,
                 'Приветственное сообщение для работников с Email',
-                reply_markup=start_menu_with_email
+                reply_markup=start_menu_with_email,
             )
         else:
             await bot.send_message(
                 message.chat.id,
                 f'С возращением {message.from_user.username}!',
-                reply_markup=start_menu_keyboard
+                reply_markup=start_menu_keyboard,
             )
 
     logger.info(f'{message.from_user.username} запустил бота')
