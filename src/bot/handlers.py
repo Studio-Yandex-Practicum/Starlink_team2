@@ -40,18 +40,15 @@ async def handle_start(message: Message) -> None:
             session=async_session,
             username=message.from_user.username,
         ):
-            print(">>>>>>>>>>>>>", 1)
             user_role = await telegram_users_crud.check_user_role(
                 session=async_session,
                 username=username,
             )
-            print(">>>>>>>>>>>>>", 2)
             message_text = 'Приветственное сообщение для работников с Email'
             menu_items = await telegram_menu_crud.get_parent_menu_for_role(
                 session=async_session,
                 role_id=checked_user.role_id,
             )
-            print(">>>>>>>>>>>>>", 3)
         else:
             user_role = None
             message_text = 'Приветственное сообщение для работников без Email'
