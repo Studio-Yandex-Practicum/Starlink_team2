@@ -34,11 +34,13 @@ async def filter_accessible_items(
         Если `None`, фильтруются элементы верхнего уровня.
     :return: Список доступных элементов меню.
     """
-    return [
-        item for item in menu_items
-        if item[constants.PARENT_KEY] == parent_id
-           and set(item[constants.ROLES_KEY]).intersection(user_roles)
-    ]
+    res = []
+    for item in menu_items:
+        if (item.parent == parent_id) and (
+            set([(item.role_access)]).intersection(set(user_roles))
+        ):
+            res.append(item)
+    return res
 
 
 async def paginate_items(
@@ -141,15 +143,15 @@ async def build_menu_buttons(
     def create_button(item: MenuItem) -> Union[InlineKeyboardButton,
     KeyboardButton]:
         if is_inline:
-            if item[constants.IS_FOLDER_KEY]:
+            if item.is_folder:
                 callback_data = (f"{constants.OPEN_CALLBACK_PREFIX}"
-                                 f"{item[constants.UNIQUE_ID_KEY]}")
+                                 f"{item.unique_id}")
             else:
                 callback_data = (f"{constants.SELECT_CALLBACK_PREFIX}"
-                                 f"{item[constants.UNIQUE_ID_KEY]}")
+                                 f"{item.unique_id}")
             return InlineKeyboardButton(text=item[constants.NAME_KEY],
                                         callback_data=callback_data)
-        return KeyboardButton(item[constants.NAME_KEY])
+        return KeyboardButton(item.name)
 
     buttons = [create_button(item) for item in accessible_items]
     return [buttons[i:i + buttons_per_row] for i in

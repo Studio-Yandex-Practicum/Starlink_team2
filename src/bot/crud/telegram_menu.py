@@ -82,12 +82,12 @@ class CRUDTelegramMenu:
 
         """
         async with session() as asession:
-
+            print(">>>>>>>>", 9)
             if role_id:
                 result = await asession.execute(
                     select(Menu).where(
-                        (Menu.parent == 0) &
-                        (Menu.role_access == role_id)),
+                        Menu.parent == 0,
+                        Menu.role_access == role_id),
                 )
             else:
                 result = await asession.execute(
@@ -109,11 +109,11 @@ class CRUDTelegramMenu:
 
         """
         async with session() as asession:
-            result = await asession.execute(
-                select(Menu).filter(Menu.parent == 0,
-                                    Menu.role_access.is_(None)),
-            )
-        return result.all()
+            result = await asession.execute(select(Menu).where(Menu.role_access.is_(None)))
+            res = []
+            for elem in result:
+                res.append(elem._mapping['Menu'])
+            return res
 
 
 telegram_menu_crud = CRUDTelegramMenu(Menu)

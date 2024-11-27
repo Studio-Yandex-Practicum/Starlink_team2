@@ -88,7 +88,9 @@ class CRUDTelegramUsers:
                 select(TelegramUser).where(TelegramUser.username == username),
             )
         user = chek_user_email_id.scalar_one_or_none()
-        return user.role_id is not None if user else False
+        if user:
+            return user.role_id
+        return None
 
     async def create_user(
         self,
@@ -111,6 +113,25 @@ class CRUDTelegramUsers:
             await asession.commit()
             return new_user
 
+    async def get_user_by_username(
+            self,
+            session: async_sessionmaker[AsyncSession],
+            username: str,
+    ) -> TelegramUser:
+        """Получение TelegramUser по username.
+
+        Args:
+            username (str): username пользователя Telegram
+            session (async_sessionmaker[AsyncSession]): сессия БД
+
+        Returns:
+            TelegramUser: Пользователь.
+
+        """
+        async with session() as asession:
+            return await asession.execute(
+                select(TelegramUser).where(TelegramUser.username == username),
+            ).scalar()
 
     async def get_user_list_roles(
             self,
