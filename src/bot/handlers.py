@@ -49,7 +49,10 @@ async def handle_start(message: Message) -> None:
                 await telegram_menu_crud.get_parent_menu_for_guest(
                     session=async_session,
                 ),
-                user_roles=["Role 1",]
+                user_roles=await telegram_users_crud.get_user_list_roles(
+                    session=async_session,
+                    username=message.from_user.username,
+                )
             )
             await bot.send_message(
                 message.chat.id,

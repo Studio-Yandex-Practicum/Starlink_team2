@@ -3,7 +3,7 @@ from typing import Optional
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-from backend.models.telegram_user import TelegramUser
+from backend.models.telegram_user import TelegramUser, Role
 
 
 class CRUDTelegramUsers:
@@ -110,6 +110,28 @@ class CRUDTelegramUsers:
             asession.add(new_user)
             await asession.commit()
             return new_user
+
+
+    async def get_user_list_roles(
+            self,
+            session: async_sessionmaker[AsyncSession],
+            username: str,
+    ) -> bool:
+        """Получение списка родей пользователя.
+
+        Args:
+            username (str): Имя пользователя Telegram
+            session (async_sessionmaker[AsyncSession]): сессия БД
+
+        Returns:
+            list: Списко ролей пользователя.
+
+        """
+        async with session() as asession:
+            user = await asession.execute(
+                select(TelegramUser).where(TelegramUser.username == username),
+            )
+            return [user.scalar().role_id]
 
 
 telegram_users_crud = CRUDTelegramUsers(TelegramUser)

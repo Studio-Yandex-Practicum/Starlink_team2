@@ -110,9 +110,10 @@ class CRUDTelegramMenu:
         """
         async with session() as asession:
             result = await asession.execute(
-                select(Menu).filter(Menu.parent == 0),
+                select(Menu).filter(Menu.parent == 0,
+                                    Menu.role_access.is_(None)),
             )
-        return result.scalars().all()
+        return result.all()
 
 
 telegram_menu_crud = CRUDTelegramMenu(Menu)
