@@ -15,7 +15,8 @@ class Settings(BaseSettings):
     - postgres_password: пароль пользователя для подключения к базе данных
     PostgreSQL.
     - postgres_host: хост для подключения к базе данных PostgreSQL.
-    - postgres_db_name: имя базы данных PostgreSQL.
+    - postgres_port: порт для подключения к базе данных PostgreSQL.
+    - postgres_db: имя базы данных PostgreSQL.
     - email_length: максимальная длина адреса электронной почты.
     - role_name_min_length: минимальная длина названия роли.
     - role_name_max_length: максимальная длина названия роли.

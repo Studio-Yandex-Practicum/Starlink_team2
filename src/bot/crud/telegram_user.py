@@ -1,8 +1,9 @@
-from sqlalchemy import select
 from typing import Optional
+
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-from backend.models.telegram_user import TelegramUser
+from backend.models.telegram_user import TelegramUser, Role
 
 
 class CRUDTelegramUsers:
@@ -35,7 +36,7 @@ class CRUDTelegramUsers:
                 (
                     await asession.execute(
                         select(self.model).where(
-                            self.model.telegram_id == str(telegram_id),
+                            self.model.telegram_id == telegram_id,
                         ),
                     )
                 )
@@ -87,7 +88,9 @@ class CRUDTelegramUsers:
                 select(TelegramUser).where(TelegramUser.username == username),
             )
         user = chek_user_email_id.scalar_one_or_none()
-        return user.role_id is not None if user else False
+        if user:
+            return user.role_id
+        return None
 
     async def create_user(
         self,
@@ -109,6 +112,47 @@ class CRUDTelegramUsers:
             asession.add(new_user)
             await asession.commit()
             return new_user
+
+    async def get_user_by_username(
+            self,
+            session: async_sessionmaker[AsyncSession],
+            username: str,
+    ) -> TelegramUser:
+        """Получение TelegramUser по username.
+
+        Args:
+            username (str): username пользователя Telegram
+            session (async_sessionmaker[AsyncSession]): сессия БД
+
+        Returns:
+            TelegramUser: Пользователь.
+
+        """
+        async with session() as asession:
+            return await asession.execute(
+                select(TelegramUser).where(TelegramUser.username == username),
+            ).scalar()
+
+    async def get_user_list_roles(
+            self,
+            session: async_sessionmaker[AsyncSession],
+            username: str,
+    ) -> bool:
+        """Получение списка родей пользователя.
+
+        Args:
+            username (str): Имя пользователя Telegram
+            session (async_sessionmaker[AsyncSession]): сессия БД
+
+        Returns:
+            list: Списко ролей пользователя.
+
+        """
+        async with session() as asession:
+            user = await asession.execute(
+                select(TelegramUser).where(TelegramUser.username == username),
+            )
+            return [user.scalar().role_id]
 
 
 telegram_users_crud = CRUDTelegramUsers(TelegramUser)

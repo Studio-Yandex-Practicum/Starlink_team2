@@ -1,23 +1,28 @@
 from math import ceil
 from typing import List, Optional, Tuple, TypedDict, Union
 
-import constants
 from telebot.types import (
     InlineKeyboardButton,
     InlineKeyboardMarkup,
     KeyboardButton,
     ReplyKeyboardMarkup,
 )
+from sqlalchemy.dialects.postgresql import UUID as pg_UUID
+
+import bot.constants as constants
+
 
 
 class MenuItem(TypedDict):
     """Определяет структуру данных для каждого элемента меню."""
 
-    UniqueID: int
+    # UniqueID: int
+    UniqueID: pg_UUID
     Name: str
     Parent: Optional[int]
     Is_folder: bool
-    Roles: List[str]
+    # Roles: List[str]
+    Roles: pg_UUID
 
 
 async def filter_accessible_items(
@@ -157,7 +162,8 @@ async def build_menu_buttons(
 
 async def build_keyboard(
         menu_items: List[MenuItem],
-        user_roles: List[str],
+        # user_roles: List[str],
+        user_roles: str,
         parent_id: Optional[int] = None,
         page: int = constants.PAGE,
         items_per_page: int = constants.ITEMS_PER_PAGE,
