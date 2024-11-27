@@ -4,6 +4,7 @@ NAME_KEY = 'Name'
 PARENT_KEY = 'Parent'
 IS_FOLDER_KEY = 'Is_folder'
 ROLES_KEY = ['Roles', 'Role 1']
+ROLE_ID_KANDIDAT = '632c541e-b149-4553-b205-7e9654eb4cd8'
 
 # Константы для навигации и callback_data
 BACK_TEXT = "⬅ Назад"

@@ -4,6 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.models.menu import Menu
+from bot.constants import ROLE_ID_KANDIDAT
 
 
 class CRUDTelegramMenu:
@@ -82,16 +83,14 @@ class CRUDTelegramMenu:
 
         """
         async with session() as asession:
-            print(">>>>>>>>", 9)
             if role_id:
                 result = await asession.execute(
                     select(Menu).where(
-                        Menu.parent == 0,
                         Menu.role_access == role_id),
                 )
             else:
                 result = await asession.execute(
-                    select(Menu).where(Menu.parent == 0),
+                    select(Menu).where(Menu.parent.is_(None)),
                 )
             return result.scalars().all()
 
@@ -109,7 +108,8 @@ class CRUDTelegramMenu:
 
         """
         async with session() as asession:
-            result = await asession.execute(select(Menu).where(Menu.role_access.is_(None)))
+            result = await asession.execute(
+                select(Menu).where(Menu.role_access == ROLE_ID_KANDIDAT))
             res = []
             for elem in result:
                 res.append(elem._mapping['Menu'])

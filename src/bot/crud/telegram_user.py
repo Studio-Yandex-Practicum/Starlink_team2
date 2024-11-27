@@ -3,7 +3,7 @@ from typing import Optional
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-from backend.models.telegram_user import TelegramUser, Role
+from backend.models.telegram_user import TelegramUser
 
 
 class CRUDTelegramUsers:
@@ -129,9 +129,10 @@ class CRUDTelegramUsers:
 
         """
         async with session() as asession:
-            return await asession.execute(
-                select(TelegramUser).where(TelegramUser.username == username),
-            ).scalar()
+            res = await asession.execute(
+                select(TelegramUser).where(TelegramUser.username == username)
+            )
+            return res.scalar()
 
     async def get_user_list_roles(
             self,
