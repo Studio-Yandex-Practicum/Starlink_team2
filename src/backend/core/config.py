@@ -44,6 +44,11 @@ class Settings(BaseSettings):
     image_link_max_length: int = 256
     content_min_length: int = 10
     content_max_length: int = 256
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int
+    COOKIE_NAME: str = "access_token"
+    SECRET_KEY: str = "secret-key"
+    ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 
 settings = Settings()
