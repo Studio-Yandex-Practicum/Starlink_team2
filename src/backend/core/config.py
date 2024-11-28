@@ -49,6 +49,7 @@ class Settings(BaseSettings):
     COOKIE_NAME: str = "access_token"
     SECRET_KEY: str = "secret-key"
     ACCESS_TOKEN_EXPIRE_MINUTES = 30
+    NOT_AUTHENTICATED: str
 
 
 settings = Settings()

@@ -34,8 +34,12 @@ class OAuth2PasswordBearerWithCookie(OAuth2):
     ):
         if not scopes:
             scopes = {}
-        flows = OAuthFlowsModel(password={"tokenUrl": tokenUrl,
-                                          "scopes": scopes})
+        flows = OAuthFlowsModel(
+            password={
+                "tokenUrl": tokenUrl,
+                "scopes": scopes
+            }
+        )
         super().__init__(
             flows=flows,
             scheme_name=scheme_name,
@@ -49,13 +53,15 @@ class OAuth2PasswordBearerWithCookie(OAuth2):
         `request.cookies.get(settings.COOKIE_NAME)` вместо
         `request.headers.get("Authorization")
         """
-        authorization: str = request.cookies.get(settings.COOKIE_NAME)
+        authorization: Optional[str] = request.cookies.get(
+            settings.COOKIE_NAME
+        )
         scheme, param = get_authorization_scheme_param(authorization)
         if not authorization or scheme.lower() != "bearer":
             if self.auto_error:
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Not authenticated",
+                    detail=settings.NOT_AUTHENTICATED,
                     headers={"WWW-Authenticate": "Bearer"},
                 )
             else:
@@ -68,7 +74,7 @@ oauth2_scheme = OAuth2PasswordBearerWithCookie(tokenUrl="token")
 
 def create_access_token(data: Dict) -> str:
     to_encode = data.copy()
-    expire = dt.datetime.utcnow() + dt.timedelta(
+    expire = dt.datetime.now() + dt.timedelta(
         minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(
