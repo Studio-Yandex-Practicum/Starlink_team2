@@ -22,7 +22,7 @@ templates = Jinja2Templates(directory=template_dir)
 
 
 @router.get("/", response_class=HTMLResponse)
-def index(request: Request):
+async def index(request: Request):
     """
     Обрабатывает запрос на главную страницу.
 
@@ -30,7 +30,7 @@ def index(request: Request):
     :return: HTML-ответом с контекстом страницы.
     """
     try:
-        user = get_current_user_from_cookie(request)
+        user = await get_current_user_from_cookie(request)
     except:
         user = None
     context = {
@@ -41,8 +41,8 @@ def index(request: Request):
 
 
 @router.get("/private", response_class=HTMLResponse)
-def private(request: Request,
-            user: Admin = Depends(get_current_user_from_token)):
+async def private(request: Request,
+                  user: Admin = Depends(get_current_user_from_token)):
     """
     Обрабатывает запрос на приватную страницу.
 
@@ -51,23 +51,35 @@ def private(request: Request,
     :return: HTML-ответом с контекстом страницы.
         Возвращает 403 (Forbidden) если пользователь не авторизован.
     """
+    try:
+        user = await get_current_user_from_cookie(request)
+    except:
+        user = None
     context = {
         "user": user,
         "request": request
     }
+    print(user)
+    print('-----')
+    print(context)
     return templates.TemplateResponse("private.html", context)
 
 
 
 @router.get("/dashboard", response_class=HTMLResponse)
-def dashboard(request: Request,
-              user: Admin = Depends(get_current_user_from_token)):
+async def dashboard(request: Request,
+                    user: Admin = Depends(get_current_user_from_token)):
     """
     Обрабатывает запрос на страницу управления ботом.
 
     :param request: Объект запроса.
     :param user: Текущий пользователь (извлекается из токена).
+    
     """
+    try:
+        user = await get_current_user_from_cookie(request)
+    except:
+        user = None
     context = {
         "user": user,
         "request": request
@@ -76,7 +88,7 @@ def dashboard(request: Request,
 
 
 @router.get("/auth/login", response_class=HTMLResponse)
-def login_get(request: Request):
+async def login_get(request: Request):
     """
     Обрабатывает запрос на страницу входа в систему (GET).
 
@@ -140,7 +152,7 @@ async def login_post(request: Request):
 
 
 @router.get("/auth/logout", response_class=HTMLResponse)
-def login_get():
+async def login_get():
     """
     Обрабатывает запрос на выход из системы.
 
