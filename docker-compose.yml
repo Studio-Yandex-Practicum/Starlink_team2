@@ -1,0 +1,22 @@
+version: "3.9"
+services:
+  postgres:
+    image: postgres:14
+    ports:
+      - "5432:5432"
+    env_file: .env
+    volumes:
+      - ./data:/var/lib/postgresql/data
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+  pgadmin:
+    image: dpage/pgadmin4
+    ports:
+      - "8080:80"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=user@domain.com
+      - PGADMIN_DEFAULT_PASSWORD=mysecretpassword

@@ -50,3 +50,14 @@ urllib3==2.2.3
 uvicorn==0.32.0
 virtualenv==20.27.1
 fastapi-users-db-sqlalchemy==6.0.1
+pyTelegramBotAPI==4.24.0
+python-dotenv==1.0.1
+aiohttp==3.11.7
+fastapi-login
+passlib[bcrypt]
+python-jose
+jinja2
+rich
+psycopg2-binary
+crypto
+sqlalchemy_utils

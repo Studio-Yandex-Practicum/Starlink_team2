@@ -6,4 +6,4 @@ POSTGRES_PASSWORD = <password>
 POSTGRES_HOST = <db_host>
 POSTGRES_PORT = <db_port>
 POSTGRES_DB = <db_name>
-BOT_TOKEN = <bot_token>
+BOT_TOKEN = "7956465840:AAGG_wUfo1E1lK-gmKkSJ-xACil3xwbLcUA"
