@@ -91,7 +91,7 @@ async def authenticate_user(username: str, plain_password: str) -> Admin:
     return user
 
 
-def decode_token(token: str) -> Admin:
+async def decode_token(token: str) -> Admin:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials."
@@ -107,21 +107,21 @@ def decode_token(token: str) -> Admin:
         print(e)
         raise credentials_exception
 
-    user = get_user(username)
+    user = await get_user(username)
     return user
 
 
-def get_current_user_from_token(token: str = Depends(oauth2_scheme)) -> Admin:
+async def get_current_user_from_token(token: str = Depends(oauth2_scheme)) -> Admin:
     """
     Получите текущего пользователя из файлов cookie в запросе.
     Используйте эту функцию, когда хотите заблокировать маршрут, чтобы только
     аутентифицированные пользователи могли видеть доступ к маршруту.
     """
-    user = decode_token(token)
+    user = await decode_token(token)
     return user
 
 
-def get_current_user_from_cookie(request: Request) -> Admin:
+async def get_current_user_from_cookie(request: Request) -> Admin:
     """
     Получите текущего пользователя из файлов cookie в запросе.
     Используйте эту функцию из других маршрутов,
@@ -131,7 +131,7 @@ def get_current_user_from_cookie(request: Request) -> Admin:
             так и для не вошедших в систему пользователей.
     """
     token = request.cookies.get(settings.COOKIE_NAME)
-    user = decode_token(token)
+    user = await decode_token(token)
     return user
 
 

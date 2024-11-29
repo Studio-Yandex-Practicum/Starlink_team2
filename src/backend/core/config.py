@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     PostgreSQL.
     - postgres_host: хост для подключения к базе данных PostgreSQL.
     - postgres_db_name: имя базы данных PostgreSQL.
+    - postgres_url: url для подключения к базе данных PostgreSQL.
     - email_length: максимальная длина адреса электронной почты.
     - role_name_min_length: минимальная длина названия роли.
     - role_name_max_length: максимальная длина названия роли.
@@ -49,6 +50,11 @@ class Settings(BaseSettings):
     COOKIE_NAME: str = "access_token"
     SECRET_KEY: str = "secret-key"
     ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
+    @property
+    def postgres_url(self):
+        return (f'postgresql+asyncpg://{self.postgres_user}:{self.postgres_password}@'
+                f'{self.postgres_host}:{self.postgres_port}/{self.postgres_db}')
 
 
 settings = Settings()

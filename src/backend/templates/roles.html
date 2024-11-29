@@ -1,10 +1,47 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% include 'header.html' %}
+<!--НАЗВАНИЕ СТРАНИЦЫ-->
+<div class="d-flex align-items-center pb-3 mb-5 border-bottom">
+  
+    <span class="fs-4">Роли</span>
+
+</div>
+<!--КОНТЕНТ СТРАНИЦЫ-->
+<div>
+<div style="width: 30%; float: left">
+  <table class="table table-bordered border-info">
+    <thead>
+    <tr>
+      <th scope="col">№</th>
+      <th scope="col">Роль</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for role in roles %}
+    <tr>
+      <td class="col-2">{{ loop.index }}</td>
+      <td class="col-8"><a href="#">{{ role.role_name }}</a></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+  </table>
+</div>
+<div style="width: 70%; padding: 100px; float: left">
+    <form class="row g-3" method="post" action="roles">
+  <div class="col-2">
+    <label for="role_label" class="visually-hidden">Роль</label>
+    <input type="text" readonly class="form-control-plaintext" id="role_label" value="Роль">
+  </div>
+  <div class="col-4">
+    <label for="role_name" class="visually-hidden">Роль</label>
+    <input type="text" class="form-control" name="role_name" id="role_name" placeholder="Роль">
+    {% for error in errors %}
+      <h6 style="color: red">{{ error }}</h6>
+    {% endfor %}
+  </div>
+  <div class="col-4">
+    <button type="submit" class="btn btn-primary mb-3">Добавить</button>
+  </div>
+</form>
+</div>
+</div>
+{% include 'footer.html' %}

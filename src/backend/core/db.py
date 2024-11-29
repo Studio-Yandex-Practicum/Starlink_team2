@@ -3,7 +3,7 @@ from uuid import uuid4
 
 from sqlalchemy import Column
 from sqlalchemy.dialects.postgresql import UUID as pg_UUID  # noqa
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 from sqlalchemy.orm import declarative_base, declared_attr, sessionmaker
 from contextlib import asynccontextmanager
 
@@ -32,27 +32,13 @@ class PreBase:
 
 Base = declarative_base(cls=PreBase)
 
-user = settings.postgres_user
-password = settings.postgres_password
-host = settings.postgres_host
-port = settings.postgres_port
-db_name = settings.postgres_db
-
-url = f'postgresql+asyncpg://{user}:{password}@{host}:{port}/{db_name}'
-
-engine = create_async_engine(url)
-
-AsyncSessionLocal = sessionmaker(engine, class_=AsyncSession)
+engine = create_async_engine(settings.postgres_url)
 
 
-@asynccontextmanager
-async def get_async_session() -> AsyncGenerator:
-    """Функция get_async_session возвращает асинхронный генератор.
+AsyncSessionLocal = async_sessionmaker(engine, class_=AsyncSession)
 
-    Который предоставляет доступ к асинхронной сессии.
-    Возвращаемое значение:
-    - AsyncGenerator: асинхронный генератор, который предоставляет доступ
-    к асинхронной сессии.
-    """
-    async with AsyncSessionLocal() as async_session:
-        yield async_session
+
+async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
+    """Предоставляет асинхронную сессию."""
+    async with AsyncSessionLocal() as session:
+        yield session

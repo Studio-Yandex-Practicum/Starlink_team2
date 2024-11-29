@@ -1,6 +1,6 @@
 from backend.models.admin import Admin
 from sqlalchemy import select
-from backend.core.db import get_async_session
+from backend.core.db import AsyncSessionLocal
 import logging
 
 
@@ -17,7 +17,7 @@ async def get_user(username: str) -> Admin:
     :type username: str
     :return: Полученный пользователь, если найден, иначе None.
     """
-    async with get_async_session() as session:
+    async with AsyncSessionLocal() as session:
         try:
             query = select(Admin).filter(Admin.username == username)
             result = await session.execute(query)

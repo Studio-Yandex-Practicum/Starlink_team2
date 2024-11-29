@@ -1,17 +1,23 @@
-
 import os
 from typing import List, Optional
-from fastapi import Depends, HTTPException, Request, status
+
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import Depends, Form, HTTPException, Request, status
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from rich.console import Console
 from fastapi import APIRouter
 
 from backend.models.admin import Admin
-from backend.core.auth import get_current_user_from_token
-from backend.core.config import settings
-from backend.core.auth import login_for_access_token
 from backend.core.auth import get_current_user_from_cookie
+from backend.core.auth import get_current_user_from_token
+from backend.core.auth import login_for_access_token
+from backend.core.config import settings
+from backend.core.db import get_async_session
+from backend.crud import role_crud
+from backend.schemas import RoleBase, RoleCreate,  RoleDB
+
 
 router = APIRouter()
 console = Console()
@@ -22,7 +28,7 @@ templates = Jinja2Templates(directory=template_dir)
 
 
 @router.get("/", response_class=HTMLResponse)
-def index(request: Request):
+async def index(request: Request):
     """
     Обрабатывает запрос на главную страницу.
 
@@ -30,7 +36,7 @@ def index(request: Request):
     :return: HTML-ответом с контекстом страницы.
     """
     try:
-        user = get_current_user_from_cookie(request)
+        user = await get_current_user_from_cookie(request)
     except:
         user = None
     context = {
@@ -41,8 +47,10 @@ def index(request: Request):
 
 
 @router.get("/private", response_class=HTMLResponse)
-def private(request: Request,
-            user: Admin = Depends(get_current_user_from_token)):
+async def private(
+        request: Request,
+        user: Admin = Depends(get_current_user_from_token)
+):
     """
     Обрабатывает запрос на приватную страницу.
 
@@ -58,10 +66,11 @@ def private(request: Request,
     return templates.TemplateResponse("private.html", context)
 
 
-
 @router.get("/dashboard", response_class=HTMLResponse)
-def dashboard(request: Request,
-              user: Admin = Depends(get_current_user_from_token)):
+async def dashboard(
+        request: Request,
+        user: Admin = Depends(get_current_user_from_token)
+):
     """
     Обрабатывает запрос на страницу управления ботом.
 
@@ -70,13 +79,110 @@ def dashboard(request: Request,
     """
     context = {
         "user": user,
+        "view_name": str(request.url).split('/')[-1],
         "request": request
     }
     return templates.TemplateResponse("dashboard.html", context)
 
 
+@router.get(
+    "/roles",
+    response_class=HTMLResponse,
+    response_model=list[RoleDB],
+    response_model_exclude_none=True
+)
+async def roles_view(
+        request: Request,
+        session: AsyncSession = Depends(get_async_session),
+        user: Admin = Depends(get_current_user_from_token)
+):
+    """
+    Обрабатывает запрос на страницу Роли.
+
+    :param request: Объект запроса.
+    :param session: Объект текущей сессии.
+    :param user: Текущий пользователь (извлекается из токена).
+    """
+    all_roles = await role_crud.get_multi(session)
+
+    context = {
+        "user": user,
+        "request": request,
+        "view_name": str(request.url).split('/')[-1],
+        "roles": all_roles
+    }
+    return templates.TemplateResponse("roles.html", context)
+
+
+@router.post(
+    "/roles",
+    response_class=HTMLResponse,
+)
+async def roles_create(
+        request: Request,
+        role_name=Form(),
+        session: AsyncSession = Depends(get_async_session),
+        user: Admin = Depends(get_current_user_from_token),
+):
+    """
+    Обрабатывает запрос на страницу Роли.
+    :param request: Объект запроса.
+    :param role_name: Название Роли.
+    :param session: Объект текущей сессии.
+    :param user: Текущий пользователь (извлекается из токена).
+    """
+    errors = set()
+
+    try:
+        await role_crud.create({"role_name": role_name}, session)
+    except IntegrityError:
+        errors.add(f'Роль "{role_name}" уже есть в базе!')
+        await session.rollback()
+        await session.commit()
+
+    all_roles = await role_crud.get_multi(session)
+
+    context = {
+        "user": user,
+        "request": request,
+        "view_name": str(request.url).split('/')[-1],
+        "roles": all_roles,
+        "errors": errors
+    }
+    return templates.TemplateResponse("roles.html", context)
+
+
+@router.get(
+    "/users",
+    response_class=HTMLResponse,
+    # response_model=list[UserDB],
+    response_model_exclude_none=True
+)
+async def users_view(
+        request: Request,
+        session: AsyncSession = Depends(get_async_session),
+        user: Admin = Depends(get_current_user_from_token)
+):
+    """
+    Обрабатывает запрос на страницу Роли.
+
+    :param request: Объект запроса.
+    :param session: Объект текущей сессии.
+    :param user: Текущий пользователь (извлекается из токена).
+    """
+    # all_roles = await user_crud.get_multi(session)
+
+    context = {
+        "user": user,
+        "request": request,
+        "view_name": str(request.url).split('/')[-1],
+        # "users": all_users
+    }
+    return templates.TemplateResponse("users.html", context)
+
+
 @router.get("/auth/login", response_class=HTMLResponse)
-def login_get(request: Request):
+async def login_get(request: Request):
     """
     Обрабатывает запрос на страницу входа в систему (GET).
 
@@ -93,6 +199,7 @@ class LoginForm:
     """
     Класс для обработки формы входа в систему.
     """
+
     def __init__(self, request: Request):
         self.request: Request = request
         self.errors: List = []
@@ -140,7 +247,7 @@ async def login_post(request: Request):
 
 
 @router.get("/auth/logout", response_class=HTMLResponse)
-def login_get():
+async def login_get():
     """
     Обрабатывает запрос на выход из системы.
 

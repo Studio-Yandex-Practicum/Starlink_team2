@@ -8,7 +8,7 @@ from fastapi.staticfiles import StaticFiles
 from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 
-from backend.core.db import get_async_session
+from backend.core.db import AsyncSessionLocal
 from backend.pages.pages import router
 from backend.models.admin import Admin
 from backend.core.config import settings
@@ -37,7 +37,7 @@ async def startup():
     """
     Создание первых пользователей.
     """
-    async with get_async_session() as session:
+    async with AsyncSessionLocal() as session:
         try:
             statement = select(Admin)
             result = await session.execute(statement)
