@@ -23,6 +23,9 @@ extend-select = ["I"]
 [lint.extend-per-file-ignores]
 # Also ignore in all files.
 "__init__.py" = ["E402", "E401"]
+"db.py" = ["N805"]
+"**/versions/*" = ["E", "D", "W"]
+"**/backend/core/auth.py" = ["N803"]
 
 [lint.flake8-annotations]
 allow-star-arg-any = true

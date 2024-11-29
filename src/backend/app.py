@@ -10,14 +10,15 @@ from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 
 from backend.core.config import settings
-from backend.core.db import get_async_session
+from backend.core.db import AsyncGenerator, get_async_session
 from backend.models.admin import Admin
 from backend.pages.pages import router
 
 load_dotenv()
 
+
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(app: FastAPI) -> AsyncGenerator:
     """Lifespan context manager для инициализации данных."""
     async with get_async_session() as session:
         try:

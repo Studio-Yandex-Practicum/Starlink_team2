@@ -1,17 +1,19 @@
 
 import os
 from typing import List, Optional
-from fastapi import Depends, HTTPException, Request, status
+
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from rich.console import Console
-from fastapi import APIRouter
 
-from backend.models.admin import Admin
-from backend.core.auth import get_current_user_from_token
+from backend.core.auth import (
+    get_current_user_from_cookie,
+    get_current_user_from_token,
+    login_for_access_token,
+)
 from backend.core.config import settings
-from backend.core.auth import login_for_access_token
-from backend.core.auth import get_current_user_from_cookie
+from backend.models.admin import Admin
 
 router = APIRouter()
 console = Console()
@@ -22,16 +24,15 @@ templates = Jinja2Templates(directory=template_dir)
 
 
 @router.get("/", response_class=HTMLResponse)
-async def index(request: Request):
-    """
-    Обрабатывает запрос на главную страницу.
+async def index(request: Request) -> HTMLResponse:
+    """Обрабатывает запрос на главную страницу.
 
     :param request: Объект запроса.
     :return: HTML-ответом с контекстом страницы.
     """
     try:
         user = await get_current_user_from_cookie(request)
-    except:
+    except Exception as _:
         user = None
     context = {
         "user": user,
@@ -41,10 +42,11 @@ async def index(request: Request):
 
 
 @router.get("/private", response_class=HTMLResponse)
-async def private(request: Request,
-                  user: Admin = Depends(get_current_user_from_token)):
-    """
-    Обрабатывает запрос на приватную страницу.
+async def private(
+    request: Request,
+    user: Admin = Depends(get_current_user_from_token),
+) -> HTMLResponse:
+    """Обрабатывает запрос на приватную страницу.
 
     :param request: Объект запроса.
     :param user: Текущий пользователь (извлекается из токена).
@@ -53,11 +55,11 @@ async def private(request: Request,
     """
     try:
         user = await get_current_user_from_cookie(request)
-    except:
+    except Exception as _:
         user = None
     context = {
         "user": user,
-        "request": request
+        "request": request,
     }
     print(user)
     print('-----')
@@ -65,35 +67,42 @@ async def private(request: Request,
     return templates.TemplateResponse("private.html", context)
 
 
-
 @router.get("/dashboard", response_class=HTMLResponse)
-async def dashboard(request: Request,
-                    user: Admin = Depends(get_current_user_from_token)):
-    """
-    Обрабатывает запрос на страницу управления ботом.
+async def dashboard(
+    request: Request,
+    user: Admin = Depends(get_current_user_from_token),
+) -> HTMLResponse:
+    """Обрабатывает запрос на страницу управления ботом.
 
-    :param request: Объект запроса.
-    :param user: Текущий пользователь (извлекается из токена).
-    
+    Args:
+        request: Объект запроса.
+        user: Текущий пользователь (извлекается из токена).
+
+    Returns:
+        HTML-ответом с контекстом страницы.
+
     """
     try:
         user = await get_current_user_from_cookie(request)
-    except:
+    except Exception as _:
         user = None
     context = {
         "user": user,
-        "request": request
+        "request": request,
     }
     return templates.TemplateResponse("dashboard.html", context)
 
 
 @router.get("/auth/login", response_class=HTMLResponse)
-async def login_get(request: Request):
-    """
-    Обрабатывает запрос на страницу входа в систему (GET).
+async def login_get(request: Request) -> HTMLResponse:
+    """Обрабатывает запрос на страницу входа в систему (GET).
 
-    :param request: Объект запроса.
-    :return: HTML-ответом с контекстом страницы.
+    Args:
+        request: Объект запроса.
+
+    Returns:
+        HTML-ответом с контекстом страницы.
+
     """
     context = {
         "request": request,
@@ -102,21 +111,23 @@ async def login_get(request: Request):
 
 
 class LoginForm:
-    """
-    Класс для обработки формы входа в систему.
-    """
-    def __init__(self, request: Request):
+    """Класс для обработки формы входа в систему."""
+
+    def __init__(self, request: Request) -> None:
+        """Инициализация класса."""
         self.request: Request = request
         self.errors: List = []
         self.username: Optional[str] = None
         self.password: Optional[str] = None
 
-    async def load_data(self):
+    async def load_data(self) -> None:
+        """Получение данных из формы входа."""
         form = await self.request.form()
         self.username = form.get("username")
         self.password = form.get("password")
 
-    async def is_valid(self):
+    async def is_valid(self) -> bool:
+        """Валидация параметров введенных в форму."""
         if not self.username or not (self.username.__contains__("@")):
             self.errors.append("Email is required")
         if not self.password or not len(self.password) >= 4:
@@ -127,13 +138,18 @@ class LoginForm:
 
 
 @router.post("/auth/login", response_class=HTMLResponse)
-async def login_post(request: Request):
-    """
-    Обрабатывает запрос на вход в систему (POST).
+async def login_post(
+    request: Request,
+) -> RedirectResponse:
+    """Обрабатывает запрос на вход в систему (POST).
 
-    :param request: Объект запроса.
-    :return: HTML-ответом с контекстом страницы входа,
+    Args:
+        request: Объект запроса.
+
+    Returns:
+        HTML-ответ с контекстом страницы входа,
         или RedirectResponse на dashboard.
+
     """
     form = LoginForm(request)
     await form.load_data()
@@ -152,12 +168,15 @@ async def login_post(request: Request):
 
 
 @router.get("/auth/logout", response_class=HTMLResponse)
-async def login_get():
-    """
-    Обрабатывает запрос на выход из системы.
+async def login_get() -> RedirectResponse:
+    """Обрабатывает запрос на выход из системы.
 
-    :param request: Объект запроса.
-    :return: Переадресация на страницу входа.
+    Args:
+        request: Объект запроса.
+
+    Returns:
+        Переадресация на страницу входа.
+
     """
     response = RedirectResponse(url="/auth/login")
     response.delete_cookie(settings.COOKIE_NAME)
