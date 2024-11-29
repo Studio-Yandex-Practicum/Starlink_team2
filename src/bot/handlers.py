@@ -1,7 +1,6 @@
 from telebot.types import Message
 
 from bot.loader import bot_instance as bot
-
 from bot.utils.logger import get_logger
 
 logger = get_logger(__name__)

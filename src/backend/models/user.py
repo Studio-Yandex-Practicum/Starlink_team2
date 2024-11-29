@@ -2,8 +2,9 @@ from fastapi_users_db_sqlalchemy import SQLAlchemyBaseUserTable
 from sqlalchemy import CheckConstraint, Column, String
 from sqlalchemy.dialects.postgresql import UUID as pg_UUID  # noqa
 
-from .base import AbstractModelForTime
 from backend.core.config import settings
+
+from .base import AbstractModelForTime
 
 
 class User(SQLAlchemyBaseUserTable[pg_UUID], AbstractModelForTime):
