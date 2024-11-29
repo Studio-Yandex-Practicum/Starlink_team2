@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from passlib.handlers.sha2_crypt import sha512_crypt as crypto
-from rich import print
+from rich import print as rich_print
 from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -15,7 +15,6 @@ from backend.models.admin import Admin
 from backend.pages.pages import router
 
 load_dotenv()
-
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -35,9 +34,9 @@ async def lifespan(app: FastAPI):
                               )
                 session.add_all([user1, user2])
                 await session.commit()
-                print("Администраторы успешно созданы.")
+                rich_print("[green]Администраторы успешно созданы.[/green]")
         except SQLAlchemyError as e:
-            print(f"Database error: {e}")
+            rich_print(f"[red]Database error: {e}[/red]")
     yield
 
 
