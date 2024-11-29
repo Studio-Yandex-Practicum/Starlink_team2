@@ -23,7 +23,6 @@ class Role(AbstractModelForTime):
     role_name = Column(
         String(length=settings.role_name_max_length),
         unique=True,
-        nullable=False,
     )
 
     def __repr__(self) -> str:
