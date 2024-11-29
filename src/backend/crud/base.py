@@ -29,7 +29,7 @@ class CRUDBase:
     ) -> Union[ModelType, None]:
         db_obj = await session.execute(
             select(self.model).where(
-                self.model.id == obj_id
+                self.model.unique_id == obj_id
             )
         )
         return db_obj.scalars().first()
@@ -56,11 +56,10 @@ class CRUDBase:
     @staticmethod
     async def update(
             db_obj: ModelType,
-            obj_in: UpdateSchemaType,
+            update_data: dict,
             session: AsyncSession,
     ) -> ModelType:
         obj_data = jsonable_encoder(db_obj)
-        update_data = obj_in.dict(exclude_unset=True)
 
         for field in obj_data:
             if field in update_data:

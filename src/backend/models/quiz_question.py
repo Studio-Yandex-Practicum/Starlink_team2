@@ -26,7 +26,9 @@ class QuizQuestion(AbstractModelForTime):
     - edited_at: дата и время редактирования.
     """
 
-    quiz_id = Column(pg_UUID, ForeignKey('quizs.unique_id'))
+    __tablename__ = "quizquestions"
+
+    quiz_id = Column(pg_UUID, ForeignKey('quizes.unique_id'))
     image_link = Column(String(settings.image_link_max_length), nullable=True)
     content = Column(String(settings.content_max_length))
     number = Column(Integer)

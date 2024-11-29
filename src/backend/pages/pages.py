@@ -15,8 +15,8 @@ from backend.core.auth import get_current_user_from_token
 from backend.core.auth import login_for_access_token
 from backend.core.config import settings
 from backend.core.db import get_async_session
-from backend.crud import role_crud
-from backend.schemas import RoleBase, RoleCreate,  RoleDB
+from backend.crud import role_crud, user_crud
+from backend.schemas import RoleBase, RoleCreate, RoleDB, TelegramUserBase, TelegramUserCreate, TelegramUserDB
 
 
 router = APIRouter()
@@ -103,13 +103,13 @@ async def roles_view(
     :param session: Объект текущей сессии.
     :param user: Текущий пользователь (извлекается из токена).
     """
-    all_roles = await role_crud.get_multi(session)
+    roles = await role_crud.get_multi(session)
 
     context = {
         "user": user,
         "request": request,
         "view_name": str(request.url).split('/')[-1],
-        "roles": all_roles
+        "roles": roles
     }
     return templates.TemplateResponse("roles.html", context)
 
@@ -120,42 +120,122 @@ async def roles_view(
 )
 async def roles_create(
         request: Request,
-        role_name=Form(),
+        role_title=Form(),
         session: AsyncSession = Depends(get_async_session),
         user: Admin = Depends(get_current_user_from_token),
 ):
     """
     Обрабатывает запрос на страницу Роли.
     :param request: Объект запроса.
-    :param role_name: Название Роли.
+    :param role_title: Название Роли.
     :param session: Объект текущей сессии.
     :param user: Текущий пользователь (извлекается из токена).
     """
     errors = set()
 
     try:
-        await role_crud.create({"role_name": role_name}, session)
+        await role_crud.create({"role_title": role_title}, session)
     except IntegrityError:
-        errors.add(f'Роль "{role_name}" уже есть в базе!')
+        errors.add(f'Роль "{role_title}" уже есть в базе!')
         await session.rollback()
         await session.commit()
 
-    all_roles = await role_crud.get_multi(session)
+    roles = await role_crud.get_multi(session)
 
     context = {
         "user": user,
         "request": request,
         "view_name": str(request.url).split('/')[-1],
-        "roles": all_roles,
+        "roles": roles,
         "errors": errors
     }
     return templates.TemplateResponse("roles.html", context)
 
 
 @router.get(
+    "/roles/{unique_id}",
+    response_class=HTMLResponse,
+    response_model=RoleCreate
+)
+async def role_view(
+        request: Request,
+        unique_id: str,
+        session: AsyncSession = Depends(get_async_session),
+        user: Admin = Depends(get_current_user_from_token)
+):
+    """
+    Обрабатывает запрос на страницу Редактирование Роли.
+
+    :param request: Объект запроса.
+    :param unique_id: ID Роли
+    :param session: Объект текущей сессии.
+    :param user: Текущий пользователь (извлекается из токена).
+     """
+
+    role = await role_crud.get(unique_id, session)
+
+    context = {
+        "user": user,
+        "request": request,
+        "role": role,
+    }
+    return templates.TemplateResponse("role.html", context)
+
+
+@router.post(
+    "/roles/{unique_id}",
+    response_class=RedirectResponse,
+    response_model=RoleCreate
+)
+async def role_edit(
+        unique_id: str,
+        role_title=Form(),
+        session: AsyncSession = Depends(get_async_session),
+):
+    """
+    Обрабатывает запрос на страницу Редактирование Роли.
+
+    :param unique_id: ID Роли
+    :param role_title: Название Роли
+    :param session: Объект текущей сессии.
+     """
+
+    role = await role_crud.get(unique_id, session)
+    await role_crud.update(
+        role,
+        {'role_title': role_title},
+        session
+    )
+    return RedirectResponse('/roles', status_code=302)
+
+
+@router.post(
+    "/roles/delete",
+    response_class=RedirectResponse,
+)
+async def role_delete(
+        unique_id: str = Form(),
+        session: AsyncSession = Depends(get_async_session),
+):
+    """
+    Обрабатывает запрос на страницу Редактирование Роли.
+
+    :param unique_id: ID Роли
+    :param session: Объект текущей сессии.
+     """
+    print("Roles DELETE")
+    role = await role_crud.get(unique_id, session)
+    await role_crud.remove(
+        role,
+        session
+    )
+    return RedirectResponse('/roles', status_code=302)
+
+
+@router.get(
     "/users",
     response_class=HTMLResponse,
-    # response_model=list[UserDB],
+    response_model=list[TelegramUserDB],
     response_model_exclude_none=True
 )
 async def users_view(

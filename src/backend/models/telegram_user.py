@@ -32,7 +32,7 @@ class TelegramUser(AbstractModelForTime):
         pg_UUID(as_uuid=True),
         ForeignKey('roles.unique_id'),
     )
-    name = Column(
+    first_name = Column(
         String(length=settings.username_max_length),
         nullable=True,
     )
@@ -45,7 +45,7 @@ class TelegramUser(AbstractModelForTime):
         ForeignKey('employee_emails.unique_id'),
         nullable=True,
     )
-    active = Column(Boolean, default=True)
+    is_active = Column(Boolean, default=True)
     telegram_id: Column[int] = Column(
         BigInteger,
         unique=True,

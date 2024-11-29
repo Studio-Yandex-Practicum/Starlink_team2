@@ -1,0 +1,19 @@
+{% include 'header.html' %}
+<!--НАЗВАНИЕ СТРАНИЦЫ-->
+<div class="d-flex align-items-center pb-3 mb-5 border-bottom">
+  <span class="fs-4">Редактирование роли "{{ role.role_title }}"</span>
+</div>
+
+<!--КОНТЕНТ СТРАНИЦЫ-->
+<div>
+    <form class="row g-3" method="post" action="{{ role.unique_id }}">
+  <div class="col-4">
+    <label for="role_title" class="visually-hidden">Роль</label>
+    <input type="text" class="form-control" name="role_title" id="role_title" placeholder="{{ role.role_title }}">
+  </div>
+  <div class="col-4">
+    <button type="submit" class="btn btn-primary mb-3">Редактировать</button>
+  </div>
+</form>
+</div>
+{% include 'footer.html' %}

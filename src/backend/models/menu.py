@@ -18,20 +18,20 @@ class Menu(AbstractModelForTime):
     """Модель меню телеграм бота.
 
     - name: Название меню;
-    - parent: UUID | null  родительсткого меню;
+    - parent: UUID | null  родительского меню;
     - content: Наполнение кнопки;
     - is_folder: Является ли меню папкой;
     - image_link: Ссылка на картинку;
-    - role_access: Роль для отоброжения меню;
+    - role_access: Роль для отображения меню;
     - created_at: Дата и время создания;
     - edited_at: Дата и время редактирования;
     - created_at: Дата и время создания;
     - edited_at: Дата и время редактирования.
     """
 
-    __table_args__ = (CheckConstraint("name != ''"),)
+    __table_args__ = (CheckConstraint("title != ''"),)
 
-    name = Column(String(settings.menu_name_length), unique=True)
+    title = Column(String(settings.menu_name_length), unique=True)
     parent = Column(pg_UUID(as_uuid=True), default=None)
     content = Column(Text)
     is_folder = Column(Boolean, default=False)
@@ -41,7 +41,7 @@ class Menu(AbstractModelForTime):
 
     def __repr__(self) -> str:
         return (
-            f'{self.name=}; {self.parent=}; '
+            f'{self.title=}; {self.parent=}; '
             f'{self.content[:30]=}; {self.is_folder=}; '
             f'{self.image_link=}; {self.role_access=}'
             f'{super().__repr__()}'
