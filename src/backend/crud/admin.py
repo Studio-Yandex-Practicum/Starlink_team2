@@ -1,16 +1,16 @@
-from backend.models.admin import Admin
-from sqlalchemy import select
-from backend.core.db import get_async_session
 import logging
 
+from sqlalchemy import select
+
+from backend.core.db import get_async_session
+from backend.models.admin import Admin
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
 async def get_user(username: str) -> Admin:
-    """
-    Извлекает пользователя из базы данных на
+    """Извлекает пользователя из базы данных на
         основе предоставленного имени пользователя.
 
     :param username: Имя пользователя для получения.

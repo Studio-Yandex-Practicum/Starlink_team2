@@ -1,5 +1,6 @@
-from sqlalchemy import select
 from typing import Optional
+
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from backend.models.telegram_user import TelegramUser

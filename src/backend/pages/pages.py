@@ -1,17 +1,18 @@
-
 import os
 from typing import List, Optional
-from fastapi import Depends, HTTPException, Request, status
+
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from rich.console import Console
-from fastapi import APIRouter
 
-from backend.models.admin import Admin
-from backend.core.auth import get_current_user_from_token
+from backend.core.auth import (
+    get_current_user_from_cookie,
+    get_current_user_from_token,
+    login_for_access_token,
+)
 from backend.core.config import settings
-from backend.core.auth import login_for_access_token
-from backend.core.auth import get_current_user_from_cookie
+from backend.models.admin import Admin
 
 router = APIRouter()
 console = Console()
@@ -23,8 +24,7 @@ templates = Jinja2Templates(directory=template_dir)
 
 @router.get("/", response_class=HTMLResponse)
 async def index(request: Request):
-    """
-    Обрабатывает запрос на главную страницу.
+    """Обрабатывает запрос на главную страницу.
 
     :param request: Объект запроса.
     :return: HTML-ответом с контекстом страницы.
@@ -43,8 +43,7 @@ async def index(request: Request):
 @router.get("/private", response_class=HTMLResponse)
 async def private(request: Request,
                   user: Admin = Depends(get_current_user_from_token)):
-    """
-    Обрабатывает запрос на приватную страницу.
+    """Обрабатывает запрос на приватную страницу.
 
     :param request: Объект запроса.
     :param user: Текущий пользователь (извлекается из токена).
@@ -57,7 +56,7 @@ async def private(request: Request,
         user = None
     context = {
         "user": user,
-        "request": request
+        "request": request,
     }
     print(user)
     print('-----')
@@ -65,16 +64,14 @@ async def private(request: Request,
     return templates.TemplateResponse("private.html", context)
 
 
-
 @router.get("/dashboard", response_class=HTMLResponse)
 async def dashboard(request: Request,
                     user: Admin = Depends(get_current_user_from_token)):
-    """
-    Обрабатывает запрос на страницу управления ботом.
+    """Обрабатывает запрос на страницу управления ботом.
 
     :param request: Объект запроса.
     :param user: Текущий пользователь (извлекается из токена).
-    
+
     """
     try:
         user = await get_current_user_from_cookie(request)
@@ -82,15 +79,14 @@ async def dashboard(request: Request,
         user = None
     context = {
         "user": user,
-        "request": request
+        "request": request,
     }
     return templates.TemplateResponse("dashboard.html", context)
 
 
 @router.get("/auth/login", response_class=HTMLResponse)
 async def login_get(request: Request):
-    """
-    Обрабатывает запрос на страницу входа в систему (GET).
+    """Обрабатывает запрос на страницу входа в систему (GET).
 
     :param request: Объект запроса.
     :return: HTML-ответом с контекстом страницы.
@@ -102,9 +98,9 @@ async def login_get(request: Request):
 
 
 class LoginForm:
+    """Класс для обработки формы входа в систему.
     """
-    Класс для обработки формы входа в систему.
-    """
+
     def __init__(self, request: Request):
         self.request: Request = request
         self.errors: List = []
@@ -128,8 +124,7 @@ class LoginForm:
 
 @router.post("/auth/login", response_class=HTMLResponse)
 async def login_post(request: Request):
-    """
-    Обрабатывает запрос на вход в систему (POST).
+    """Обрабатывает запрос на вход в систему (POST).
 
     :param request: Объект запроса.
     :return: HTML-ответом с контекстом страницы входа,
@@ -153,8 +148,7 @@ async def login_post(request: Request):
 
 @router.get("/auth/logout", response_class=HTMLResponse)
 async def login_get():
-    """
-    Обрабатывает запрос на выход из системы.
+    """Обрабатывает запрос на выход из системы.
 
     :param request: Объект запроса.
     :return: Переадресация на страницу входа.
