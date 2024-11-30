@@ -139,7 +139,7 @@ class LoginForm:
 @router.post("/auth/login", response_class=HTMLResponse)
 async def login_post(
     request: Request,
-) -> RedirectResponse:
+) -> RedirectResponse | templates.TemplateResponse:
     """Обрабатывает запрос на вход в систему (POST).
 
     Args:

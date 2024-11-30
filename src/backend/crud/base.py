@@ -1,4 +1,4 @@
-from typing import Generic, List, Optional, Type, TypeVar
+from typing import Generic, Optional, Type, TypeVar
 
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
@@ -13,7 +13,6 @@ UpdateSchemaType = TypeVar('UpdateSchemaType', bound=BaseModel)
 
 
 class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
-
     """Базовый CRUD."""
 
     def __init__(self, model: Type[ModelType]):
@@ -32,7 +31,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     async def get_multi(
         self,
         session: AsyncSession,
-    ) -> List[ModelType]:
+    ) -> list[ModelType]:
         """Получение всех обьектов из модели."""
         db_objs = await session.execute(select(self.model))
 

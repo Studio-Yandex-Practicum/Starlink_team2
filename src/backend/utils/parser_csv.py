@@ -10,7 +10,7 @@ from backend.utils.validators import check_file_keys
 
 STARLINKRUSSIA_PATTERN = re.compile(r'@starlinkrussia.ru$')
 MILESTONERUSSIA_PATTERN = re.compile(r'@milestonerussia.ru$')
-
+DELIMITER = ';'
 
 async def parsing_email_addresses_from_csv_file(
     session: AsyncSession,
@@ -22,7 +22,7 @@ async def parsing_email_addresses_from_csv_file(
     emails_for_adds_in_db = []
     with open(path, 'r', encoding=encoding) as f:
 
-        reader = csv.DictReader(f, delimiter=';')
+        reader = csv.DictReader(f, delimiter=DELIMITER)
         await check_file_keys(reader)
 
         for i in reader:
