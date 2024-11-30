@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+from anyio import open_file
 from fastapi import APIRouter, Depends, File, Request, UploadFile
 from fastapi.exceptions import HTTPException
 from fastapi.responses import HTMLResponse
@@ -11,7 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from backend.core.db import get_async_session
 from backend.crud.employee_email import employee_email_crud
 from backend.utils.parser_csv import parsing_email_addresses_from_csv_file
-from backend.utils.validators import check_file_extension, check_file_exist
+from backend.utils.validators import check_file_exist, check_file_extension
 
 router = APIRouter()
 
@@ -28,7 +29,8 @@ async def load_data(
     file: UploadFile = File(...),
     session: AsyncSession = Depends(get_async_session),
 
-):
+) -> templates.TemplateResponse:
+    """Получение файла с формы и его парсинг."""
     context = {
         'request': request,
     }
@@ -38,8 +40,8 @@ async def load_data(
         await check_file_exist(file_name)
         await check_file_extension(file_name)
 
-        with open(path, "wb") as f:
-            f.write(file.file.read())
+        async with await open_file(path, "wb") as f:
+            await f.write(file.file.read())
 
         emails_for_remove = await employee_email_crud.get_multi(session)
 

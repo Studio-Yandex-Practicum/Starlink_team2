@@ -1,6 +1,6 @@
 import csv
-import re
 from pathlib import Path
+import re
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -11,6 +11,7 @@ from backend.utils.validators import check_file_keys
 STARLINKRUSSIA_PATTERN = re.compile(r'@starlinkrussia.ru$')
 MILESTONERUSSIA_PATTERN = re.compile(r'@milestonerussia.ru$')
 DELIMITER = ';'
+
 
 async def parsing_email_addresses_from_csv_file(
     session: AsyncSession,
