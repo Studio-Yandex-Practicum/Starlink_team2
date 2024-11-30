@@ -1,8 +1,7 @@
 import os
 from typing import List, Optional
 
-from fastapi import APIRouter
-
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from rich.console import Console

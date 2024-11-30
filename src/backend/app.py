@@ -1,14 +1,18 @@
+from contextlib import asynccontextmanager
 import os
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
-
 from passlib.handlers.sha2_crypt import sha512_crypt as crypto
 from rich import print as rich_print
+from sqlalchemy import select
+from sqlalchemy.exc import SQLAlchemyError
+
 from backend.core.config import settings
+from backend.core.db import AsyncGenerator, get_async_session
+from backend.models.admin import Admin
 from backend.pages.pages import router
-from backend.pages.parse_csv import router as parse_csv_router
 
 load_dotenv()
 
@@ -45,7 +49,6 @@ app = FastAPI(
 )
 
 app.include_router(router)
-app.include_router(parse_csv_router)
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
 static_dir = os.path.join(base_dir, 'static')
