@@ -1,27 +1,37 @@
 <ul class="nav nav-pills flex-column mb-auto">
     <li class="nav-item">
-      <a href="#" class="nav-link active" aria-current="page">
+      <a href="/dashboard" class="nav-link {% if request.path.startswith('/dashboard') %}active {% else %} text-white {% endif %}" aria-current="page">
         Главная
       </a>
     </li>
     <li>
-      <a href="#" class="nav-link text-white">
+      <a href="#" class="nav-link {% if request.path.startswith('/#') %}active {% else %} text-white {% endif %}">
         Квизы
       </a>
     </li>
     <li>
-      <a href="#" class="nav-link text-white">
+      <a href="#" class="nav-link {% if request.path.startswith('/#') %}active {% else %} text-white {% endif %}">
         Orders
       </a>
     </li>
     <li>
-      <a href="#" class="nav-link text-white">
+      <a href="#" class="nav-link {% if request.path.startswith('/#') %}active {% else %} text-white {% endif %}">
         Products
       </a>
     </li>
+    <li class="nav-item">
+      <a href="/private" class="nav-link {% if request.path.startswith('/private') %}active {% else %} text-white {% endif %}">
+        private
+      </a>
+    </li>
     <li>
-      <a href="#" class="nav-link text-white">
+      <a href="users" class="nav-link {% if request.path.startswith('/users') %}active {% else %} text-white {% endif %}">
         Пользователи
+      </a>
+    </li>
+    <li>
+      <a href="roles" class="nav-link {% if request.path.startswith('/roles') %}active {% else %} text-white {% endif %}">
+        Роли
       </a>
     </li>
   </ul>
