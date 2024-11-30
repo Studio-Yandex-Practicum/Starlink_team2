@@ -15,8 +15,15 @@ from backend.core.auth import get_current_user_from_token
 from backend.core.auth import login_for_access_token
 from backend.core.config import settings
 from backend.core.db import get_async_session
-from backend.crud import role_crud, user_crud
-from backend.schemas import RoleBase, RoleCreate, RoleDB, TelegramUserBase, TelegramUserCreate, TelegramUserDB
+from backend.crud import role_crud, telegramuser_crud
+from backend.schemas import (
+    RoleBase,
+    RoleCreate,
+    RoleDB,
+    TelegramUserBase,
+    TelegramUserCreate,
+    TelegramUserDB
+)
 
 
 router = APIRouter()
@@ -223,7 +230,6 @@ async def role_delete(
     :param unique_id: ID Роли
     :param session: Объект текущей сессии.
      """
-    print("Roles DELETE")
     role = await role_crud.get(unique_id, session)
     await role_crud.remove(
         role,
@@ -250,13 +256,13 @@ async def users_view(
     :param session: Объект текущей сессии.
     :param user: Текущий пользователь (извлекается из токена).
     """
-    # all_roles = await user_crud.get_multi(session)
+    tgusers = await telegramuser_crud.get_multi(session)
 
     context = {
         "user": user,
         "request": request,
         "view_name": str(request.url).split('/')[-1],
-        # "users": all_users
+        "tgusers": tgusers
     }
     return templates.TemplateResponse("users.html", context)
 
