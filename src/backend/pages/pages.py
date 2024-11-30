@@ -1,3 +1,4 @@
+from datetime import datetime
 import os
 from typing import List, Optional
 
@@ -210,7 +211,10 @@ async def role_edit(
     role = await role_crud.get(unique_id, session)
     await role_crud.update(
         role,
-        {'role_title': role_title},
+        {
+            'role_title': role_title,
+            'edited_at': datetime.now()
+        },
         session
     )
     return RedirectResponse('/roles', status_code=302)
@@ -225,7 +229,7 @@ async def role_delete(
         session: AsyncSession = Depends(get_async_session),
 ):
     """
-    Обрабатывает запрос на страницу Редактирование Роли.
+    Обрабатывает запрос на страницу удаление Роли.
 
     :param unique_id: ID Роли
     :param session: Объект текущей сессии.
@@ -250,7 +254,7 @@ async def users_view(
         user: Admin = Depends(get_current_user_from_token)
 ):
     """
-    Обрабатывает запрос на страницу Роли.
+    Обрабатывает запрос на страницу Пользователи.
 
     :param request: Объект запроса.
     :param session: Объект текущей сессии.
@@ -265,6 +269,100 @@ async def users_view(
         "tgusers": tgusers
     }
     return templates.TemplateResponse("users.html", context)
+
+
+@router.get(
+    "/users/{unique_id}",
+    response_class=HTMLResponse,
+    response_model=TelegramUserCreate
+)
+async def user_view(
+        request: Request,
+        unique_id: str,
+        session: AsyncSession = Depends(get_async_session),
+        user: Admin = Depends(get_current_user_from_token)
+):
+    """
+    Обрабатывает запрос на страницу Редактирование Пользователя.
+
+    :param request: Объект запроса.
+    :param unique_id: ID Роли
+    :param session: Объект текущей сессии.
+    :param user: Текущий пользователь (извлекается из токена).
+     """
+
+    tguser = await telegramuser_crud.get(unique_id, session)
+    roles = await role_crud.get_multi(session)
+
+    context = {
+        "user": user,
+        "request": request,
+        "tguser": tguser,
+        "roles": roles
+    }
+    return templates.TemplateResponse("user.html", context)
+
+
+@router.post(
+    "/users/{unique_id}",
+    response_class=RedirectResponse,
+    response_model=TelegramUserCreate
+)
+async def user_edit(
+        unique_id: str,
+        first_name=Form(None),
+        last_name=Form(None),
+        email=Form(None),
+        role_title=Form(None),
+        session: AsyncSession = Depends(get_async_session),
+):
+    """
+    Обрабатывает запрос на страницу Редактирование Пользователя.
+
+    :param unique_id: ID Пользователя
+    :param first_name: Имя Пользователя
+    :param last_name: Фамилия Пользователя
+    :param email: Электронная почта Пользователя
+    :param role_title: Роль Пользователя
+    :param session: Объект текущей сессии.
+     """
+
+    tguser = await telegramuser_crud.get(unique_id, session)
+    #  СОЗДАТЬ ПОЧТУ И РОЛЬ ОТДЕЛЬНО, И ПРИСВОИТЬ UNIQUE_ID ПОЛЬЗОВАТЕЛЮ
+    await telegramuser_crud.update(
+        tguser,
+        {
+            'first_name': first_name,
+            'last_name': last_name,
+            'edited_at': datetime.now()
+            # 'email': email,
+            # 'role_title': role_title
+        },
+        session
+    )
+    return RedirectResponse('/users', status_code=302)
+
+
+@router.post(
+    "/users/delete",
+    response_class=RedirectResponse,
+)
+async def user_delete(
+        unique_id: str = Form(),
+        session: AsyncSession = Depends(get_async_session),
+):
+    """
+    Обрабатывает запрос на удаление Пользователя.
+
+    :param unique_id: ID Пользователя
+    :param session: Объект текущей сессии.
+     """
+    tguser = await telegramuser_crud.get(unique_id, session)
+    await telegramuser_crud.remove(
+        tguser,
+        session
+    )
+    return RedirectResponse('/users', status_code=302)
 
 
 @router.get("/auth/login", response_class=HTMLResponse)

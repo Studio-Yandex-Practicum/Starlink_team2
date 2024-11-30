@@ -1,31 +1,34 @@
 <ul class="nav nav-pills flex-column mb-auto">
     <li class="nav-item">
-      <a href="dashboard" class="nav-link {% if view_name == 'dashboard' %} active {% else %} text-white {% endif %}">
+      <a href="{{ url_for('dashboard') }}" class="nav-link {% if view_name == 'dashboard' %} active {% else %} text-white {% endif %}">
         Главная
       </a>
     </li>
     <li>
-      <a href="#" class="nav-link text-white">
+        <!-- ВРЕМЕННАЯ ССЫЛКА, ЗАМЕНИТЬ -->
+      <a href="{{ url_for('dashboard') }}" class="nav-link text-white">
         Квизы
       </a>
     </li>
     <li>
-      <a href="#" class="nav-link text-white">
+        <!-- ВРЕМЕННАЯ ССЫЛКА, ЗАМЕНИТЬ -->
+      <a href="{{ url_for('dashboard') }}" class="nav-link text-white">
         Orders
       </a>
     </li>
     <li>
-      <a href="#" class="nav-link text-white">
+        <!-- ВРЕМЕННАЯ ССЫЛКА, ЗАМЕНИТЬ -->
+      <a href="{{ url_for('dashboard') }}" class="nav-link text-white">
         Products
       </a>
     </li>
     <li>
-      <a href="users" class="nav-link {% if view_name == 'users' %} active {% else %} text-white {% endif %}">
+      <a href="{{ url_for('users_view') }}" class="nav-link {% if view_name == 'users' %} active {% else %} text-white {% endif %}">
         Пользователи
       </a>
     </li>
     <li>
-      <a href="roles" class="nav-link {% if view_name == 'roles' %} active {% else %} text-white {% endif %}">
+      <a href="{{ url_for('roles_view') }}" class="nav-link {% if view_name == 'roles' %} active {% else %} text-white {% endif %}">
         Роли
       </a>
     </li>

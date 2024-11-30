@@ -22,14 +22,14 @@
     {% for tguser in tgusers %}
     <tr>
       <td class="col-0.5">{{ loop.index }}</td>
-      <td class="col-2"><a href="users/{{ user.unique_id }}">{{ tguser.username }}</a></td>
+      <td class="col-2"><a href="{{ url_for('user_view', unique_id=tguser.unique_id) }}">{{ tguser.username }}</a></td>
       <td class="col-2">{{ tguser.first_name }}</td>
       <td class="col-2">{{ tguser.last_name }}</td>
       <td class="col-2">{{ tguser.role.role_title }}</td>
       <td class="col-2">{{ tguser.email.email }}</td>
       <td class="col-2">{{ tguser.created_at }}</td>
       <td class="col-1">
-        <form action="/users/delete" method="post" style="display: inline;">
+        <form action="{{ url_for('user_delete') }}" method="post" style="display: inline;">
           <input type="hidden" name="unique_id" value="{{ tguser.unique_id }}">
           <button type="submit" class="btn btn-danger" aria-label="Удалить">X</button>
         </form>

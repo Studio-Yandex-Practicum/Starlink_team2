@@ -20,10 +20,10 @@
     <tr>
       <td class="col-1">{{ loop.index }}</td>
       <td class="col-8">
-        <a href="roles/{{ role.unique_id }}">{{ role.role_title }}</a>
+        <a href="{{ url_for('role_view', unique_id=role.unique_id) }}">{{ role.role_title }}</a>
       </td>
       <td class="col-1">
-        <form action="/roles/delete" method="post" style="display: inline;">
+        <form action="{{ url_for('role_delete') }}" method="post" style="display: inline;">
           <input type="hidden" name="unique_id" value="{{ role.unique_id }}">
           <button type="submit" class="btn btn-danger" aria-label="Удалить">X</button>
         </form>
