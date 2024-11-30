@@ -12,6 +12,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from backend.core.config import settings
 from backend.core.db import AsyncGenerator, get_async_session
 from backend.models.admin import Admin
+from backend.pages.menus import router as menus_router
 from backend.pages.pages import router
 
 load_dotenv()
@@ -49,6 +50,7 @@ app = FastAPI(
 )
 
 app.include_router(router)
+app.include_router(menus_router)
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
 static_dir = os.path.join(base_dir, 'static')

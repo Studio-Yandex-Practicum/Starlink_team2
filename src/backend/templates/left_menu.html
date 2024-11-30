@@ -1,6 +1,6 @@
 <ul class="nav nav-pills flex-column mb-auto">
     <li class="nav-item">
-      <a href="#" class="nav-link active" aria-current="page">
+      <a href="#" class="nav-link text-white">
         Главная
       </a>
     </li>
@@ -10,8 +10,8 @@
       </a>
     </li>
     <li>
-      <a href="#" class="nav-link text-white">
-        Orders
+      <a href="{{ url_for ('get_menus') }}" class="nav-link text-white {% if request.url==url_for('get_menus')%}active{% endif %}">
+        Построитель меню
       </a>
     </li>
     <li>
