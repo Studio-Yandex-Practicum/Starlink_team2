@@ -1,10 +1,11 @@
-import csv
+from typing import Sequence
 
 from fastapi import status
 from fastapi.exceptions import HTTPException
 
 FILE_IS_MISSING = 'Приложите файл в формате csv.'
 MUST_HAVE_CSV_EXTENSION = 'Файл должен быть в расширении csv.'
+TABLE_HEADER_IS_MISSING = 'Не хватает заголовка таблицы: Адрес почты.'
 
 
 async def check_file_exist(filename: str) -> None:
@@ -24,16 +25,12 @@ async def check_file_extension(filename: str, extension: str = 'csv') -> None:
         )
 
 
-async def check_file_keys(reader: csv.DictReader) -> None:
-    """Функия проверяющая наличие заголовков ['Сотрудник', 'Адрес почты'].
+async def check_file_keys(fieldnames: Sequence[str]) -> None:
+    """Функия проверяющая наличие заголовка 'Адрес почты'.
 
     Принимает на вход csv.DictReader.
     """
-    fields = ['Сотрудник', 'Адрес почты']
-    for field in reader.fieldnames:
-        if field in fields:
-            fields.remove(field)
-    if len(fields) != 0:
+    if 'Адрес почты' not in fieldnames:
         raise HTTPException(
-            status_code=400, detail=f'Не хватате заголовков талицы: {fields}.',
+            status_code=400, detail=TABLE_HEADER_IS_MISSING,
         )

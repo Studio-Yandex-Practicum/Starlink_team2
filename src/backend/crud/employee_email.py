@@ -1,5 +1,6 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy_utils import EmailType
 
 from backend.crud.base import CRUDBase
 from backend.crud.telegram_user import telegram_user_crud
@@ -13,7 +14,9 @@ class EmployeeEmailCRUD(
     """CRUD для работы с моделью EmployeeEmail."""
 
     async def remove_multi(
-        self, session: AsyncSession, emails, commit: bool = False,
+        self, session: AsyncSession,
+            emails: list[EmployeeEmail],
+            commit: bool = False,
     ) -> None | list[EmployeeEmail]:
         """Массовое удаление эмейлов из БД."""
         for email_obj in emails:
@@ -34,7 +37,13 @@ class EmployeeEmailCRUD(
             await session.commit()
             return emails
 
-    async def get_email(self, session: AsyncSession, employee_email) -> EmployeeEmail:
+        return None
+
+    async def get_email(
+            self,
+            session: AsyncSession,
+            employee_email: EmailType,
+    ) -> EmployeeEmail:
         """Получение информации по эмейлу."""
         email = await session.execute(
             select(self.model).where(self.model.email == employee_email),

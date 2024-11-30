@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -13,7 +15,7 @@ class TelegramUserCRUD(
     """CRUD для работы с моделью TelegramUser."""
 
     async def get_tg_user_by_using_email_id(
-        self, session: AsyncSession, email_id,
+        self, session: AsyncSession, email_id: uuid4,
     ) -> TelegramUser:
         """Находит пользователя по email_id."""
         email = await session.execute(
@@ -22,7 +24,10 @@ class TelegramUserCRUD(
         return email.scalars().first()
 
     async def remove_role_id(
-        self, db_obj: TelegramUser, data_obj: dict[str:None], session: AsyncSession,
+        self,
+        db_obj: TelegramUser,
+        data_obj: dict[str, None],
+        session: AsyncSession,
     ) -> TelegramUser:
         """Удаляет роль у пользователя."""
         obj_data = jsonable_encoder(db_obj)

@@ -30,6 +30,7 @@ class OAuth2PasswordBearerWithCookie(OAuth2):
     Единственное изменение — аутентификация берется из cookie,
         а не из заголовка!
     """
+
     def __init__(
         self,
         tokenUrl: str,
