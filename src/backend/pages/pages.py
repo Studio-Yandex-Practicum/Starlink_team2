@@ -23,7 +23,7 @@ templates = Jinja2Templates(directory=template_dir)
 
 
 @router.get("/", response_class=HTMLResponse)
-async def index(request: Request):
+async def index(request: Request) -> HTMLResponse:
     """Обрабатывает запрос на главную страницу.
 
     :param request: Объект запроса.
@@ -31,7 +31,7 @@ async def index(request: Request):
     """
     try:
         user = await get_current_user_from_cookie(request)
-    except:
+    except Exception as _:
         user = None
     context = {
         "user": user,
@@ -41,8 +41,10 @@ async def index(request: Request):
 
 
 @router.get("/private", response_class=HTMLResponse)
-async def private(request: Request,
-                  user: Admin = Depends(get_current_user_from_token)):
+async def private(
+    request: Request,
+    user: Admin = Depends(get_current_user_from_token),
+) -> HTMLResponse:
     """Обрабатывает запрос на приватную страницу.
 
     :param request: Объект запроса.
@@ -52,7 +54,7 @@ async def private(request: Request,
     """
     try:
         user = await get_current_user_from_cookie(request)
-    except:
+    except Exception as _:
         user = None
     context = {
         "user": user,
@@ -65,17 +67,23 @@ async def private(request: Request,
 
 
 @router.get("/dashboard", response_class=HTMLResponse)
-async def dashboard(request: Request,
-                    user: Admin = Depends(get_current_user_from_token)):
+async def dashboard(
+    request: Request,
+    user: Admin = Depends(get_current_user_from_token),
+) -> HTMLResponse:
     """Обрабатывает запрос на страницу управления ботом.
 
-    :param request: Объект запроса.
-    :param user: Текущий пользователь (извлекается из токена).
+    Args:
+        request: Объект запроса.
+        user: Текущий пользователь (извлекается из токена).
+
+    Returns:
+        HTML-ответом с контекстом страницы.
 
     """
     try:
         user = await get_current_user_from_cookie(request)
-    except:
+    except Exception as _:
         user = None
     context = {
         "user": user,
@@ -85,11 +93,15 @@ async def dashboard(request: Request,
 
 
 @router.get("/auth/login", response_class=HTMLResponse)
-async def login_get(request: Request):
+async def login_get(request: Request) -> HTMLResponse:
     """Обрабатывает запрос на страницу входа в систему (GET).
 
-    :param request: Объект запроса.
-    :return: HTML-ответом с контекстом страницы.
+    Args:
+        request: Объект запроса.
+
+    Returns:
+        HTML-ответом с контекстом страницы.
+
     """
     context = {
         "request": request,
@@ -98,21 +110,23 @@ async def login_get(request: Request):
 
 
 class LoginForm:
-    """Класс для обработки формы входа в систему.
-    """
+    """Класс для обработки формы входа в систему."""
 
-    def __init__(self, request: Request):
+    def __init__(self, request: Request) -> None:
+        """Инициализация класса."""
         self.request: Request = request
         self.errors: List = []
         self.username: Optional[str] = None
         self.password: Optional[str] = None
 
-    async def load_data(self):
+    async def load_data(self) -> None:
+        """Получение данных из формы входа."""
         form = await self.request.form()
         self.username = form.get("username")
         self.password = form.get("password")
 
-    async def is_valid(self):
+    async def is_valid(self) -> bool:
+        """Валидация параметров введенных в форму."""
         if not self.username or not (self.username.__contains__("@")):
             self.errors.append("Email is required")
         if not self.password or not len(self.password) >= 4:
@@ -123,12 +137,18 @@ class LoginForm:
 
 
 @router.post("/auth/login", response_class=HTMLResponse)
-async def login_post(request: Request):
+async def login_post(
+    request: Request,
+) -> RedirectResponse:
     """Обрабатывает запрос на вход в систему (POST).
 
-    :param request: Объект запроса.
-    :return: HTML-ответом с контекстом страницы входа,
+    Args:
+        request: Объект запроса.
+
+    Returns:
+        HTML-ответ с контекстом страницы входа,
         или RedirectResponse на dashboard.
+
     """
     form = LoginForm(request)
     await form.load_data()
@@ -147,11 +167,15 @@ async def login_post(request: Request):
 
 
 @router.get("/auth/logout", response_class=HTMLResponse)
-async def login_get():
+async def login_get() -> RedirectResponse:
     """Обрабатывает запрос на выход из системы.
 
-    :param request: Объект запроса.
-    :return: Переадресация на страницу входа.
+    Args:
+        request: Объект запроса.
+
+    Returns:
+        Переадресация на страницу входа.
+
     """
     response = RedirectResponse(url="/auth/login")
     response.delete_cookie(settings.COOKIE_NAME)
