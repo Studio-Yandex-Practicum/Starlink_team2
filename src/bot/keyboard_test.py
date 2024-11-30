@@ -41,7 +41,7 @@ async def filter_accessible_items(
         item
         for item in menu_items
         if item[constants.PARENT_KEY] == parent_id
-        and set(item[constants.ROLES_KEY]).intersection(user_roles)
+        # and set(item[constants.ROLES_KEY]).intersection(user_roles)
     ]
 
 
@@ -198,11 +198,7 @@ async def build_keyboard(
         По умолчанию False.
     :return: Объект клавиатуры: ReplyKeyboardMarkup или InlineKeyboardMarkup.
     """
-    _, total_pages = await paginate_items(
-        await filter_accessible_items(menu_items, user_roles, parent_id),
-        page,
-        items_per_page,
-    )
+
     keyboard = await build_menu_buttons(
         menu_items,
         user_roles,
@@ -212,25 +208,6 @@ async def build_keyboard(
         buttons_per_row,
         is_inline,
     )
-    navigation_buttons = await build_navigation_buttons(
-        page,
-        total_pages,
-        parent_id,
-        is_inline,
-    )
-    if navigation_buttons:
-        keyboard.append(navigation_buttons)
-    if parent_id is not None:
-        back_button = (
-            InlineKeyboardButton(
-                constants.BACK_TEXT,
-                callback_data=f'{constants.BACK_CALLBACK_PREFIX}'
-                f'{parent_id}',
-            )
-            if is_inline
-            else KeyboardButton(constants.BACK_TEXT)
-        )
-        keyboard.append([back_button])
 
     if is_inline:
         return InlineKeyboardMarkup(keyboard)

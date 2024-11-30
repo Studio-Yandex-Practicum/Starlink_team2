@@ -3,7 +3,9 @@ from telebot.types import Message
 from bot.crud.telegram_menu import telegram_menu_crud
 from bot.crud.telegram_user import telegram_users_crud
 from bot.db import async_session
-from bot.keyboard import build_reply_keyboard
+
+# test
+from bot.keyboard_test import build_reply_keyboard, filter_accessible_items
 from bot.loader import bot_instance as bot
 from bot.utils.logger import get_logger
 
@@ -50,16 +52,29 @@ async def handle_start(message: Message) -> None:
         message_to_send = (
             f'Ура мы нашли вас в базе данных: ' f'{username} {telegram_id}'
         )
-    reply_markup = await build_reply_keyboard(
-        menu_items, GUEST_ROLE_ID
-    )
+
+    role_list = [GUEST_ROLE_ID]
 
     print(menu_items)
 
+    accessible_items = await filter_accessible_items(
+        menu_items, role_list, None
+    )
+    print(accessible_items)
+
+    reply_markup = await build_reply_keyboard(menu_items, role_list)
+
+    # await bot.send_message(message.chat.id, message_to_send)
+
     await bot.send_message(
-        message.chat.id,
-        message_to_send,
-        reply_markup=reply_markup
+        message.chat.id, message_to_send, reply_markup=reply_markup
     )
 
     logger.info(f'{message.from_user.username} запустил бота')
+
+
+@bot.callback_query_handler(func=lambda call: True)
+async def callback_query(call):
+    print(call.data)
+    if call.data:
+        bot.answer_callback_query(call.id, 'Answer is Yes')

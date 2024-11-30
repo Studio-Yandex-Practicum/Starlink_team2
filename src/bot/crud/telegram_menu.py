@@ -99,6 +99,8 @@ class CRUDTelegramMenu:
                     'Roles': elem.role_access,
                 }
                 res.append(temp_dict)
+
+                # res.append(elem.unique_id)
             return res
 
     async def get_parent_menu_for_guest(
