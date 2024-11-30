@@ -57,7 +57,7 @@ class TelegramUser(AbstractModelForTime):
     def __repr__(self) -> str:
         return (
             f'{self.username=}; {self.role_id=}; '
-            f'{self.name=}; {self.last_name=}; '
-            f'{self.email_id=}; {self.active=}; '
+            f'{self.first_name=}; {self.last_name=}; '
+            f'{self.email_id=}; {self.is_active=}; '
             f'{super().__repr__()}'
         )
