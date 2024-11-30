@@ -1,13 +1,15 @@
-from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 from uuid import uuid4
 
+from dotenv import load_dotenv
 from sqlalchemy import Column
 from sqlalchemy.dialects.postgresql import UUID as pg_UUID  # noqa
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import declarative_base, declared_attr, sessionmaker
 
 from backend.core.config import settings
+
+load_dotenv()
 
 
 class PreBase:
@@ -45,7 +47,6 @@ engine = create_async_engine(url)
 AsyncSessionLocal = sessionmaker(engine, class_=AsyncSession)
 
 
-@asynccontextmanager
 async def get_async_session() -> AsyncGenerator:
     """Функция get_async_session возвращает асинхронный генератор.
 
