@@ -1,3 +1,4 @@
+import contextlib
 from contextlib import asynccontextmanager
 import os
 
@@ -12,27 +13,33 @@ from sqlalchemy.exc import SQLAlchemyError
 from backend.core.config import settings
 from backend.core.db import AsyncGenerator, get_async_session
 from backend.models.admin import Admin
-from backend.pages.pages import router
+from backend.pages.pages import router as pages_router
+from backend.pages.parse_csv import router as parse_csv_router
 
 load_dotenv()
 
+get_async_session_context = contextlib.asynccontextmanager(get_async_session)
 
-@asynccontextmanager
+
 async def lifespan(app: FastAPI) -> AsyncGenerator:
     """Lifespan context manager для инициализации данных."""
-    async with get_async_session() as session:
+    async with get_async_session_context() as session:
         try:
             result = await session.execute(select(Admin))
             user = result.scalars().first()
             if not user:
-                user1 = Admin(username=os.getenv("ADMIN_USER1_USERNAME"),
-                              hashed_password=crypto.hash(
-                                  os.getenv("ADMIN_USER1_PASSWORD")),
-                              )
-                user2 = Admin(username=os.getenv("ADMIN_USER2_USERNAME"),
-                              hashed_password=crypto.hash(
-                                  os.getenv("ADMIN_USER2_PASSWORD")),
-                              )
+                user1 = Admin(
+                    username=os.getenv("ADMIN_USER1_USERNAME"),
+                    hashed_password=crypto.hash(
+                        os.getenv("ADMIN_USER1_PASSWORD")
+                    ),
+                )
+                user2 = Admin(
+                    username=os.getenv("ADMIN_USER2_USERNAME"),
+                    hashed_password=crypto.hash(
+                        os.getenv("ADMIN_USER2_PASSWORD")
+                    ),
+                )
                 session.add_all([user1, user2])
                 await session.commit()
                 rich_print("[green]Администраторы успешно созданы.[/green]")
@@ -48,7 +55,8 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-app.include_router(router)
+app.include_router(pages_router)
+app.include_router(parse_csv_router)
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
 static_dir = os.path.join(base_dir, 'static')

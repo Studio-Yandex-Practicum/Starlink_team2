@@ -60,9 +60,6 @@ async def private(
         "user": user,
         "request": request,
     }
-    print(user)
-    print('-----')
-    print(context)
     return templates.TemplateResponse("private.html", context)
 
 
@@ -86,10 +83,10 @@ async def dashboard(
     except Exception as _:
         user = None
     context = {
-        "user": user,
-        "request": request,
+        'user': user,
+        'request': request,
     }
-    return templates.TemplateResponse("dashboard.html", context)
+    return templates.TemplateResponse('dashboard.html', context)
 
 
 @router.get("/auth/login", response_class=HTMLResponse)
@@ -139,7 +136,7 @@ class LoginForm:
 @router.post("/auth/login", response_class=HTMLResponse)
 async def login_post(
     request: Request,
-) -> RedirectResponse | templates.TemplateResponse:
+) -> RedirectResponse:
     """Обрабатывает запрос на вход в систему (POST).
 
     Args:

@@ -84,7 +84,8 @@ def create_access_token(data: Dict) -> str:
     """Создание токена."""
     to_encode = data.copy()
     expire = dt.datetime.now() + dt.timedelta(
-        minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+        minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
+    )
     to_encode.update({"exp": expire})
     return jwt.encode(
         to_encode,
@@ -96,34 +97,36 @@ def create_access_token(data: Dict) -> str:
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
-async def authenticate_user(username: str, plain_password: str) -> Admin:
+async def authenticate_user(
+    username: str,
+    plain_password: str,
+) -> Admin | bool:
     """Аутентификация пользователя."""
     user = await get_user(username)
-    if not user:
-        return False
-    if not crypto.verify(plain_password, user.hashed_password):
+    if not user or not crypto.verify(plain_password, user.hashed_password):
         return False
     return user
 
 
-def decode_token(token: str) -> Admin:
+async def decode_token(token: str) -> Admin:
     """Декодирование токена."""
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials.",
     )
-    """Декодирование токенаю"""
+    """Декодирование токена."""
     token = token.removeprefix("Bearer").strip()
     try:
-        payload = jwt.decode(token, settings.SECRET_KEY,
-                             algorithms=[settings.ALGORITHM])
+        payload = jwt.decode(
+            token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
+        )
         username: str = payload.get("username")
         if username is None:
             raise credentials_exception
     except JWTError as e:
         rich.print(e)
         raise credentials_exception
-    return get_user(username)
+    return await get_user(username)
 
 
 def get_current_user_from_token(token: str = Depends(oauth2_scheme)) -> Admin:
@@ -158,7 +161,8 @@ async def login_for_access_token(
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password")
+            detail="Incorrect username or password",
+        )
     access_token = create_access_token(data={"username": user.username})
 
     response.set_cookie(
