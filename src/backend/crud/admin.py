@@ -2,7 +2,7 @@ import logging
 
 from sqlalchemy import select
 
-from backend.core.db import get_async_session
+from backend.core.db import AsyncSessionLocal
 from backend.models.admin import Admin
 
 logging.basicConfig(level=logging.INFO)
@@ -18,10 +18,11 @@ async def get_user(username: str) -> Admin:
     :type username: str
     :return: Полученный пользователь, если найден, иначе None.
     """
-    async with get_async_session() as session:
+    async with AsyncSessionLocal() as session:
         try:
-            query = select(Admin).filter(Admin.username == username)
-            result = await session.execute(query)
+            result = await session.execute(
+                select(Admin).filter(Admin.username == username),
+            )
             return result.scalar_one_or_none()
         except Exception as e:
             logger.error(f"Error fetching user {username}: {e}")

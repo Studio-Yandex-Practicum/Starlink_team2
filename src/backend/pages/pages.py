@@ -37,7 +37,7 @@ async def index(request: Request) -> HTMLResponse:
         "user": user,
         "request": request,
     }
-    return templates.TemplateResponse("login.html", context)
+    return templates.TemplateResponse("index.html", context)
 
 
 @router.get("/private", response_class=HTMLResponse)
@@ -60,9 +60,6 @@ async def private(
         "user": user,
         "request": request,
     }
-    print(user)
-    print('-----')
-    print(context)
     return templates.TemplateResponse("private.html", context)
 
 
@@ -86,10 +83,10 @@ async def dashboard(
     except Exception as _:
         user = None
     context = {
-        "user": user,
-        "request": request,
+        'user': user,
+        'request': request,
     }
-    return templates.TemplateResponse("dashboard.html", context)
+    return templates.TemplateResponse('dashboard.html', context)
 
 
 @router.get("/auth/login", response_class=HTMLResponse)
@@ -106,7 +103,7 @@ async def login_get(request: Request) -> HTMLResponse:
     context = {
         "request": request,
     }
-    return templates.TemplateResponse("login.html", context)
+    return templates.TemplateResponse("index.html", context)
 
 
 class LoginForm:
@@ -162,8 +159,8 @@ async def login_post(
         except HTTPException:
             form.__dict__.update(msg="")
             form.__dict__.get("errors").append("Incorrect Email or Password")
-            return templates.TemplateResponse("login.html", form.__dict__)
-    return templates.TemplateResponse("login.html", form.__dict__)
+            return templates.TemplateResponse("index.html", form.__dict__)
+    return templates.TemplateResponse("index.html", form.__dict__)
 
 
 @router.get("/auth/logout", response_class=HTMLResponse)
