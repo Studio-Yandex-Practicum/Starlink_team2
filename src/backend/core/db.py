@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 from uuid import uuid4
 
@@ -47,6 +48,7 @@ engine = create_async_engine(url)
 AsyncSessionLocal = sessionmaker(engine, class_=AsyncSession)
 
 
+@asynccontextmanager
 async def get_async_session() -> AsyncGenerator:
     """Функция get_async_session возвращает асинхронный генератор.
 
