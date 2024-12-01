@@ -2,7 +2,7 @@ from typing import Optional
 
 from sqlalchemy import func, select
 
-from backend.core.db import get_async_session
+from backend.core.db import get_async_session, AsyncSessionLocal
 from backend.models.menu import Menu
 from backend.models.role import Role
 

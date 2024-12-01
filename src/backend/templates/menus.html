@@ -1,17 +1,14 @@
+{% extends "base.html" %}
 {% block left_menu_menus_active %}
 active
 {% endblock left_menu_menus_active %}
-{% include "header.html" %}
+{% block content %}
 <div class="d-flex align-items-center pb-3 mb-5 border-bottom">
   <a href="/" class="d-flex align-items-center text-body-emphasis text-decoration-none">
     <span class="fs-4">Конструктор меню</span>
   </a>
 </div>
 <div>
-  <h1 class="text-body-emphasis">Hello {{ user.username }}!</h1>
-  <p class="fs-5 col-md-8">Welcome to this private page. You can only see if you are logged in!
-
-
     {% if user %}
     <div>Количество записей = {{ count_rows }}</div>
     {% if count_rows == 0 %}
@@ -28,4 +25,4 @@ active
         <a href="/auth/login" class="btn">login</a>!
     </p>
 {% endif %}
-{% include "footer.html" %}
+{% endblock content %}

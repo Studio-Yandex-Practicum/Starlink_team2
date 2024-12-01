@@ -23,7 +23,7 @@ get_async_session_context = contextlib.asynccontextmanager(get_async_session)
 
 async def lifespan(app: FastAPI) -> AsyncGenerator:
     """Lifespan context manager для инициализации данных."""
-    async with get_async_session_context() as session:
+    async with get_async_session() as session:
         try:
             result = await session.execute(select(Admin))
             user = result.scalars().first()
