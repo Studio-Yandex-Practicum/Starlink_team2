@@ -2,7 +2,7 @@ from typing import Optional
 
 from sqlalchemy import func, select
 
-from backend.core.db import get_async_session, AsyncSessionLocal
+from backend.core.db import get_async_session
 from backend.models.menu import Menu
 from backend.models.role import Role
 
@@ -18,7 +18,7 @@ async def menus_folders() -> Optional[list[Menu]]:
     """Получение списка папок меню."""
     async with get_async_session() as session:
         items = await session.execute(
-            select(Menu).filter(Menu.is_folder.is_(True))
+            select(Menu).filter(Menu.is_folder.is_(True)),
         )
         if items:
             return items.scalars().all()

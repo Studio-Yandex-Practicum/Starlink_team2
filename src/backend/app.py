@@ -1,4 +1,3 @@
-import contextlib
 import os
 
 from dotenv import load_dotenv
@@ -10,15 +9,13 @@ from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 
 from backend.core.config import settings
-from backend.core.db import AsyncGenerator, get_async_session, AsyncSessionLocal
+from backend.core.db import AsyncGenerator, get_async_session
 from backend.models.admin import Admin
 from backend.pages.menus import router as menus_router
 from backend.pages.pages import router as pages_router
 from backend.pages.parse_csv import router as parse_csv_router
 
 load_dotenv()
-
-get_async_session_context = contextlib.asynccontextmanager(get_async_session)
 
 
 async def lifespan(app: FastAPI) -> AsyncGenerator:

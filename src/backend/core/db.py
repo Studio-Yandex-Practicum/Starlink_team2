@@ -1,6 +1,6 @@
+from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 from uuid import uuid4
-from contextlib import asynccontextmanager
 
 from dotenv import load_dotenv
 from sqlalchemy import Column
@@ -46,6 +46,7 @@ url = f'postgresql+asyncpg://{user}:{password}@{host}:{port}/{db_name}'
 engine = create_async_engine(url)
 
 AsyncSessionLocal = sessionmaker(engine, class_=AsyncSession)
+
 
 @asynccontextmanager
 async def get_async_session() -> AsyncGenerator:
