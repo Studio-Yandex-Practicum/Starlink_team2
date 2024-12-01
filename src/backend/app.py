@@ -1,5 +1,4 @@
 import contextlib
-from contextlib import asynccontextmanager
 import os
 
 from dotenv import load_dotenv
@@ -31,13 +30,13 @@ async def lifespan(app: FastAPI) -> AsyncGenerator:
                 user1 = Admin(
                     username=os.getenv("ADMIN_USER1_USERNAME"),
                     hashed_password=crypto.hash(
-                        os.getenv("ADMIN_USER1_PASSWORD")
+                        os.getenv("ADMIN_USER1_PASSWORD"),
                     ),
                 )
                 user2 = Admin(
                     username=os.getenv("ADMIN_USER2_USERNAME"),
                     hashed_password=crypto.hash(
-                        os.getenv("ADMIN_USER2_PASSWORD")
+                        os.getenv("ADMIN_USER2_PASSWORD"),
                     ),
                 )
                 session.add_all([user1, user2])

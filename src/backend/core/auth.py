@@ -84,7 +84,7 @@ def create_access_token(data: Dict) -> str:
     """Создание токена."""
     to_encode = data.copy()
     expire = dt.datetime.now() + dt.timedelta(
-        minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
+        minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES,
     )
     to_encode.update({"exp": expire})
     return jwt.encode(
@@ -118,7 +118,7 @@ async def decode_token(token: str) -> Admin:
     token = token.removeprefix("Bearer").strip()
     try:
         payload = jwt.decode(
-            token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
+            token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM],
         )
         username: str = payload.get("username")
         if username is None:

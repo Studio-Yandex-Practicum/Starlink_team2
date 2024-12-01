@@ -21,7 +21,7 @@ async def get_user(username: str) -> Admin:
     async with AsyncSessionLocal() as session:
         try:
             result = await session.execute(
-                select(Admin).filter(Admin.username == username)
+                select(Admin).filter(Admin.username == username),
             )
             return result.scalar_one_or_none()
         except Exception as e:
