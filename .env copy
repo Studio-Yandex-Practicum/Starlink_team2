@@ -1,9 +1,0 @@
-APP_TITLE = 'Административная панель Starlink бот'
-APP_DESCRIPTION = 'Управление справочным чат ботом для сотрудников'
-APP_VERSION='1.0.0'
-POSTGRES_USER = <username>
-POSTGRES_PASSWORD = <password>
-POSTGRES_HOST = <db_host>
-POSTGRES_PORT = <db_port>
-POSTGRES_DB = <db_name>
-BOT_TOKEN = "7956465840:AAGG_wUfo1E1lK-gmKkSJ-xACil3xwbLcUA"
