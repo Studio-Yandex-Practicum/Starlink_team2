@@ -1,8 +1,8 @@
 import os
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from fastapi.templating import Jinja2Templates
 from rich.console import Console
 
@@ -139,7 +139,7 @@ class LoginForm:
 @router.post("/auth/login", response_class=HTMLResponse)
 async def login_post(
     request: Request,
-) -> RedirectResponse | templates.TemplateResponse:
+) -> Response:
     """Обрабатывает запрос на вход в систему (POST).
 
     Args:
