@@ -21,7 +21,7 @@ services:
       retries: 5
   app:
     container_name: starlink-app
-    build: ./src/
+    image: dmi3ev1987/starlink_app
     env_file: .env
     depends_on:
       postgres:
@@ -33,7 +33,7 @@ services:
     container_name: starlink-nginx
     depends_on:
       - app
-    build: ./nginx/
+    image: dmi3ev1987/starlink_nginx
     env_file: .env
     ports:
       - 8000:80

@@ -168,7 +168,11 @@ cython_debug/
 /pg_data/
 
 # logs folder
-/logs
+*/logs
 
 # alembic migrations folder
 /src/alembic/versions/
+
+# dev files
+.env copy
+docker-compose.yml
