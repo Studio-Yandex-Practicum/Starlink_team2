@@ -1,34 +1,9 @@
-{% include 'header.html' %}
-<!--НАЗВАНИЕ СТРАНИЦЫ-->
-<div class="d-flex align-items-center pb-3 mb-5 border-bottom">
-  <a href="/" class="d-flex align-items-center text-body-emphasis text-decoration-none">
-    <span class="fs-4">Private Page 🕵️</span>
-  </a>
-</div>
-<!--КОНТЕНТ СТРАНИЦЫ-->
-<div>
-  <h1 class="text-body-emphasis">Hello {{ user.username }}!</h1>
-  <p class="fs-5 col-md-8">Welcome to this private page. You can only see if you are logged in!
+{% extends "base.html" %}
+{% block title %}Private Page 🕵️{% endblock %}
+{% block content %}
 
-
-    {% if user %}
-    <h2>You are logged in :)</h2>
+    <h1 class="text-body-emphasis">Hello {{ user.username }}!</h1>
     <p>
-        Hi {{ user.username }}! You are logged in, so you can access the private
-        page. <a href="/private">here</a>!
-    </p>
-{% else %}
-    <h2>You are NOT logged in :(</h2>
-    <p>
-        Hello stranger. You are not logged. Please follow the link to
-        <a href="/auth/login" class="btn">login</a>!
-    </p>
-{% endif %}
+       </p>
 
-
-
-
-
-  </p>
-</div>
-{% include 'footer.html' %}
+{% endblock %}

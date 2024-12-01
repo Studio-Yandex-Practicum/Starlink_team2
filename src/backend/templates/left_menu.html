@@ -1,27 +1,13 @@
 <ul class="nav nav-pills flex-column mb-auto">
-    <li class="nav-item">
-      <a href="#" class="nav-link active" aria-current="page">
-        Главная
-      </a>
-    </li>
-    <li>
-      <a href="#" class="nav-link text-white">
-        Квизы
-      </a>
-    </li>
-    <li>
-      <a href="#" class="nav-link text-white">
-        Orders
-      </a>
-    </li>
-    <li>
-      <a href="#" class="nav-link text-white">
-        Products
-      </a>
-    </li>
-    <li>
-      <a href="#" class="nav-link text-white">
-        Пользователи
-      </a>
-    </li>
-  </ul>
+  <li class="nav-item">
+    <a href="{{ url_for('dashboard') }}" class="nav-link {% if request.path.startswith('/dashboard') %}active {% else %} text-white {% endif %}" aria-current="page">
+      Главная
+    </a>
+  </li>
+  <li class="nav-item">
+    <a href="{{ url_for('private') }}" class="nav-link {% if request.path.startswith('/private') %}active {% else %} text-white {% endif %}">
+      private
+    </a>
+  </li>
+
+</ul>

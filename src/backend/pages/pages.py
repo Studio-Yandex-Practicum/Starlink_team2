@@ -37,7 +37,7 @@ async def index(request: Request) -> HTMLResponse:
         "user": user,
         "request": request,
     }
-    return templates.TemplateResponse("login.html", context)
+    return templates.TemplateResponse("index.html", context)
 
 
 @router.get("/private", response_class=HTMLResponse)
@@ -103,7 +103,7 @@ async def login_get(request: Request) -> HTMLResponse:
     context = {
         "request": request,
     }
-    return templates.TemplateResponse("login.html", context)
+    return templates.TemplateResponse("index.html", context)
 
 
 class LoginForm:
@@ -159,8 +159,8 @@ async def login_post(
         except HTTPException:
             form.__dict__.update(msg="")
             form.__dict__.get("errors").append("Incorrect Email or Password")
-            return templates.TemplateResponse("login.html", form.__dict__)
-    return templates.TemplateResponse("login.html", form.__dict__)
+            return templates.TemplateResponse("index.html", form.__dict__)
+    return templates.TemplateResponse("index.html", form.__dict__)
 
 
 @router.get("/auth/logout", response_class=HTMLResponse)
