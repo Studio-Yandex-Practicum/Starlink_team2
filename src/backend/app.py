@@ -10,7 +10,7 @@ from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 
 from backend.core.config import settings
-from backend.core.db import AsyncGenerator, get_async_session
+from backend.core.db import AsyncGenerator, get_async_session, AsyncSessionLocal
 from backend.models.admin import Admin
 from backend.pages.menus import router as menus_router
 from backend.pages.pages import router
