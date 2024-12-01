@@ -88,9 +88,3 @@ sudo docker compose -f docker-compose.local.yml up --build
 # для работы в контенере указать имя контенера с базой: postgres
 POSTGRES_HOST = postgres
 ```
-
-### Перед сборкой контенеров должны быть созданы миграции
-
-```bash
-alembic revision --autogenerate -m "Name of migration"
-```
