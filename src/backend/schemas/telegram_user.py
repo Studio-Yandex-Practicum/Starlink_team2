@@ -1,4 +1,6 @@
 from datetime import datetime
+from typing import Optional
+from uuid import UUID
 
 from pydantic import BaseModel, Field, PositiveInt, Extra
 
@@ -7,10 +9,10 @@ from backend.core.config import settings
 
 class TelegramUserBase(BaseModel):
     username: str = Field(...)
-    role_id: str
+    role_id: Optional[UUID] = None
     first_name: str = Field(None)
     last_name: str = Field(None)
-    email_id: str = Field(None)
+    email_id: Optional[UUID] = None
     is_active: bool = True
     telegram_id: int = Field(...)
 
@@ -28,3 +30,10 @@ class TelegramUserCreate(TelegramUserBase):
 
 class TelegramUserDB(TelegramUserCreate):
     edited_at: datetime = None
+
+
+class TelegramUserEdit(BaseModel):
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    role_id: Optional[UUID] = None
+    email_id: Optional[UUID] = None

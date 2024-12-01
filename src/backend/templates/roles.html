@@ -20,11 +20,10 @@
     <tr>
       <td class="col-1">{{ loop.index }}</td>
       <td class="col-8">
-        <a href="{{ url_for('role_view', unique_id=role.unique_id) }}">{{ role.role_title }}</a>
+        <a href="{{ url_for('role_view', unique_id=role.unique_id) }}">{{ role.title }}</a>
       </td>
       <td class="col-1">
-        <form action="{{ url_for('role_delete') }}" method="post" style="display: inline;">
-          <input type="hidden" name="unique_id" value="{{ role.unique_id }}">
+        <form action="{{ url_for('role_delete', unique_id=role.unique_id) }}" method="post" style="display: inline;">
           <button type="submit" class="btn btn-danger" aria-label="Удалить">X</button>
         </form>
       </td>
@@ -34,10 +33,10 @@
   </table>
 </div>
 <div style="width: 70%; padding: 100px; float: left">
-    <form class="row g-3" method="post" action="roles">
+    <form class="row g-3" method="post" action="{{ url_for('roles_create') }}">
   <div class="col-4">
     <label for="role_title" class="visually-hidden">Роль</label>
-    <input type="text" class="form-control" name="role_title" id="role_title" placeholder="Роль">
+    <input type="text" class="form-control" name="title" id="role_title" placeholder="Роль">
     {% for error in errors %}
       <h6 style="color: red">{{ error }}</h6>
     {% endfor %}

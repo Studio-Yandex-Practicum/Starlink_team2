@@ -26,11 +26,11 @@ class TelegramUser(AbstractModelForTime):
     username = Column(
         String(length=settings.username_max_length),
         unique=True,
-        nullable=False,
     )
     role_id = Column(
         pg_UUID(as_uuid=True),
-        ForeignKey('roles.unique_id'),
+        ForeignKey('roles.unique_id', ondelete='SET NULL'),
+        nullable=True,
     )
     first_name = Column(
         String(length=settings.username_max_length),
@@ -42,16 +42,18 @@ class TelegramUser(AbstractModelForTime):
     )
     email_id = Column(
         pg_UUID(as_uuid=True),
-        ForeignKey('employee_emails.unique_id'),
+        ForeignKey('employee_emails.unique_id', ondelete='SET NULL'),
         nullable=True,
     )
     is_active = Column(Boolean, default=True)
     telegram_id: Column[int] = Column(
         BigInteger,
         unique=True,
-        nullable=False,
     )
-    email = relationship(EmployeeEmail)
+    email = relationship(
+        "EmployeeEmail",
+        back_populates="users",
+    )
     role = relationship(Role)
 
     def __repr__(self) -> str:

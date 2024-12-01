@@ -1,18 +1,18 @@
-<footer class="my-4 text-body-secondary fixed-bottom offset-2">
-    <p class="mt-2 mb-2 text-body-secondary" align="center">
-    Starlink © <span id="currentYear"></span>
-        <script>
-            const startYear = 2024;
-            const currentYear = new Date().getFullYear();
-            let yearText = startYear;
-            if(currentYear > startYear) {
-                yearText += '-' + currentYear;
-            }
-            document.getElementById("currentYear").innerHTML = yearText;
-        </script>
-    </p>
-</footer>
-</div>
-<script src="../static/js/bootstrap.bundle.min.js"></script>
-<script src="../static/js/sidebars.js"></script>
-</html>
+    <footer class="pt-5 my-5 text-body-secondary border-top">
+        <p class="mt-5 mb-3 text-body-secondary" align="center">
+        Starlink © <span id="currentYear"></span>
+            <script>
+                const startYear = 2024;
+                const currentYear = new Date().getFullYear();
+                let yearText = startYear;
+                if(currentYear > startYear) {
+                    yearText += '-' + currentYear;
+                }
+                document.getElementById("currentYear").innerHTML = yearText;
+            </script>
+        </p>
+    </footer>
+  </div>
+  <script src="../static/js/bootstrap.bundle.min.js"></script>
+  <script src="../static/js/sidebars.js"></script></body>
+  </html>

@@ -1,6 +1,7 @@
 from typing import AsyncGenerator
 from uuid import uuid4
 
+from dotenv import load_dotenv
 from sqlalchemy import Column
 from sqlalchemy.dialects.postgresql import UUID as pg_UUID  # noqa
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
@@ -8,6 +9,8 @@ from sqlalchemy.orm import declarative_base, declared_attr, sessionmaker
 from contextlib import asynccontextmanager
 
 from backend.core.config import settings
+
+load_dotenv()
 
 
 class PreBase:

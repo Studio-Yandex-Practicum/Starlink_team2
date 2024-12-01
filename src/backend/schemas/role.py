@@ -1,10 +1,15 @@
 from datetime import datetime
+from uuid import uuid4
 
 from pydantic import BaseModel, PositiveInt, Extra
 
 
+class RoleDelete(BaseModel):
+    unique_id: uuid4
+
+
 class RoleBase(BaseModel):
-    role_name: str
+    title: str
 
     class Config:
         extra = Extra.forbid

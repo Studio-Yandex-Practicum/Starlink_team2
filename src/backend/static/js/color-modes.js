@@ -21,11 +21,15 @@
   }
 
   const setTheme = theme => {
-    if (theme === 'auto') {
-      document.documentElement.setAttribute('data-bs-theme', (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'))
-    } else {
-      document.documentElement.setAttribute('data-bs-theme', theme)
-    }
+    document.documentElement.setAttribute('data-bs-theme', 'dark'); // Приоритет темной темы
+    setStoredTheme(theme); // Сохраняем предпочтение, но оно игнорируется при отображении.
+  };
+
+  const storedTheme = getStoredTheme();
+  if (storedTheme){
+    setTheme(storedTheme);
+  } else {
+    setTheme('dark'); // если темы нет в localStorage, ставим темную
   }
 
   setTheme(getPreferredTheme())

@@ -1,51 +1,37 @@
 from datetime import datetime
 import os
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import Depends, Form, HTTPException, Request, status
 from fastapi.responses import HTMLResponse, RedirectResponse
-from fastapi.templating import Jinja2Templates
 from rich.console import Console
-from fastapi import APIRouter
 
-from backend.models.admin import Admin
-from backend.core.auth import get_current_user_from_cookie
-from backend.core.auth import get_current_user_from_token
-from backend.core.auth import login_for_access_token
-from backend.core.config import settings
-from backend.core.db import get_async_session
-from backend.crud import role_crud, telegramuser_crud
-from backend.schemas import (
-    RoleBase,
-    RoleCreate,
-    RoleDB,
-    TelegramUserBase,
-    TelegramUserCreate,
-    TelegramUserDB
+from .forms import LoginForm
+from .routers import main_router as router
+from backend.core.auth import (
+    get_current_user_from_cookie,
+    get_current_user_from_token,
+    login_for_access_token,
 )
+from backend.core.config import settings, templates
+from backend.core.db import AsyncSession, get_async_session
+from backend.crud import role_crud, telegramuser_crud
+from backend.models.admin import Admin
 
-
-router = APIRouter()
 console = Console()
-
-base_dir = os.path.dirname(os.path.abspath(__file__))
-template_dir = os.path.join(base_dir, '..', 'templates')
-templates = Jinja2Templates(directory=template_dir)
 
 
 @router.get("/", response_class=HTMLResponse)
-async def index(request: Request):
-    """
-    Обрабатывает запрос на главную страницу.
+async def index(request: Request) -> HTMLResponse:
+    """Обрабатывает запрос на главную страницу.
 
     :param request: Объект запроса.
     :return: HTML-ответом с контекстом страницы.
     """
     try:
         user = await get_current_user_from_cookie(request)
-    except:
+    except Exception as _:
         user = None
     context = {
         "user": user,
@@ -55,323 +41,59 @@ async def index(request: Request):
 
 
 @router.get("/private", response_class=HTMLResponse)
-async def private(
-        request: Request,
-        user: Admin = Depends(get_current_user_from_token)
-):
-    """
-    Обрабатывает запрос на приватную страницу.
+async def private(request: Request) -> HTMLResponse:
+    """Обрабатывает запрос на приватную страницу.
 
     :param request: Объект запроса.
-    :param user: Текущий пользователь (извлекается из токена).
     :return: HTML-ответом с контекстом страницы.
         Возвращает 403 (Forbidden) если пользователь не авторизован.
     """
+    try:
+        user = await get_current_user_from_cookie(request)
+    except Exception as _:
+        user = None
     context = {
         "user": user,
-        "request": request
+        "request": request,
     }
+    print(user)
+    print('-----')
+    print(context)
     return templates.TemplateResponse("private.html", context)
 
 
 @router.get("/dashboard", response_class=HTMLResponse)
-async def dashboard(
-        request: Request,
-        user: Admin = Depends(get_current_user_from_token)
-):
-    """
-    Обрабатывает запрос на страницу управления ботом.
+async def dashboard(request: Request) -> HTMLResponse:
+    """Обрабатывает запрос на страницу управления ботом.
 
-    :param request: Объект запроса.
-    :param user: Текущий пользователь (извлекается из токена).
+    Args:
+        request: Объект запроса.
+
+    Returns:
+        HTML-ответом с контекстом страницы.
+
     """
+    try:
+        user = await get_current_user_from_cookie(request)
+    except Exception as _:
+        user = None
     context = {
         "user": user,
-        "view_name": str(request.url).split('/')[-1],
-        "request": request
+        "request": request,
     }
     return templates.TemplateResponse("dashboard.html", context)
 
 
-@router.get(
-    "/roles",
-    response_class=HTMLResponse,
-    response_model=list[RoleDB],
-    response_model_exclude_none=True
-)
-async def roles_view(
-        request: Request,
-        session: AsyncSession = Depends(get_async_session),
-        user: Admin = Depends(get_current_user_from_token)
-):
-    """
-    Обрабатывает запрос на страницу Роли.
-
-    :param request: Объект запроса.
-    :param session: Объект текущей сессии.
-    :param user: Текущий пользователь (извлекается из токена).
-    """
-    roles = await role_crud.get_multi(session)
-
-    context = {
-        "user": user,
-        "request": request,
-        "view_name": str(request.url).split('/')[-1],
-        "roles": roles
-    }
-    return templates.TemplateResponse("roles.html", context)
-
-
-@router.post(
-    "/roles",
-    response_class=HTMLResponse,
-)
-async def roles_create(
-        request: Request,
-        role_title=Form(),
-        session: AsyncSession = Depends(get_async_session),
-        user: Admin = Depends(get_current_user_from_token),
-):
-    """
-    Обрабатывает запрос на страницу Роли.
-    :param request: Объект запроса.
-    :param role_title: Название Роли.
-    :param session: Объект текущей сессии.
-    :param user: Текущий пользователь (извлекается из токена).
-    """
-    errors = set()
-
-    try:
-        await role_crud.create({"role_title": role_title}, session)
-    except IntegrityError:
-        errors.add(f'Роль "{role_title}" уже есть в базе!')
-        await session.rollback()
-        await session.commit()
-
-    roles = await role_crud.get_multi(session)
-
-    context = {
-        "user": user,
-        "request": request,
-        "view_name": str(request.url).split('/')[-1],
-        "roles": roles,
-        "errors": errors
-    }
-    return templates.TemplateResponse("roles.html", context)
-
-
-@router.get(
-    "/roles/{unique_id}",
-    response_class=HTMLResponse,
-    response_model=RoleCreate
-)
-async def role_view(
-        request: Request,
-        unique_id: str,
-        session: AsyncSession = Depends(get_async_session),
-        user: Admin = Depends(get_current_user_from_token)
-):
-    """
-    Обрабатывает запрос на страницу Редактирование Роли.
-
-    :param request: Объект запроса.
-    :param unique_id: ID Роли
-    :param session: Объект текущей сессии.
-    :param user: Текущий пользователь (извлекается из токена).
-     """
-
-    role = await role_crud.get(unique_id, session)
-
-    context = {
-        "user": user,
-        "request": request,
-        "role": role,
-    }
-    return templates.TemplateResponse("role.html", context)
-
-
-@router.post(
-    "/roles/{unique_id}",
-    response_class=RedirectResponse,
-    response_model=RoleCreate
-)
-async def role_edit(
-        unique_id: str,
-        role_title=Form(),
-        session: AsyncSession = Depends(get_async_session),
-):
-    """
-    Обрабатывает запрос на страницу Редактирование Роли.
-
-    :param unique_id: ID Роли
-    :param role_title: Название Роли
-    :param session: Объект текущей сессии.
-     """
-
-    role = await role_crud.get(unique_id, session)
-    await role_crud.update(
-        role,
-        {
-            'role_title': role_title,
-            'edited_at': datetime.now()
-        },
-        session
-    )
-    return RedirectResponse('/roles', status_code=302)
-
-
-@router.post(
-    "/roles/delete",
-    response_class=RedirectResponse,
-)
-async def role_delete(
-        unique_id: str = Form(),
-        session: AsyncSession = Depends(get_async_session),
-):
-    """
-    Обрабатывает запрос на страницу удаление Роли.
-
-    :param unique_id: ID Роли
-    :param session: Объект текущей сессии.
-     """
-    role = await role_crud.get(unique_id, session)
-    await role_crud.remove(
-        role,
-        session
-    )
-    return RedirectResponse('/roles', status_code=302)
-
-
-@router.get(
-    "/users",
-    response_class=HTMLResponse,
-    response_model=list[TelegramUserDB],
-    response_model_exclude_none=True
-)
-async def users_view(
-        request: Request,
-        session: AsyncSession = Depends(get_async_session),
-        user: Admin = Depends(get_current_user_from_token)
-):
-    """
-    Обрабатывает запрос на страницу Пользователи.
-
-    :param request: Объект запроса.
-    :param session: Объект текущей сессии.
-    :param user: Текущий пользователь (извлекается из токена).
-    """
-    tgusers = await telegramuser_crud.get_multi(session)
-
-    context = {
-        "user": user,
-        "request": request,
-        "view_name": str(request.url).split('/')[-1],
-        "tgusers": tgusers
-    }
-    return templates.TemplateResponse("users.html", context)
-
-
-@router.get(
-    "/users/{unique_id}",
-    response_class=HTMLResponse,
-    response_model=TelegramUserCreate
-)
-async def user_view(
-        request: Request,
-        unique_id: str,
-        session: AsyncSession = Depends(get_async_session),
-        user: Admin = Depends(get_current_user_from_token)
-):
-    """
-    Обрабатывает запрос на страницу Редактирование Пользователя.
-
-    :param request: Объект запроса.
-    :param unique_id: ID Роли
-    :param session: Объект текущей сессии.
-    :param user: Текущий пользователь (извлекается из токена).
-     """
-
-    tguser = await telegramuser_crud.get(unique_id, session)
-    roles = await role_crud.get_multi(session)
-
-    context = {
-        "user": user,
-        "request": request,
-        "tguser": tguser,
-        "roles": roles
-    }
-    return templates.TemplateResponse("user.html", context)
-
-
-@router.post(
-    "/users/{unique_id}",
-    response_class=RedirectResponse,
-    response_model=TelegramUserCreate
-)
-async def user_edit(
-        unique_id: str,
-        first_name=Form(None),
-        last_name=Form(None),
-        email=Form(None),
-        role_title=Form(None),
-        session: AsyncSession = Depends(get_async_session),
-):
-    """
-    Обрабатывает запрос на страницу Редактирование Пользователя.
-
-    :param unique_id: ID Пользователя
-    :param first_name: Имя Пользователя
-    :param last_name: Фамилия Пользователя
-    :param email: Электронная почта Пользователя
-    :param role_title: Роль Пользователя
-    :param session: Объект текущей сессии.
-     """
-
-    tguser = await telegramuser_crud.get(unique_id, session)
-    #  СОЗДАТЬ ПОЧТУ И РОЛЬ ОТДЕЛЬНО, И ПРИСВОИТЬ UNIQUE_ID ПОЛЬЗОВАТЕЛЮ
-    await telegramuser_crud.update(
-        tguser,
-        {
-            'first_name': first_name,
-            'last_name': last_name,
-            'edited_at': datetime.now()
-            # 'email': email,
-            # 'role_title': role_title
-        },
-        session
-    )
-    return RedirectResponse('/users', status_code=302)
-
-
-@router.post(
-    "/users/delete",
-    response_class=RedirectResponse,
-)
-async def user_delete(
-        unique_id: str = Form(),
-        session: AsyncSession = Depends(get_async_session),
-):
-    """
-    Обрабатывает запрос на удаление Пользователя.
-
-    :param unique_id: ID Пользователя
-    :param session: Объект текущей сессии.
-     """
-    tguser = await telegramuser_crud.get(unique_id, session)
-    await telegramuser_crud.remove(
-        tguser,
-        session
-    )
-    return RedirectResponse('/users', status_code=302)
-
-
 @router.get("/auth/login", response_class=HTMLResponse)
-async def login_get(request: Request):
-    """
-    Обрабатывает запрос на страницу входа в систему (GET).
+async def login_get(request: Request) -> HTMLResponse:
+    """Обрабатывает запрос на страницу входа в систему (GET).
 
-    :param request: Объект запроса.
-    :return: HTML-ответом с контекстом страницы.
+    Args:
+        request: Объект запроса.
+
+    Returns:
+        HTML-ответом с контекстом страницы.
+
     """
     context = {
         "request": request,
@@ -379,40 +101,19 @@ async def login_get(request: Request):
     return templates.TemplateResponse("login.html", context)
 
 
-class LoginForm:
-    """
-    Класс для обработки формы входа в систему.
-    """
-
-    def __init__(self, request: Request):
-        self.request: Request = request
-        self.errors: List = []
-        self.username: Optional[str] = None
-        self.password: Optional[str] = None
-
-    async def load_data(self):
-        form = await self.request.form()
-        self.username = form.get("username")
-        self.password = form.get("password")
-
-    async def is_valid(self):
-        if not self.username or not (self.username.__contains__("@")):
-            self.errors.append("Email is required")
-        if not self.password or not len(self.password) >= 4:
-            self.errors.append("A valid password is required")
-        if not self.errors:
-            return True
-        return False
-
-
 @router.post("/auth/login", response_class=HTMLResponse)
-async def login_post(request: Request):
-    """
-    Обрабатывает запрос на вход в систему (POST).
+async def login_post(
+    request: Request,
+) -> templates.TemplateResponse:
+    """Обрабатывает запрос на вход в систему (POST).
 
-    :param request: Объект запроса.
-    :return: HTML-ответом с контекстом страницы входа,
+    Args:
+        request: Объект запроса.
+
+    Returns:
+        HTML-ответ с контекстом страницы входа,
         или RedirectResponse на dashboard.
+
     """
     form = LoginForm(request)
     await form.load_data()
@@ -431,12 +132,15 @@ async def login_post(request: Request):
 
 
 @router.get("/auth/logout", response_class=HTMLResponse)
-async def login_get():
-    """
-    Обрабатывает запрос на выход из системы.
+async def login_get() -> RedirectResponse:
+    """Обрабатывает запрос на выход из системы.
 
-    :param request: Объект запроса.
-    :return: Переадресация на страницу входа.
+    Args:
+        request: Объект запроса.
+
+    Returns:
+        Переадресация на страницу входа.
+
     """
     response = RedirectResponse(url="/auth/login")
     response.delete_cookie(settings.COOKIE_NAME)

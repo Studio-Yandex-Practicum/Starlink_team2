@@ -1,29 +1,36 @@
 import datetime as dt
 from typing import Dict, Optional
-from fastapi import (APIRouter, Depends, HTTPException,
-                     Request, Response, status)
+
+from fastapi import (
+    APIRouter,
+    Depends,
+    HTTPException,
+    Request,
+    Response,
+    status,
+)
 from fastapi.openapi.models import OAuthFlows as OAuthFlowsModel
 from fastapi.security import OAuth2, OAuth2PasswordRequestForm
 from fastapi.security.utils import get_authorization_scheme_param
 from jose import JWTError, jwt
-from passlib.handlers.sha2_crypt import sha512_crypt as crypto
-from rich import print
 from passlib.context import CryptContext
+from passlib.handlers.sha2_crypt import sha512_crypt as crypto
+import rich
 
-from backend.models.admin import Admin
-from backend.crud.admin import get_user
 from backend.core.config import settings
-
+from backend.crud.admin import get_user
+from backend.models.admin import Admin
 
 router = APIRouter()
 
 
 class OAuth2PasswordBearerWithCookie(OAuth2):
-    """
-    Этот класс взят напрямую из FastAPI.
+    """Этот класс взят напрямую из FastAPI.
+
     Единственное изменение — аутентификация берется из cookie,
         а не из заголовка!
     """
+
     def __init__(
         self,
         tokenUrl: str,
@@ -31,11 +38,16 @@ class OAuth2PasswordBearerWithCookie(OAuth2):
         scopes: Optional[Dict[str, str]] = None,
         description: Optional[str] = None,
         auto_error: bool = True,
-    ):
+    ) -> None:
+        """Build an instance of OAuth2PasswordBearerWithCookie."""
         if not scopes:
             scopes = {}
-        flows = OAuthFlowsModel(password={"tokenUrl": tokenUrl,
-                                          "scopes": scopes})
+        flows = OAuthFlowsModel(
+            password={
+                "tokenUrl": tokenUrl,
+                "scopes": scopes,
+            },
+        )
         super().__init__(
             flows=flows,
             scheme_name=scheme_name,
@@ -44,22 +56,24 @@ class OAuth2PasswordBearerWithCookie(OAuth2):
         )
 
     async def __call__(self, request: Request) -> Optional[str]:
-        """
-        ВАЖНО: эта строка отличается от FastAPI. Здесь мы используем
+        """ВАЖНО: эта строка отличается от FastAPI.
+
+        Здесь мы используем
         `request.cookies.get(settings.COOKIE_NAME)` вместо
-        `request.headers.get("Authorization")
+        `request.headers.get("Authorization").
         """
-        authorization: str = request.cookies.get(settings.COOKIE_NAME)
+        authorization: Optional[str] = request.cookies.get(
+            settings.COOKIE_NAME,
+        )
         scheme, param = get_authorization_scheme_param(authorization)
         if not authorization or scheme.lower() != "bearer":
             if self.auto_error:
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Not authenticated",
+                    detail=settings.NOT_AUTHENTICATED,
                     headers={"WWW-Authenticate": "Bearer"},
                 )
-            else:
-                return None
+            return None
         return param
 
 
@@ -67,22 +81,23 @@ oauth2_scheme = OAuth2PasswordBearerWithCookie(tokenUrl="token")
 
 
 def create_access_token(data: Dict) -> str:
+    """Создание токена."""
     to_encode = data.copy()
-    expire = dt.datetime.utcnow() + dt.timedelta(
+    expire = dt.datetime.now() + dt.timedelta(
         minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(
+    return jwt.encode(
         to_encode,
         settings.SECRET_KEY,
-        algorithm=settings.ALGORITHM
+        algorithm=settings.ALGORITHM,
     )
-    return encoded_jwt
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 async def authenticate_user(username: str, plain_password: str) -> Admin:
+    """Аутентификация пользователя."""
     user = await get_user(username)
     if not user:
         return False
@@ -92,10 +107,12 @@ async def authenticate_user(username: str, plain_password: str) -> Admin:
 
 
 async def decode_token(token: str) -> Admin:
+    """Декодирование токена."""
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials."
+        detail="Could not validate credentials.",
     )
+    """Декодирование токенаю"""
     token = token.removeprefix("Bearer").strip()
     try:
         payload = jwt.decode(token, settings.SECRET_KEY,
@@ -104,42 +121,39 @@ async def decode_token(token: str) -> Admin:
         if username is None:
             raise credentials_exception
     except JWTError as e:
-        print(e)
+        rich.print(e)
         raise credentials_exception
-
-    user = await get_user(username)
-    return user
+    return await get_user(username)
 
 
 async def get_current_user_from_token(token: str = Depends(oauth2_scheme)) -> Admin:
-    """
-    Получите текущего пользователя из файлов cookie в запросе.
+    """Получите текущего пользователя из файлов cookie в запросе.
+
     Используйте эту функцию, когда хотите заблокировать маршрут, чтобы только
     аутентифицированные пользователи могли видеть доступ к маршруту.
     """
-    user = await decode_token(token)
-    return user
+    return await decode_token(token)
 
 
 async def get_current_user_from_cookie(request: Request) -> Admin:
-    """
-    Получите текущего пользователя из файлов cookie в запросе.
+    """Получите текущего пользователя из файлов cookie в запросе.
+
     Используйте эту функцию из других маршрутов,
         чтобы получить текущего пользователя.
     Хорошо для представлений,
         которые должны работать как для вошедших в систему,
             так и для не вошедших в систему пользователей.
     """
-    token = request.cookies.get(settings.COOKIE_NAME)
-    user = await decode_token(token)
-    return user
+    token = request.cookies.get(settings.COOKIE_NAME, '')
+    return await decode_token(token)
 
 
 @router.post("/token")
 async def login_for_access_token(
     response: Response,
-    form_data: OAuth2PasswordRequestForm = Depends()
+    form_data: OAuth2PasswordRequestForm = Depends(),
 ) -> Dict[str, str]:
+    """Логин с токеном."""
     user = await authenticate_user(form_data.username, form_data.password)
     if not user:
         raise HTTPException(
@@ -150,6 +164,6 @@ async def login_for_access_token(
     response.set_cookie(
         key=settings.COOKIE_NAME,
         value=f"Bearer {access_token}",
-        httponly=True
+        httponly=True,
     )
     return {settings.COOKIE_NAME: access_token, "token_type": "bearer"}

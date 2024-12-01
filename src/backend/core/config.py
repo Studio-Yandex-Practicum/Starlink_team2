@@ -1,7 +1,14 @@
+import os
+
 from dotenv import load_dotenv
+from fastapi.templating import Jinja2Templates
 from pydantic_settings import BaseSettings
 
 load_dotenv()
+
+base_dir = os.path.dirname(os.path.abspath(__file__))
+template_dir = os.path.join(base_dir, '..', 'templates')
+templates = Jinja2Templates(directory=template_dir)
 
 
 class Settings(BaseSettings):
@@ -50,6 +57,12 @@ class Settings(BaseSettings):
     COOKIE_NAME: str = "access_token"
     SECRET_KEY: str = "secret-key"
     ACCESS_TOKEN_EXPIRE_MINUTES = 30
+    NOT_AUTHENTICATED: str
+
+    ROLES_PREFIX: str = '/roles'
+    ROLES_TAGS: list = ['Роли', 'Roles']
+    USERS_PREFIX: str = '/users'
+    USERS_TAGS: list = ['Пользователи', 'Users']
 
     @property
     def postgres_url(self):
