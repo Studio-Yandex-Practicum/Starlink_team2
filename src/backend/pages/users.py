@@ -60,12 +60,14 @@ async def user_view(
 
     tguser = await telegramuser_crud.get(unique_id)
     roles = await role_crud.get_multi()
+    emails = await employee_email_crud.get_free_emails()
 
     context = {
         "user": user,
         "request": request,
         "tguser": tguser,
-        "roles": roles
+        "roles": roles,
+        "emails": emails
     }
     return templates.TemplateResponse("user.html", context)
 
@@ -80,7 +82,7 @@ async def user_edit(
         unique_id: str,
         first_name=Form(None),
         last_name=Form(None),
-        email=Form(None),
+        email_id=Form(None),
         role_id=Form(None),
         user: Admin = Depends(get_current_user_from_token)
 ):
@@ -90,34 +92,20 @@ async def user_edit(
     :param unique_id: ID Пользователя
     :param first_name: Имя Пользователя
     :param last_name: Фамилия Пользователя
-    :param email: Электронная почта Пользователя
-    :param role_id: ID Роли Пользователяv
+    :param email_id: ID Электронной почты Пользователя
+    :param role_id: ID Роли Пользователя
     :param user: Текущий пользователь (извлекается из токена).
      """
 
-    tguser = await telegramuser_crud.get(unique_id)
-
-    current_email_id = tguser.email_id
-
-    existing_email = await employee_email_crud.get_email(email)
-    if existing_email:
-        new_email = existing_email
-    else:
-        new_email = await employee_email_crud.create(
-            EmployeeEmailBase(title=email)
+    await telegramuser_crud.update(
+        await telegramuser_crud.get(unique_id),
+        TelegramUserEdit(
+            first_name=first_name,
+            last_name=last_name,
+            role_id=role_id,
+            email_id=email_id
         )
-
-    tguser.email_id = new_email.unique_id
-    tguser.first_name = first_name
-    tguser.last_name = last_name
-    tguser.role_id = role_id
-
-    if current_email_id and current_email_id != new_email.unique_id:
-        current_email = await employee_email_crud.get(current_email_id)
-        if current_email:
-            linked_users = await telegramuser_crud.get_linked_users(current_email_id)
-            if not linked_users.scalars().first():
-                await employee_email_crud.remove(current_email)
+    )
 
     return RedirectResponse('/users', status_code=302)
 

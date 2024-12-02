@@ -49,5 +49,12 @@ class EmployeeEmailCRUD(
             )
         return email.scalars().first()
 
+    async def get_free_emails(self) -> list[EmployeeEmail]:
+        """Получение всех свободных почт"""
+        async with get_async_session() as session:
+            return (await session.execute(
+                select(self.model).where(self.model.users == None)
+            )).scalars().all()
+
 
 employee_email_crud = EmployeeEmailCRUD(EmployeeEmail)

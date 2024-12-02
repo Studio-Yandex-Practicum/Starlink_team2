@@ -53,6 +53,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         for field in obj_data:
             if field in update_obj:
                 setattr(db_obj, field, update_obj[field])
+        db_obj.edited_at = datetime.now()
         async with get_async_session() as session:
             session.add(db_obj)
             await session.commit()
