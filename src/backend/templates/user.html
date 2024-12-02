@@ -1,5 +1,6 @@
-{% include 'header.html' %}
-<!--НАЗВАНИЕ СТРАНИЦЫ-->
+{% extends "base.html" %}
+{% block title %}{{ tguser.username }}{% endblock %}
+{% block content %}
 <div class="d-flex align-items-center pb-3 mb-5 border-bottom">
   <span class="fs-4">Редактирование пользователя {{ tguser.last_name }} {{ tguser.first_name }} ({{ tguser.username }})</span>
 </div>
@@ -33,4 +34,4 @@
   </div>
 </form>
 </div>
-{% include 'footer.html' %}
+{% endblock %}

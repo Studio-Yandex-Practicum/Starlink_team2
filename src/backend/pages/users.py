@@ -19,22 +19,19 @@ router = APIRouter()
 @router.get(
     "/",
     response_class=HTMLResponse,
-    # response_model=list[TelegramUserDB],
     response_model_exclude_none=True
 )
 async def users_view(
         request: Request,
-        session: AsyncSession = Depends(get_async_session),
         user: Admin = Depends(get_current_user_from_token)
 ):
     """
     Обрабатывает запрос на страницу Пользователи.
 
     :param request: Объект запроса.
-    :param session: Объект текущей сессии.
     :param user: Текущий пользователь (извлекается из токена).
     """
-    tgusers = await telegramuser_crud.get_multi(session)
+    tgusers = await telegramuser_crud.get_multi()
 
     context = {
         "user": user,
@@ -47,12 +44,10 @@ async def users_view(
 @router.get(
     "/{unique_id}",
     response_class=HTMLResponse,
-    # response_model=TelegramUserCreate
 )
 async def user_view(
         request: Request,
         unique_id: str,
-        session: AsyncSession = Depends(get_async_session),
         user: Admin = Depends(get_current_user_from_token)
 ):
     """
@@ -60,12 +55,11 @@ async def user_view(
 
     :param request: Объект запроса.
     :param unique_id: ID Роли
-    :param session: Объект текущей сессии.
     :param user: Текущий пользователь (извлекается из токена).
      """
 
-    tguser = await telegramuser_crud.get(unique_id, session)
-    roles = await role_crud.get_multi(session)
+    tguser = await telegramuser_crud.get(unique_id)
+    roles = await role_crud.get_multi()
 
     context = {
         "user": user,
@@ -88,7 +82,7 @@ async def user_edit(
         last_name=Form(None),
         email=Form(None),
         role_id=Form(None),
-        session: AsyncSession = Depends(get_async_session),
+        user: Admin = Depends(get_current_user_from_token)
 ):
     """
     Обрабатывает запрос на страницу Редактирование Пользователя.
@@ -97,20 +91,20 @@ async def user_edit(
     :param first_name: Имя Пользователя
     :param last_name: Фамилия Пользователя
     :param email: Электронная почта Пользователя
-    :param role_id: ID Роли Пользователя
-    :param session: Объект текущей сессии.
+    :param role_id: ID Роли Пользователяv
+    :param user: Текущий пользователь (извлекается из токена).
      """
 
-    tguser = await telegramuser_crud.get(unique_id, session)
+    tguser = await telegramuser_crud.get(unique_id)
 
     current_email_id = tguser.email_id
 
-    existing_email = await employee_email_crud.get_email(session, email)
+    existing_email = await employee_email_crud.get_email(email)
     if existing_email:
         new_email = existing_email
     else:
         new_email = await employee_email_crud.create(
-            EmployeeEmailBase(title=email), session
+            EmployeeEmailBase(title=email)
         )
 
     tguser.email_id = new_email.unique_id
@@ -119,15 +113,11 @@ async def user_edit(
     tguser.role_id = role_id
 
     if current_email_id and current_email_id != new_email.unique_id:
-        current_email = await employee_email_crud.get(current_email_id, session)
+        current_email = await employee_email_crud.get(current_email_id)
         if current_email:
-            linked_users = await session.execute(
-                select(TelegramUser).filter(TelegramUser.email_id == current_email_id)
-            )
+            linked_users = await telegramuser_crud.get_linked_users(current_email_id)
             if not linked_users.scalars().first():
-                await employee_email_crud.remove(current_email, session)
-
-    await session.commit()
+                await employee_email_crud.remove(current_email)
 
     return RedirectResponse('/users', status_code=302)
 
@@ -138,17 +128,14 @@ async def user_edit(
 )
 async def user_delete(
         unique_id: str,
-        session: AsyncSession = Depends(get_async_session),
+        user: Admin = Depends(get_current_user_from_token)
 ):
     """
     Обрабатывает запрос на удаление Пользователя.
 
     :param unique_id: ID Пользователя
-    :param session: Объект текущей сессии.
+    :param user: Текущий пользователь (извлекается из токена).
      """
-    tguser = await telegramuser_crud.get(unique_id, session)
-    await telegramuser_crud.remove(
-        tguser,
-        session
-    )
+    tguser = await telegramuser_crud.get(unique_id)
+    await telegramuser_crud.remove(tguser)
     return RedirectResponse('/users', status_code=302)

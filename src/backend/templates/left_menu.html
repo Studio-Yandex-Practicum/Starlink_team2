@@ -5,20 +5,17 @@
       </a>
     </li>
     <li>
-        <!-- ВРЕМЕННАЯ ССЫЛКА, ЗАМЕНИТЬ -->
-      <a href="{{ url_for('dashboard') }}" class="nav-link text-white">
+      <a href="#" class="nav-link text-white">
         Квизы
       </a>
     </li>
     <li>
-        <!-- ВРЕМЕННАЯ ССЫЛКА, ЗАМЕНИТЬ -->
-      <a href="{{ url_for('dashboard') }}" class="nav-link text-white">
-        Orders
+      <a href="{{ url_for ('get_menus') }}" class="nav-link text-white {% if request.url==url_for('get_menus')%}active{% endif %}">
+        Построитель меню
       </a>
     </li>
     <li>
-        <!-- ВРЕМЕННАЯ ССЫЛКА, ЗАМЕНИТЬ -->
-      <a href="{{ url_for('dashboard') }}" class="nav-link text-white">
+      <a href="#" class="nav-link text-white">
         Products
       </a>
     </li>

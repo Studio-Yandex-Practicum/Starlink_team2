@@ -20,8 +20,9 @@ async def get_user(username: str) -> Admin:
     """
     async with AsyncSessionLocal() as session:
         try:
-            query = select(Admin).filter(Admin.username == username)
-            result = await session.execute(query)
+            result = await session.execute(
+                select(Admin).filter(Admin.username == username),
+            )
             return result.scalar_one_or_none()
         except Exception as e:
             logger.error(f"Error fetching user {username}: {e}")

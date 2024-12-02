@@ -1,5 +1,6 @@
-{% include 'header.html' %}
-<!--НАЗВАНИЕ СТРАНИЦЫ-->
+{% extends "base.html" %}
+{% block title %}{{ role.title }}{% endblock %}
+{% block content %}
 <div class="d-flex align-items-center pb-3 mb-5 border-bottom">
   <span class="fs-4">Редактирование роли "{{ role.title }}"</span>
 </div>
@@ -16,4 +17,4 @@
   </div>
 </form>
 </div>
-{% include 'footer.html' %}
+{% endblock %}

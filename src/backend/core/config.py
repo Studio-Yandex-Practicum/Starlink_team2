@@ -63,6 +63,8 @@ class Settings(BaseSettings):
     ROLES_TAGS: list = ['Роли', 'Roles']
     USERS_PREFIX: str = '/users'
     USERS_TAGS: list = ['Пользователи', 'Users']
+    MENUS_PREFIX: str = '/menus'
+    MENUS_TAGS: list = ['Построитель меню', 'Menus']
 
     @property
     def postgres_url(self):

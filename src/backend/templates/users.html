@@ -1,5 +1,6 @@
-{% include 'header.html' %}
-<!--НАЗВАНИЕ СТРАНИЦЫ-->
+{% extends "base.html" %}
+{% block title %}Пользователи{% endblock %}
+{% block content %}
 <div class="d-flex align-items-center pb-3 mb-5 border-bottom">
     <span class="fs-4">Пользователи</span>
 </div>
@@ -39,4 +40,4 @@
   </tbody>
   </table>
 </div>
-{% include 'footer.html' %}
+{% endblock %}

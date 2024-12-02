@@ -4,7 +4,7 @@ from typing import List, Optional, Union
 
 from sqlalchemy.exc import IntegrityError
 from fastapi import Depends, Form, HTTPException, Request, status
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from rich.console import Console
 
 from .forms import LoginForm
@@ -37,14 +37,18 @@ async def index(request: Request) -> HTMLResponse:
         "user": user,
         "request": request,
     }
-    return templates.TemplateResponse("login.html", context)
+    return templates.TemplateResponse("index.html", context)
 
 
 @router.get("/private", response_class=HTMLResponse)
-async def private(request: Request) -> HTMLResponse:
+async def private(
+    request: Request,
+    user: Admin = Depends(get_current_user_from_token),
+) -> HTMLResponse:
     """Обрабатывает запрос на приватную страницу.
 
     :param request: Объект запроса.
+    :param user: Текущий пользователь (извлекается из токена).
     :return: HTML-ответом с контекстом страницы.
         Возвращает 403 (Forbidden) если пользователь не авторизован.
     """
@@ -56,18 +60,19 @@ async def private(request: Request) -> HTMLResponse:
         "user": user,
         "request": request,
     }
-    print(user)
-    print('-----')
-    print(context)
     return templates.TemplateResponse("private.html", context)
 
 
 @router.get("/dashboard", response_class=HTMLResponse)
-async def dashboard(request: Request) -> HTMLResponse:
+async def dashboard(
+    request: Request,
+    user: Admin = Depends(get_current_user_from_token),
+) -> HTMLResponse:
     """Обрабатывает запрос на страницу управления ботом.
 
     Args:
         request: Объект запроса.
+        user: Текущий пользователь (извлекается из токена).
 
     Returns:
         HTML-ответом с контекстом страницы.
@@ -78,10 +83,10 @@ async def dashboard(request: Request) -> HTMLResponse:
     except Exception as _:
         user = None
     context = {
-        "user": user,
-        "request": request,
+        'user': user,
+        'request': request,
     }
-    return templates.TemplateResponse("dashboard.html", context)
+    return templates.TemplateResponse('dashboard.html', context)
 
 
 @router.get("/auth/login", response_class=HTMLResponse)
@@ -98,13 +103,13 @@ async def login_get(request: Request) -> HTMLResponse:
     context = {
         "request": request,
     }
-    return templates.TemplateResponse("login.html", context)
+    return templates.TemplateResponse("index.html", context)
 
 
 @router.post("/auth/login", response_class=HTMLResponse)
 async def login_post(
     request: Request,
-) -> templates.TemplateResponse:
+) -> Response:
     """Обрабатывает запрос на вход в систему (POST).
 
     Args:
@@ -127,8 +132,8 @@ async def login_post(
         except HTTPException:
             form.__dict__.update(msg="")
             form.__dict__.get("errors").append("Incorrect Email or Password")
-            return templates.TemplateResponse("login.html", form.__dict__)
-    return templates.TemplateResponse("login.html", form.__dict__)
+            return templates.TemplateResponse("index.html", form.__dict__)
+    return templates.TemplateResponse("index.html", form.__dict__)
 
 
 @router.get("/auth/logout", response_class=HTMLResponse)

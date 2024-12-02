@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block left_menu_menus_active %}
+active
+{% endblock left_menu_menus_active %}
+{% block content %}
+<div class="d-flex align-items-center pb-3 mb-5 border-bottom">
+  <a href="/" class="d-flex align-items-center text-body-emphasis text-decoration-none">
+    <span class="fs-4">Конструктор меню</span>
+  </a>
+</div>
+<div>
+    {% if user %}
+    <div>Количество записей = {{ count_rows }}</div>
+    {% if count_rows == 0 %}
+    <button class="btn btn-primary">
+        <a href="{{ url_for('create_menu_item_page') }}" class="text-white">Добавить пункт меню</a>
+    </button>
+    {% else %}
+    
+    {% endif %}
+{% else %}
+    <h2>You are NOT logged in :(</h2>
+    <p>
+        Hello stranger. You are not logged. Please follow the link to
+        <a href="/auth/login" class="btn">login</a>!
+    </p>
+{% endif %}
+{% endblock content %}
