@@ -67,9 +67,9 @@ class Settings(BaseSettings):
     MENUS_PREFIX: str = '/menus'
     MENUS_TAGS: list = ['Построитель меню', 'Menus']
 
-    ADMIN1_USERNAME: EmailStr
+    ADMIN1_EMAIL: EmailStr
     ADMIN1_PASSWORD: str = Field(min_length=5)
-    ADMIN2_USERNAME: EmailStr
+    ADMIN2_EMAIL: EmailStr
     ADMIN2_PASSWORD: str = Field(min_length=5)
 
     @property

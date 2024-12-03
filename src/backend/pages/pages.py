@@ -101,7 +101,7 @@ async def login_get(request: Request) -> HTMLResponse:
         user = None
     context = {
         "request": request,
-        "user": user
+        "user": user,
     }
     return templates.TemplateResponse("index.html", context)
 
@@ -136,7 +136,11 @@ async def login_post(request: Request) -> Response:
                 user = None
             return templates.TemplateResponse(
                 "index.html",
-                context={"request": request, "user": user, "form": form.__dict__}
+                context={
+                    "request": request,
+                    "user": user,
+                    "form": form.__dict__,
+                },
             )
     return templates.TemplateResponse("index.html", form.__dict__)
 

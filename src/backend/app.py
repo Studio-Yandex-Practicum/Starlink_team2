@@ -26,13 +26,13 @@ async def lifespan(app: FastAPI) -> AsyncGenerator:
             user = result.scalars().first()
             if not user:
                 user1 = Admin(
-                    username=settings.ADMIN1_USERNAME,
+                    username=settings.ADMIN1_EMAIL,
                     hashed_password=crypto.hash(
                         settings.ADMIN1_PASSWORD,
                     ),
                 )
                 user2 = Admin(
-                    username=settings.ADMIN2_USERNAME,
+                    username=settings.ADMIN2_EMAIL,
                     hashed_password=crypto.hash(
                         settings.ADMIN2_PASSWORD,
                     ),
