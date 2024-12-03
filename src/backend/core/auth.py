@@ -118,7 +118,9 @@ async def decode_token(token: str) -> Admin:
     token = token.removeprefix("Bearer").strip()
     try:
         payload = jwt.decode(
-            token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM],
+            token,
+            settings.SECRET_KEY,
+            algorithms=[settings.ALGORITHM],
         )
         username: str = payload.get("username")
         if username is None:
@@ -129,7 +131,9 @@ async def decode_token(token: str) -> Admin:
     return await get_user(username)
 
 
-async def get_current_user_from_token(token: str = Depends(oauth2_scheme)) -> Admin:
+async def get_current_user_from_token(
+    token: str = Depends(oauth2_scheme),
+) -> Admin:
     """Получите текущего пользователя из файлов cookie в запросе.
 
     Используйте эту функцию, когда хотите заблокировать маршрут, чтобы только
@@ -138,7 +142,7 @@ async def get_current_user_from_token(token: str = Depends(oauth2_scheme)) -> Ad
     return await decode_token(token)
 
 
-def get_current_user_from_cookie(request: Request) -> Admin:
+async def get_current_user_from_cookie(request: Request) -> Admin:
     """Получите текущего пользователя из файлов cookie в запросе.
 
     Используйте эту функцию из других маршрутов,
@@ -148,7 +152,7 @@ def get_current_user_from_cookie(request: Request) -> Admin:
             так и для не вошедших в систему пользователей.
     """
     token = request.cookies.get(settings.COOKIE_NAME, '')
-    return decode_token(token)
+    return await decode_token(token)
 
 
 @router.post("/token")
