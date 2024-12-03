@@ -1,23 +1,18 @@
-from datetime import datetime
-import os
-from typing import List, Optional, Union
 
-from sqlalchemy.exc import IntegrityError
-from fastapi import Depends, Form, HTTPException, Request, status
+from fastapi import Depends, HTTPException, Request, status
 from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from rich.console import Console
 
-from .forms import LoginForm
-from .routers import main_router as router
 from backend.core.auth import (
     get_current_user_from_cookie,
     get_current_user_from_token,
     login_for_access_token,
 )
 from backend.core.config import settings, templates
-from backend.core.db import AsyncSession, get_async_session
-from backend.crud import role_crud, telegramuser_crud
 from backend.models.admin import Admin
+
+from .forms import LoginForm
+from .routers import main_router as router
 
 console = Console()
 

@@ -1,11 +1,6 @@
 {% extends "base.html" %}
-{% block title %}{{ role.title }}{% endblock %}
+{% block title %}Редактирование роли "{{ role.title }}"{% endblock %}
 {% block content %}
-<div class="d-flex align-items-center pb-3 mb-5 border-bottom">
-  <span class="fs-4">Редактирование роли "{{ role.title }}"</span>
-</div>
-
-<!--КОНТЕНТ СТРАНИЦЫ-->
 <div>
     <form class="row g-3" method="post" action="{{ url_for('role_view', unique_id=role.unique_id) }}">
   <div class="col-4">

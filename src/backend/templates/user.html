@@ -1,11 +1,6 @@
 {% extends "base.html" %}
-{% block title %}{{ tguser.username }}{% endblock %}
+{% block title %}Редактирование пользователя {{ tguser.last_name }} {{ tguser.first_name }} ({{ tguser.username }}){% endblock %}
 {% block content %}
-<div class="d-flex align-items-center pb-3 mb-5 border-bottom">
-  <span class="fs-4">Редактирование пользователя {{ tguser.last_name }} {{ tguser.first_name }} ({{ tguser.username }})</span>
-</div>
-
-<!--КОНТЕНТ СТРАНИЦЫ-->
 <div class="col-sm-3">
 <form method="post" action="{{ url_for('user_edit', unique_id=tguser.unique_id) }}">
   <div class="mb-3">

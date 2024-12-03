@@ -1,8 +1,6 @@
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy_utils import EmailType
 
-from . import telegramuser_crud
 from backend.core.db import get_async_session
 from backend.crud.base import CRUDBase
 from backend.models.employee_email import EmployeeEmail
@@ -19,10 +17,11 @@ class EmployeeEmailCRUD(
             emails: list[EmployeeEmail],
             commit: bool = False,
     ) -> None | list[EmployeeEmail]:
-        """Массовое удаление эмейлов из БД."""
+        """Массовое удаление E-Mail из БД."""
+        from backend.crud import telegramuser_crud
         async with get_async_session() as session:
             for email_obj in emails:
-                tg_user = await telegram_user_crud.get_tg_user_by_using_email_id(
+                tg_user = await telegramuser_crud.get_tg_user_by_email_id(
                     session, email_obj.unique_id,
                 )
                 await session.delete(email_obj)
@@ -30,7 +29,7 @@ class EmployeeEmailCRUD(
                 if tg_user is None:
                     continue
 
-                await telegram_user_crud.remove_role_id(
+                await telegramuser_crud.remove_role_id(
                     tg_user,
                     {'role_id': None},
                     session,
@@ -42,7 +41,7 @@ class EmployeeEmailCRUD(
         return None
 
     async def get_email(self, employee_email: EmailType) -> EmployeeEmail:
-        """Получение информации по эмейлу."""
+        """Получение информации по E-Mail."""
         async with get_async_session() as session:
             email = await session.execute(
                 select(self.model).where(self.model.title == employee_email),
@@ -50,10 +49,10 @@ class EmployeeEmailCRUD(
         return email.scalars().first()
 
     async def get_free_emails(self) -> list[EmployeeEmail]:
-        """Получение всех свободных почт"""
+        """Получение всех свободных E-Mail."""
         async with get_async_session() as session:
             return (await session.execute(
-                select(self.model).where(self.model.users == None)
+                select(self.model).where(self.model.users == None),  # noqa
             )).scalars().all()
 
 

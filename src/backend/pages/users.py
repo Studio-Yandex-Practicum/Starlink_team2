@@ -1,17 +1,13 @@
-from datetime import datetime
+from uuid import UUID
 
-from fastapi import APIRouter, Depends, Form, HTTPException, Request
+from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
-from sqlalchemy import select
-from sqlalchemy.exc import IntegrityError
 
-from backend.crud import employee_email_crud, role_crud, telegramuser_crud
 from backend.core.auth import get_current_user_from_token
 from backend.core.config import templates
-from backend.core.db import AsyncSession, get_async_session
-from backend.models import Admin, TelegramUser
-from backend.schemas import EmployeeEmailBase, TelegramUserEdit
-
+from backend.crud import employee_email_crud, role_crud, telegramuser_crud
+from backend.models import Admin
+from backend.schemas import TelegramUserEdit
 
 router = APIRouter()
 
@@ -19,14 +15,13 @@ router = APIRouter()
 @router.get(
     "/",
     response_class=HTMLResponse,
-    response_model_exclude_none=True
+    response_model_exclude_none=True,
 )
 async def users_view(
         request: Request,
-        user: Admin = Depends(get_current_user_from_token)
-):
-    """
-    Обрабатывает запрос на страницу Пользователи.
+        user: Admin = Depends(get_current_user_from_token),
+) -> templates.TemplateResponse:
+    """Обрабатывает запрос на страницу Пользователи.
 
     :param request: Объект запроса.
     :param user: Текущий пользователь (извлекается из токена).
@@ -36,7 +31,7 @@ async def users_view(
     context = {
         "user": user,
         "request": request,
-        "tgusers": tgusers
+        "tgusers": tgusers,
     }
     return templates.TemplateResponse("users.html", context)
 
@@ -48,16 +43,14 @@ async def users_view(
 async def user_view(
         request: Request,
         unique_id: str,
-        user: Admin = Depends(get_current_user_from_token)
-):
-    """
-    Обрабатывает запрос на страницу Редактирование Пользователя.
+        user: Admin = Depends(get_current_user_from_token),
+) -> templates.TemplateResponse:
+    """Обрабатывает запрос на страницу Редактирование Пользователя.
 
     :param request: Объект запроса.
     :param unique_id: ID Роли
     :param user: Текущий пользователь (извлекается из токена).
-     """
-
+    """
     tguser = await telegramuser_crud.get(unique_id)
     roles = await role_crud.get_multi()
     emails = await employee_email_crud.get_free_emails()
@@ -67,7 +60,7 @@ async def user_view(
         "request": request,
         "tguser": tguser,
         "roles": roles,
-        "emails": emails
+        "emails": emails,
     }
     return templates.TemplateResponse("user.html", context)
 
@@ -76,18 +69,17 @@ async def user_view(
     "/{unique_id}",
     response_class=RedirectResponse,
     response_model=TelegramUserEdit,
-    response_model_exclude_none=True
+    response_model_exclude_none=True,
 )
 async def user_edit(
         unique_id: str,
-        first_name=Form(None),
-        last_name=Form(None),
-        email_id=Form(None),
-        role_id=Form(None),
-        user: Admin = Depends(get_current_user_from_token)
-):
-    """
-    Обрабатывает запрос на страницу Редактирование Пользователя.
+        first_name: str = Form(None),
+        last_name: str = Form(None),
+        email_id: UUID = Form(None),
+        role_id: UUID = Form(None),
+        user: Admin = Depends(get_current_user_from_token),
+) -> RedirectResponse:
+    """Обрабатывает запрос на страницу Редактирование Пользователя.
 
     :param unique_id: ID Пользователя
     :param first_name: Имя Пользователя
@@ -95,16 +87,15 @@ async def user_edit(
     :param email_id: ID Электронной почты Пользователя
     :param role_id: ID Роли Пользователя
     :param user: Текущий пользователь (извлекается из токена).
-     """
-
+    """
     await telegramuser_crud.update(
         await telegramuser_crud.get(unique_id),
         TelegramUserEdit(
             first_name=first_name,
             last_name=last_name,
             role_id=role_id,
-            email_id=email_id
-        )
+            email_id=email_id,
+        ),
     )
 
     return RedirectResponse('/users', status_code=302)
@@ -116,14 +107,14 @@ async def user_edit(
 )
 async def user_delete(
         unique_id: str,
-        user: Admin = Depends(get_current_user_from_token)
-):
-    """
-    Обрабатывает запрос на удаление Пользователя.
+        user: Admin = Depends(get_current_user_from_token),
+) -> RedirectResponse:
+    """Обрабатывает запрос на удаление Пользователя.
 
-    :param unique_id: ID Пользователя
+    :param unique_id: ID Пользователя.
     :param user: Текущий пользователь (извлекается из токена).
-     """
+    :return: RedirectResponse.
+    """
     tguser = await telegramuser_crud.get(unique_id)
     await telegramuser_crud.remove(tguser)
     return RedirectResponse('/users', status_code=302)

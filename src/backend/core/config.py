@@ -67,7 +67,8 @@ class Settings(BaseSettings):
     MENUS_TAGS: list = ['Построитель меню', 'Menus']
 
     @property
-    def postgres_url(self):
+    def postgres_url(self) -> str:
+        """Url для подключения к базе данных PostgreSQL."""
         return (f'postgresql+asyncpg://{self.postgres_user}:{self.postgres_password}@'
                 f'{self.postgres_host}:{self.postgres_port}/{self.postgres_db}')
 

@@ -5,7 +5,6 @@ from uuid import uuid4
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.core.db import Base, get_async_session
 
@@ -27,11 +26,14 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         """Получение объекта ио ID."""
         async with get_async_session() as session:
             db_obj = await session.execute(
-                select(self.model).where(self.model.unique_id == obj_id),
+                select(self.model).where(self.model.unique_id == obj_id),  # noqa
             )
         return db_obj.scalars().first()
 
-    async def create(self, obj_in_data) -> list[ModelType]:
+    async def create(
+            self, obj_in_data: CreateSchemaType,
+    ) -> list[ModelType]:
+        """Создание нового объекта модели."""
         async with get_async_session() as session:
             db_obj = self.model(**obj_in_data.dict())
             session.add(db_obj)
@@ -45,7 +47,9 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             db_objs = await session.execute(select(self.model))
         return db_objs.scalars().all()
 
-    async def update(self, db_obj: ModelType, obj_in: UpdateSchemaType) -> ModelType:
+    async def update(
+            self, db_obj: ModelType, obj_in: UpdateSchemaType,
+    ) -> ModelType:
         """Обновление объекта в БД."""
         obj_data = jsonable_encoder(db_obj)
         update_obj = obj_in.dict(exclude_unset=True)

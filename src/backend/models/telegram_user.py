@@ -4,7 +4,6 @@ from sqlalchemy.orm import relationship
 
 from backend.core.config import settings
 from backend.models.base import AbstractModelForTime
-from backend.models.employee_email import EmployeeEmail
 from backend.models.role import Role
 
 
