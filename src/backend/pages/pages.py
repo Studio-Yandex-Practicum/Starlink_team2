@@ -95,16 +95,19 @@ async def login_get(request: Request) -> HTMLResponse:
         HTML-ответом с контекстом страницы.
 
     """
+    try:
+        user = await get_current_user_from_cookie(request)
+    except Exception as _:
+        user = None
     context = {
         "request": request,
+        "user": user
     }
     return templates.TemplateResponse("index.html", context)
 
 
 @router.post("/auth/login", response_class=HTMLResponse)
-async def login_post(
-    request: Request,
-) -> Response:
+async def login_post(request: Request) -> Response:
     """Обрабатывает запрос на вход в систему (POST).
 
     Args:
@@ -127,7 +130,14 @@ async def login_post(
         except HTTPException:
             form.__dict__.update(msg="")
             form.__dict__.get("errors").append("Incorrect Email or Password")
-            return templates.TemplateResponse("index.html", form.__dict__)
+            try:
+                user = await get_current_user_from_cookie(request)
+            except Exception as _:
+                user = None
+            return templates.TemplateResponse(
+                "index.html",
+                context={"request": request, "user": user, "form": form.__dict__}
+            )
     return templates.TemplateResponse("index.html", form.__dict__)
 
 
@@ -142,6 +152,6 @@ async def login_get() -> RedirectResponse:
         Переадресация на страницу входа.
 
     """
-    response = RedirectResponse(url="/auth/login")
+    response = RedirectResponse(url="/", status_code=302)
     response.delete_cookie(settings.COOKIE_NAME)
     return response
