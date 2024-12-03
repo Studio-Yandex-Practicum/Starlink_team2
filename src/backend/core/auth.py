@@ -129,13 +129,13 @@ async def decode_token(token: str) -> Admin:
     return await get_user(username)
 
 
-def get_current_user_from_token(token: str = Depends(oauth2_scheme)) -> Admin:
+async def get_current_user_from_token(token: str = Depends(oauth2_scheme)) -> Admin:
     """Получите текущего пользователя из файлов cookie в запросе.
 
     Используйте эту функцию, когда хотите заблокировать маршрут, чтобы только
     аутентифицированные пользователи могли видеть доступ к маршруту.
     """
-    return decode_token(token)
+    return await decode_token(token)
 
 
 def get_current_user_from_cookie(request: Request) -> Admin:

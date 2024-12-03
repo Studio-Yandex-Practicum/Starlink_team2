@@ -32,3 +32,12 @@ async def get_roles() -> Optional[list[Role]]:
         if items:
             return items.scalars().all()
         return None
+
+
+async def create_roles() -> None:
+    """Создание ролей."""
+    async with get_async_session() as session:
+        session.add(Role(role_name='junior'))
+        session.add(Role(role_name='middle'))
+        session.add(Role(role_name='senior'))
+        await session.commit()
