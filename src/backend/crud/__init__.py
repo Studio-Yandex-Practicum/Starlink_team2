@@ -1,0 +1,1 @@
+from .menu_builder import menu_builder_crud as menu_builder_crud # noqa

@@ -10,7 +10,7 @@ from bot.utils.logger import get_logger
 
 async def run_fastapi() -> None:
     """Запуск fastapi."""
-    config = uvicorn.Config(app='backend.app:app', host='0.0.0.0', port=8000)
+    config = uvicorn.Config(proxy_headers=True, app='backend.app:app', host='0.0.0.0', port=8000)
     server = uvicorn.Server(config=config)
     await server.serve()
 

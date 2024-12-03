@@ -1,13 +1,14 @@
 from pathlib import Path
+from typing import Optional
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Form, Request, UploadFile
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+import aiofiles
 
 from backend.core.auth import get_current_user_from_token
-from backend.crud.menu_builder import count_rows, get_roles, menus_folders, create_roles
-from backend.models.admin import Admin 
-
+from backend.crud import menu_builder_crud
+from backend.models.admin import Admin
 
 router = APIRouter()
 BASE_DIR = Path(__file__).parent.parent
@@ -15,26 +16,26 @@ FOLDER_TEMPLATES = 'templates'
 templates = Jinja2Templates(directory=BASE_DIR / FOLDER_TEMPLATES)
 
 
-@router.get('/menus', response_class=HTMLResponse)
-async def get_menus(
+@router.get('/menu', response_class=HTMLResponse)
+async def menu_view(
     request: Request,
     user: Admin = Depends(get_current_user_from_token),
 ) -> HTMLResponse:
     """Отображение страницы с сгенерированным меню."""
-    count = await count_rows()
+    count = await menu_builder_crud.count_rows()
     context = {'request': request, 'user': user, 'count_rows': count}
     return templates.TemplateResponse('menus.html', context)
 
 
-@router.get('/munus/create', response_class=HTMLResponse)
+@router.get('/create', response_class=HTMLResponse)
 async def menu_item_page(
     request: Request,
     user: Admin = Depends(get_current_user_from_token),
 ) -> HTMLResponse:
     """Отображение страницы с формой для создания меню."""
-    get_folders_items = await menus_folders()
+    get_folders_items = await menu_builder_crud.menus_folders()
     # await create_roles()
-    roles = await get_roles()
+    roles = await menu_builder_crud.get_roles()
     context = {
         'request': request,
         'user': user,
@@ -47,24 +48,25 @@ async def menu_item_page(
 @router.post('/munus/create', response_class=HTMLResponse)
 async def create_menu_item_page(
     request: Request,
+    menu_image: UploadFile = Form(),
+    item_name: str = Form(),
+    parent: str = Form(),
+    is_folder: Optional[bool] = Form(default=False),
+    roles: Optional[list] = Form(default=[]),
+    for_quest: Optional[bool] = Form(default=False),
     user: Admin = Depends(get_current_user_from_token),
 ) -> HTMLResponse:
     """Отображение страницы с формой для создания меню."""
-    get_folders_items = await menus_folders()
-    # await create_roles()
-    roles = await get_roles()
-    form = await request.form()
-    form.items()
-    item_name = form.get('item_name')
-    parent = form.get('parent')
-    is_folder = form.get('is_folder')
-    roles_ = form.getlist('roles')
-    for_quest = form.get('for_quest')
-    menu_image = form.get('menu_image')
-    print(item_name, parent, is_folder, roles_, for_quest, menu_image)
-    contents = await menu_image.read()
-    with open(menu_image.filename, 'wb') as f:
-        f.write(contents)
+    get_folders_items = await menu_builder_crud.menus_folders()
+    roles_ = roles
+    roles = await menu_builder_crud.get_roles()
+    if menu_image.filename:
+        contents = await menu_image.read()
+        async with aiofiles.open(f'{BASE_DIR}/static/images/{menu_image.filename}', 'wb') as f:
+            f.write(contents)
+    parent = None if parent == 'none' else parent
+    item = {'name': item_name, 'parent': parent, 'content': '', 'is_folder': is_folder, 'image_link': menu_image.filename, 'role_access': roles_, 'guest_access': for_quest}
+    await menu_builder_crud.create_item(item)
     context = {
         'request': request,
         'user': user,
