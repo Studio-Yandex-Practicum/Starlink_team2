@@ -54,7 +54,6 @@ async def private(
     """
     try:
         user = await get_current_user_from_cookie(request)
-        # return RedirectResponse('/dashboard', status_code=302)
     except Exception as _:
         user = None
     context = {
@@ -83,12 +82,10 @@ async def dashboard(
         user = await get_current_user_from_cookie(request)
     except Exception as _:
         user = None
-
     context = {
         'user': user,
         'request': request,
     }
-
     return templates.TemplateResponse('dashboard.html', context)
 
 
