@@ -10,13 +10,11 @@
         <div class="mb-3">
             <label for="parent" class="form-label">Родитель</label>
             <select class="form-select" name="parent">
-                {% if not folders %}
+
                 <option value="none" selected>----</option>
-                {% else %}
                 {% for folder in folders %}
-                    <option value="{{ folder.id }}">{{ folder.name }}</option>
+                    <option value="{{ folder.unique_id }}">{{ folder.name }}</option>
                 {% endfor %}
-                {% endif %}
             </select>
         </div>
         <div class="form-check">
@@ -47,6 +45,10 @@
             <input type="checkbox" class="form-check-input" name="for_quest"
             <label for="is_folder" class="form-check-label">Доступно для гостя</label>
         </div>
+        <div class="mb-3">
+            <label for="content" class="form-label">Текст сообщения</label>
+            <textarea class="form-control" name="content" rows="5"></textarea>
+          </div>
         <div class="mb-3">
             <button type="submit" class="btn btn-primary">Создать</button>
         </div>

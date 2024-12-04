@@ -23,10 +23,16 @@ async def menu_view(
 ) -> HTMLResponse:
     """Отображение страницы с сгенерированным меню."""
     count = await menu_builder_crud.count_rows()
+    items = await menu_builder_crud.get_multi()
     # await menu_builder_crud.create_role('junior')
     # await menu_builder_crud.create_role('middle')
     # await menu_builder_crud.create_role('senior')
-    context = {'request': request, 'user': user, 'count_rows': count}
+    context = {
+        'request': request,
+        'user': user,
+        'count_rows': count,
+        'items': items,
+    }
     return templates.TemplateResponse('menus.html', context)
 
 
@@ -57,29 +63,38 @@ async def create_menu_item_page(
     is_folder: Optional[bool] = Form(default=False),
     roles: Optional[list] = Form(default=[]),
     for_quest: Optional[bool] = Form(default=False),
+    content: Optional[str] = Form(default=''),
     user: Admin = Depends(get_current_user_from_token),
 ) -> HTMLResponse:
     """Отображение страницы с формой для создания меню."""
     get_folders_items = await menu_builder_crud.menus_folders()
     roles_ = roles
     roles = await menu_builder_crud.get_roles()
-    if menu_image.filename:
-        contents = await menu_image.read()
-        async with aiofiles.open(
-            f'{BASE_DIR}/static/images/{menu_image.filename}', 'wb',
-        ) as f:
-            f.write(contents)
-    parent = None if parent == 'none' else parent
+    if parent == 'none':
+        parent: Optional[str] = None
+    else:
+        parent = await menu_builder_crud.get(parent)
+        parent = parent.unique_id
     item = {
         'name': item_name,
         'parent': parent,
-        'content': '',
+        'content': content,
         'is_folder': is_folder,
         'image_link': menu_image.filename,
         'role': [await menu_builder_crud.get_role(role) for role in roles_],
         'guest_access': for_quest,
     }
-    await menu_builder_crud.create_item(item)
+    try:
+        await menu_builder_crud.create_item(item)
+    except Exception as e:
+        print(f'error: {e}')
+    if menu_image.filename:
+        contents = await menu_image.read()
+        async with aiofiles.open(
+            f'{BASE_DIR}/static/images/{menu_image.filename}',
+            'wb',
+        ) as f:
+            await f.write(contents)
     context = {
         'request': request,
         'user': user,

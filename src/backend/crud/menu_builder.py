@@ -1,6 +1,7 @@
 from typing import Optional
 
 from sqlalchemy import func, select
+from sqlalchemy.orm import selectinload
 
 from backend.core.db import get_async_session
 from backend.crud.base import CRUDBase
@@ -61,6 +62,30 @@ class CRUDMenuBuilder(CRUDBase):
             role = Role(role_name=name)
             session.add(role)
             await session.commit()
+
+    async def get_multi(self) -> list[Menu]:
+        """Получение всех объектов из модели."""
+        async with get_async_session() as session:
+            db_objs = await session.execute(
+                select(self.model).options(
+                    selectinload(self.model.role),
+                    selectinload(self.model.parent_menu),
+                ),
+            )
+        return db_objs.scalars().all()
+
+    async def get(
+        self,
+        obj_id: str,
+    ) -> Optional[Menu]:
+        """Получение объекта ио ID."""
+        async with get_async_session() as session:
+            db_obj = await session.execute(
+                select(self.model).where(
+                    self.model.unique_id == obj_id,
+                )  # noqa
+            )
+        return db_obj.scalars().first()
 
 
 menu_builder_crud = CRUDMenuBuilder(Menu)

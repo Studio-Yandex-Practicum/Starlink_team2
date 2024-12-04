@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.core.db import Base
+from backend.core.db import Base, get_async_session
 
 ModelType = TypeVar('ModelType', bound=Base)
 CreateSchemaType = TypeVar('CreateSchemaType', bound=BaseModel)
@@ -21,28 +21,29 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         self.model = model
 
     async def get(
-        self, obj_id: uuid4, session: AsyncSession,
+        self,
+        obj_id: uuid4,
     ) -> Optional[ModelType]:
-        """Получение обьекта ио ID."""
-        db_obj = await session.execute(
-            select(self.model).where(self.model.unique_id == obj_id),
-        )
+        """Получение объекта ио ID."""
+        async with get_async_session() as session:
+            db_obj = await session.execute(
+                select(self.model).where(
+                    self.model.unique_id == obj_id,
+                ),  # noqa
+            )
         return db_obj.scalars().first()
 
-    async def get_multi(
-        self,
-        session: AsyncSession,
-    ) -> list[ModelType]:
-        """Получение всех обьектов из модели."""
-        db_objs = await session.execute(select(self.model))
-
+    async def get_multi(self) -> list[ModelType]:
+        """Получение всех объектов из модели."""
+        async with get_async_session() as session:
+            db_objs = await session.execute(select(self.model))
         return db_objs.scalars().all()
 
     async def update(
-            self,
-            db_obj: ModelType,
-            obj_in:UpdateSchemaType,
-            session: AsyncSession,
+        self,
+        db_obj: ModelType,
+        obj_in: UpdateSchemaType,
+        session: AsyncSession,
     ) -> ModelType:
         """Обновление обьекта в БД."""
         obj_data = jsonable_encoder(db_obj)

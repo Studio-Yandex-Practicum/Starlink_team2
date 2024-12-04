@@ -29,15 +29,23 @@ class Menu(AbstractModelForTime):
     - edited_at: Дата и время редактирования.
     """
 
-    __table_args__ = (CheckConstraint("name != ''"),)
+    __table_args__ = (CheckConstraint("name != ''", name='name_empty'),)
 
     name = Column(String(settings.menu_name_length), unique=True)
-    parent = Column(pg_UUID(as_uuid=True), default=None)
+    parent = Column(
+        pg_UUID(as_uuid=True),
+        ForeignKey('menus.unique_id'),
+        nullable=True,
+    )
     content = Column(Text)
     is_folder = Column(Boolean, default=False)
     image_link = Column(String(settings.image_link_max_length), nullable=True)
     role_access = Column(pg_UUID, ForeignKey('roles.unique_id'))
     role = relationship(Role, secondary='menu_role', back_populates='menus')
+    parent_menu = relationship(
+        'Menu',
+        remote_side='Menu.unique_id',
+    )
     guest_access = Column(Boolean, default=False)
 
     def __repr__(self) -> str:
