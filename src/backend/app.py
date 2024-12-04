@@ -17,7 +17,6 @@ from backend.pages.index import router as index_router
 from backend.pages.auth_login import router as auth_login_router
 from backend.pages.dashboard import router as dashboard_router
 
-
 load_dotenv()
 
 
