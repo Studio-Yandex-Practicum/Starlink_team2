@@ -10,7 +10,7 @@ class CreateDataInDB:
         self.model = model
 
     async def fill_db_from_json(
-        self, data: dict, session: async_sessionmaker[AsyncSession]
+        self, data: dict, session: async_sessionmaker[AsyncSession],
     ):
         async with session() as asession:
             new_data = self.model(**data)
@@ -19,7 +19,7 @@ class CreateDataInDB:
             return new_data
 
     async def check_db_is_empty(
-        self, session: async_sessionmaker[AsyncSession]
+        self, session: async_sessionmaker[AsyncSession],
     ):
         async with session() as asession:
             db_objs = await asession.execute(select(self.model))
@@ -34,7 +34,7 @@ async def create_data_in_db(model, data) -> str:
     else:
         for item in data:
             await create_crud.fill_db_from_json(
-                data=item, session=async_session
+                data=item, session=async_session,
             )
         message_to_send = 'База данных УСПЕШНО заполнена'
     return message_to_send
@@ -44,7 +44,7 @@ async def generate_menu(role_name: str) -> list[dict]:
     """Генерация меню."""
     async with async_session() as asession:
         role_access = await asession.execute(
-            select(Role).where(Role.role_name == role_name)
+            select(Role).where(Role.role_name == role_name),
         )
         role_access = role_access.scalars().first()
         role_access = role_access.unique_id
