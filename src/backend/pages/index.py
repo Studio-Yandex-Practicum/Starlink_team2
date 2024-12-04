@@ -9,7 +9,6 @@ from backend.core.auth import get_current_user_from_cookie
 
 router = APIRouter()
 
-
 base_dir = os.path.dirname(os.path.abspath(__file__))
 template_dir = os.path.join(base_dir, '..', 'templates')
 templates = Jinja2Templates(directory=template_dir)
