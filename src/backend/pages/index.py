@@ -4,7 +4,6 @@ from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
-
 from backend.core.auth import get_current_user_from_cookie
 
 router = APIRouter()
