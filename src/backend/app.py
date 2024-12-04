@@ -12,8 +12,11 @@ from backend.core.config import settings
 from backend.core.db import AsyncGenerator, get_async_session
 from backend.models.admin import Admin
 from backend.pages.menus import router as menus_router
-from backend.pages.pages import router as pages_router
 from backend.pages.parse_csv import router as parse_csv_router
+from backend.pages.index import router as index_router
+from backend.pages.auth_login import router as auth_login_router
+from backend.pages.dashboard import router as dashboard_router
+
 
 load_dotenv()
 
@@ -52,9 +55,12 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-app.include_router(pages_router)
 app.include_router(parse_csv_router)
 app.include_router(menus_router)
+app.include_router(index_router)
+app.include_router(auth_login_router)
+app.include_router(dashboard_router)
+
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
 static_dir = os.path.join(base_dir, 'static')
