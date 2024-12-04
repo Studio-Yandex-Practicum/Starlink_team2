@@ -85,7 +85,10 @@ async def role_view(
     :param unique_id: ID Роли
     :param user: Текущий пользователь (извлекается из токена).
     """
-    role = await role_crud.get(unique_id)
+    try:
+        role = await role_crud.get(unique_id)
+    except Exception:
+        raise HTTPException(status_code=404, detail=f"Роль с ID {unique_id} не найден")
 
     context = {
         "user": user,
