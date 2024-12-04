@@ -1,10 +1,10 @@
 from pathlib import Path
 from typing import Optional
 
+import aiofiles
 from fastapi import APIRouter, Depends, Form, Request, UploadFile
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-import aiofiles
 
 from backend.core.auth import get_current_user_from_token
 from backend.crud import menu_builder_crud
@@ -23,6 +23,9 @@ async def menu_view(
 ) -> HTMLResponse:
     """Отображение страницы с сгенерированным меню."""
     count = await menu_builder_crud.count_rows()
+    # await menu_builder_crud.create_role('junior')
+    # await menu_builder_crud.create_role('middle')
+    # await menu_builder_crud.create_role('senior')
     context = {'request': request, 'user': user, 'count_rows': count}
     return templates.TemplateResponse('menus.html', context)
 
@@ -62,10 +65,20 @@ async def create_menu_item_page(
     roles = await menu_builder_crud.get_roles()
     if menu_image.filename:
         contents = await menu_image.read()
-        async with aiofiles.open(f'{BASE_DIR}/static/images/{menu_image.filename}', 'wb') as f:
+        async with aiofiles.open(
+            f'{BASE_DIR}/static/images/{menu_image.filename}', 'wb',
+        ) as f:
             f.write(contents)
     parent = None if parent == 'none' else parent
-    item = {'name': item_name, 'parent': parent, 'content': '', 'is_folder': is_folder, 'image_link': menu_image.filename, 'role_access': roles_, 'guest_access': for_quest}
+    item = {
+        'name': item_name,
+        'parent': parent,
+        'content': '',
+        'is_folder': is_folder,
+        'image_link': menu_image.filename,
+        'role': [await menu_builder_crud.get_role(role) for role in roles_],
+        'guest_access': for_quest,
+    }
     await menu_builder_crud.create_item(item)
     context = {
         'request': request,

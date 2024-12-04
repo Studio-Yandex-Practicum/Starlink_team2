@@ -15,7 +15,7 @@ class CRUDMenuBuilder(CRUDBase):
         """Подсчет количества строк в таблице."""
         async with get_async_session() as session:
             count_rows = await session.execute(
-                select(func.count(self.model.unique_id))
+                select(func.count(self.model.unique_id)),
             )
             return count_rows.scalar()
 
@@ -36,7 +36,17 @@ class CRUDMenuBuilder(CRUDBase):
             if items:
                 return items.scalars().all()
             return None
-    
+
+    async def get_role(self, role_id: str) -> Role:
+        """Получение роли по id."""
+        async with get_async_session() as session:
+            item = await session.execute(
+                select(Role).filter(Role.unique_id == role_id),
+            )
+            if item:
+                return item.scalar()
+            return None
+
     async def create_item(self, item: Menu) -> Menu:
         """Создание нового пункта меню."""
         async with get_async_session() as session:
@@ -44,6 +54,13 @@ class CRUDMenuBuilder(CRUDBase):
             session.add(item)
             await session.commit()
             return item
+
+    async def create_role(self, name: str) -> None:
+        """Создание новой роли."""
+        async with get_async_session() as session:
+            role = Role(role_name=name)
+            session.add(role)
+            await session.commit()
 
 
 menu_builder_crud = CRUDMenuBuilder(Menu)
