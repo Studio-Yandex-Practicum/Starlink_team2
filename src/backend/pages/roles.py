@@ -90,7 +90,7 @@ async def role_view(
     except Exception:
         raise HTTPException(
             status_code=404,
-            detail=f"Роль с ID {unique_id} не найдена."
+            detail=f"Роль с ID {unique_id} не найдена.",
         )
 
     context = {

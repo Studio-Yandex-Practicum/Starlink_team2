@@ -56,7 +56,7 @@ async def user_view(
     except Exception:
         raise HTTPException(
             status_code=404,
-            detail=f"Пользователь с ID {unique_id} не найден."
+            detail=f"Пользователь с ID {unique_id} не найден.",
         )
 
     roles = await role_crud.get_multi()
