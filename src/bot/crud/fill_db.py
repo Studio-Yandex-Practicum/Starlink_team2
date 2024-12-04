@@ -1,7 +1,5 @@
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
-
-from backend.models.telegram_user import EmployeeEmail
-from bot.db import async_session
 
 
 class CreateDataInDB:
@@ -17,10 +15,9 @@ class CreateDataInDB:
             await asession.commit()
             return new_data
 
-
-data = {'email': 'kirkill2024@yandex.by'}
-
-
-async def main():
-    async with async_session() as session:
-        await CreateDataInDB(EmployeeEmail).fill_db_from_json(data, session)
+    async def check_db_is_empty(
+        self, session: async_sessionmaker[AsyncSession]
+    ):
+        async with session() as asession:
+            db_objs = await asession.execute(select(self.model))
+            return db_objs.scalars().first() if db_objs else None
