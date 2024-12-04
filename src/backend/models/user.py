@@ -23,7 +23,7 @@ class User(SQLAlchemyBaseUserTable[pg_UUID], AbstractModelForTime):
     - edited_at: дата и время редактирования.
     """
 
-    __tablename__ = 'users'
+    __tablename__ = "users"
 
     __table_args__ = (
         CheckConstraint(

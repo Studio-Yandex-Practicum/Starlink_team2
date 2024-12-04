@@ -19,8 +19,6 @@ class Quiz(AbstractModelForTime):
     - edited_at: Дата и время редактирования.
     """
 
-    __tablename__ = "quizes"
-
     title = Column(String(settings.quiz_name_length), unique=True)
     description = Column(Text, nullable=True)
     is_active = Column(Boolean, default=False)

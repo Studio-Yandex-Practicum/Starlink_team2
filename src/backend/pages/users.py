@@ -54,7 +54,10 @@ async def user_view(
     try:
         tguser = await telegramuser_crud.get(unique_id)
     except Exception:
-        raise HTTPException(status_code=404, detail=f"Пользователь с ID {unique_id} не найден")
+        raise HTTPException(
+            status_code=404,
+            detail=f"Пользователь с ID {unique_id} не найден."
+        )
 
     roles = await role_crud.get_multi()
     emails = await employee_email_crud.get_free_emails()
