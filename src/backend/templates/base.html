@@ -40,7 +40,8 @@
           <span class="fs-4">{{ self.title() }}</span>
       </div>
       <div class="row">
-        {% block content %}{% endblock %}
+        {% block content %}
+        {% endblock %}
       </div>
       {% include 'footer.html' %}
 </div>
@@ -70,6 +71,6 @@
 {% endif %}
 </main>
 <script src="{{ url_for('static', path='/js/bootstrap.bundle.min.js') }}"></script>
-<script src="{{ url_for('static', path='/jssidebars.js') }}"></script>
+<script src="{{ url_for('static', path='/js/sidebars.js') }}"></script>
 </body>
 </html>

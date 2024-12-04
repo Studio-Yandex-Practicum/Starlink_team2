@@ -118,7 +118,9 @@ async def decode_token(token: str) -> Admin:
     token = token.removeprefix("Bearer").strip()
     try:
         payload = jwt.decode(
-            token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM],
+            token,
+            settings.SECRET_KEY,
+            algorithms=[settings.ALGORITHM],
         )
         username: str = payload.get("username")
         if username is None:
@@ -130,7 +132,7 @@ async def decode_token(token: str) -> Admin:
 
 
 async def get_current_user_from_token(
-        token: str = Depends(oauth2_scheme),
+    token: str = Depends(oauth2_scheme),
 ) -> Admin:
     """Получите текущего пользователя из файлов cookie в запросе.
 
