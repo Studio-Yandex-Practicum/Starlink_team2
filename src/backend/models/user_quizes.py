@@ -14,7 +14,7 @@ from .quiz import Quiz
 from .telegram_user import TelegramUser
 
 
-class UserQuize(AbstractModelForTime):
+class UserQuiz(AbstractModelForTime):
     """Модель участника квиза.
 
     Модель содержит:
@@ -27,8 +27,10 @@ class UserQuize(AbstractModelForTime):
     - edited_at: Дата и время редактирования.
     """
 
+    __tablename__ = "userquizes"
+
     tg_user_id = Column(pg_UUID, ForeignKey('telegramusers.unique_id'))
-    quize_id = Column(pg_UUID, ForeignKey('quizs.unique_id'), unique=True)
+    quiz_id = Column(pg_UUID, ForeignKey('quizes.unique_id'), unique=True)
     status = Column(Boolean, default=True)
     started_at = Column(DateTime, default=datetime.now)
     finished_at = Column(DateTime, nullable=True)

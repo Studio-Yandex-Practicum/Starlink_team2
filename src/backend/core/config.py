@@ -2,6 +2,7 @@ import os
 
 from dotenv import load_dotenv
 from fastapi.templating import Jinja2Templates
+from pydantic import EmailStr, Field
 from pydantic_settings import BaseSettings
 
 load_dotenv()
@@ -65,6 +66,11 @@ class Settings(BaseSettings):
     USERS_TAGS: list = ['Пользователи', 'Users']
     MENUS_PREFIX: str = '/menus'
     MENUS_TAGS: list = ['Построитель меню', 'Menus']
+
+    ADMIN1_EMAIL: EmailStr
+    ADMIN1_PASSWORD: str = Field(min_length=5)
+    ADMIN2_EMAIL: EmailStr
+    ADMIN2_PASSWORD: str = Field(min_length=5)
 
     @property
     def postgres_url(self) -> str:

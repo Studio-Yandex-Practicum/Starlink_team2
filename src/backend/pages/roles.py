@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from fastapi import APIRouter, Depends, Form, HTTPException, Request
+from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy.exc import IntegrityError
 
@@ -85,13 +85,7 @@ async def role_view(
     :param unique_id: ID Роли
     :param user: Текущий пользователь (извлекается из токена).
     """
-    try:
-        role = await role_crud.get(unique_id)
-    except Exception:
-        raise HTTPException(
-            status_code=404,
-            detail=f"Роль с ID {unique_id} не найдена.",
-        )
+    role = await role_crud.get(unique_id)
 
     context = {
         "user": user,

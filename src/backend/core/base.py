@@ -1,7 +1,7 @@
 from backend.core.db import Base  # noqa
 from backend.models.menu import Menu  # noqa
 from backend.models.quiz import Quiz  # noqa
-from backend.models.user_quizes import UserQuize  # noqa
+from backend.models.user_quizes import UserQuiz  # noqa
 from backend.models.employee_email import EmployeeEmail  # noqa
 from backend.models.role import Role  # noqa
 from backend.models.telegram_user import TelegramUser  # noqa
