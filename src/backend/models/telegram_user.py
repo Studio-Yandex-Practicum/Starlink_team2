@@ -4,7 +4,6 @@ from sqlalchemy.orm import relationship
 
 from backend.core.config import settings
 from backend.models.base import AbstractModelForTime
-from backend.models.employee_email import EmployeeEmail
 from backend.models.role import Role
 
 
@@ -32,7 +31,7 @@ class TelegramUser(AbstractModelForTime):
         ForeignKey('roles.unique_id', ondelete='SET NULL'),
         nullable=True,
     )
-    name = Column(
+    first_name = Column(
         String(length=settings.username_max_length),
         nullable=True,
     )
@@ -45,18 +44,21 @@ class TelegramUser(AbstractModelForTime):
         ForeignKey('employee_emails.unique_id', ondelete='SET NULL'),
         nullable=True,
     )
-    active = Column(Boolean, default=True)
+    is_active = Column(Boolean, default=True)
     telegram_id: Column[int] = Column(
         BigInteger,
         unique=True,
     )
-    email = relationship(EmployeeEmail)
+    email = relationship(
+        "EmployeeEmail",
+        back_populates="users",
+    )
     role = relationship(Role)
 
     def __repr__(self) -> str:
         return (
             f'{self.username=}; {self.role_id=}; '
-            f'{self.name=}; {self.last_name=}; '
-            f'{self.email_id=}; {self.active=}; '
+            f'{self.first_name=}; {self.last_name=}; '
+            f'{self.email_id=}; {self.is_active=}; '
             f'{super().__repr__()}'
         )

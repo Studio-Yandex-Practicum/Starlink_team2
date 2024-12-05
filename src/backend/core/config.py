@@ -1,7 +1,14 @@
+import os
+
 from dotenv import load_dotenv
+from fastapi.templating import Jinja2Templates
 from pydantic_settings import BaseSettings
 
 load_dotenv()
+
+base_dir = os.path.dirname(os.path.abspath(__file__))
+template_dir = os.path.join(base_dir, '..', 'templates')
+templates = Jinja2Templates(directory=template_dir)
 
 
 class Settings(BaseSettings):
@@ -16,6 +23,7 @@ class Settings(BaseSettings):
     PostgreSQL.
     - postgres_host: хост для подключения к базе данных PostgreSQL.
     - postgres_db_name: имя базы данных PostgreSQL.
+    - postgres_url: url для подключения к базе данных PostgreSQL.
     - email_length: максимальная длина адреса электронной почты.
     - role_name_min_length: минимальная длина названия роли.
     - role_name_max_length: максимальная длина названия роли.
@@ -50,6 +58,19 @@ class Settings(BaseSettings):
     SECRET_KEY: str = "secret-key"
     ACCESS_TOKEN_EXPIRE_MINUTES = 30
     NOT_AUTHENTICATED: str
+
+    ROLES_PREFIX: str = '/roles'
+    ROLES_TAGS: list = ['Роли', 'Roles']
+    USERS_PREFIX: str = '/users'
+    USERS_TAGS: list = ['Пользователи', 'Users']
+    MENUS_PREFIX: str = '/menus'
+    MENUS_TAGS: list = ['Построитель меню', 'Menus']
+
+    @property
+    def postgres_url(self) -> str:
+        """Url для подключения к базе данных PostgreSQL."""
+        return (f'postgresql+asyncpg://{self.postgres_user}:{self.postgres_password}@'
+                f'{self.postgres_host}:{self.postgres_port}/{self.postgres_db}')
 
 
 settings = Settings()
