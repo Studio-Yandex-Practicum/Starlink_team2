@@ -54,25 +54,9 @@ async def handle_start(message: Message) -> None:
             f'Ура мы нашли вас в базе данных: ' f'{username} {telegram_id}'
         )
 
-    test_role_id_1 = await telegram_menu_crud.get_role_id_by_name(
-        session=async_session,
-        role_name='Кандидат',
+    menu_items = await get_menu_for_user_roles(
+        username=message.from_user.username,
     )
-    test_role_id_2 = await telegram_menu_crud.get_role_id_by_name(
-        session=async_session,
-        role_name='Сотрудник',
-    )
-
-    role_id_list = [role_id, test_role_id_1, test_role_id_2]
-
-    menu_items = []
-
-    for role in role_id_list:
-        menu_item = await telegram_menu_crud.get_menu_for_role(
-            session=async_session,
-            role_id=role,
-        )
-        menu_items.extend(menu_item)
 
     reply_markup = await build_reply_keyboard(menu_items=menu_items, page=page)
 
@@ -110,25 +94,12 @@ async def handle_db(message: Message) -> None:
 
 
 @bot.message_handler(content_types=['text'])
-async def get_data_from_db(message):
+async def get_data_from_db(message: Message) -> None:
     global page
-    role_id = None
-    test_role_id_1 = await telegram_menu_crud.get_role_id_by_name(
-        session=async_session,
-        role_name='Кандидат',
+
+    menu_items = await get_menu_for_user_roles(
+        username=message.from_user.username,
     )
-    test_role_id_2 = await telegram_menu_crud.get_role_id_by_name(
-        session=async_session,
-        role_name='Сотрудник',
-    )
-    role_id_list = [role_id, test_role_id_1, test_role_id_2]
-    menu_items = []
-    for role in role_id_list:
-        menu_item = await telegram_menu_crud.get_menu_for_role(
-            session=async_session,
-            role_id=role,
-        )
-        menu_items.extend(menu_item)
 
     text_from_db = await telegram_menu_crud.get_content_by_menu_name(
         session=async_session,
@@ -146,7 +117,7 @@ async def get_data_from_db(message):
             menu_items=menu_items, page=page
         )
 
-        message_to_send = 'Переходим на следующую страницу'
+        message_to_send = 'Переходим на след. страницу'
 
         await bot.send_message(
             message.chat.id, message_to_send, reply_markup=reply_markup
@@ -160,10 +131,38 @@ async def get_data_from_db(message):
             menu_items=menu_items, page=page
         )
 
-        message_to_send = 'Переходим на пред страницу'
+        message_to_send = 'Переходим на пред. страницу'
 
         await bot.send_message(
             message.chat.id, message_to_send, reply_markup=reply_markup
         )
 
         logger.info(f'{message.from_user.username} на перешел на стр. #{page}')
+
+
+async def get_menu_for_user_roles(username: str) -> list[dict] | None:
+    """Функция для получения меню для пользователя."""
+    user_role_id = await telegram_users_crud.get_user_role(
+        session=async_session,
+        username=username,
+    )
+
+    # тестовые роли для проверки работы бота
+    test_role_id_1 = await telegram_menu_crud.get_role_id_by_name(
+        session=async_session,
+        role_name='Кандидат',
+    )
+    test_role_id_2 = await telegram_menu_crud.get_role_id_by_name(
+        session=async_session,
+        role_name='Сотрудник',
+    )
+
+    role_id_list = [user_role_id, test_role_id_1, test_role_id_2]
+    menu_items = []
+    for role in role_id_list:
+        menu_item = await telegram_menu_crud.get_menu_for_role(
+            session=async_session,
+            role_id=role,
+        )
+        menu_items.extend(menu_item)
+    return menu_items

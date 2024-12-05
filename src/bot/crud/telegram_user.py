@@ -1,6 +1,7 @@
 from typing import Optional
 
 from sqlalchemy import select
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from backend.models.telegram_user import TelegramUser
@@ -112,6 +113,19 @@ class CRUDTelegramUsers:
             asession.add(new_user)
             await asession.commit()
             return new_user
+
+    async def get_user_role(
+        self,
+        session: async_sessionmaker[AsyncSession],
+        username: str,
+    ) -> Optional[UUID]:
+        """Получение роли пользователя."""
+        async with session() as asession:
+            user = await asession.execute(
+                select(TelegramUser).where(TelegramUser.username == username),
+            )
+        user = user.scalar_one_or_none()
+        return user.role_id
 
 
 telegram_users_crud = CRUDTelegramUsers(TelegramUser)
