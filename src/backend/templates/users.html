@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Пользователи{% endblock %}
+{% block content %}
+<div>
+  <table class="table table-bordered border-info">
+    <thead>
+    <tr>
+      <th scope="col">№</th>
+      <th scope="col">Никнейм</th>
+      <th scope="col">Имя</th>
+      <th scope="col">Фамилия</th>
+      <th scope="col">Роль</th>
+      <th scope="col">E-Mail</th>
+      <th scope="col">Дата регистрации</th>
+      <th scope="col"></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for tguser in tgusers %}
+    <tr>
+      <td class="col-0.5">{{ loop.index }}</td>
+      <td class="col-2"><a href="{{ url_for('user_view', unique_id=tguser.unique_id) }}">{{ tguser.username }}</a></td>
+      <td class="col-2">{{ tguser.first_name }}</td>
+      <td class="col-2">{{ tguser.last_name }}</td>
+      <td class="col-2">{{ tguser.role.title }}</td>
+      <td class="col-2">{{ tguser.email.title }}</td>
+      <td class="col-2">{{ tguser.created_at }}</td>
+      <td class="col-1">
+        <form action="{{ url_for('user_delete', unique_id=tguser.unique_id) }}" method="post" style="display: inline;">
+          <input type="hidden" name="unique_id" value="{{ tguser.unique_id }}">
+          <button type="submit" class="btn btn-danger" aria-label="Удалить">X</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+  </table>
+</div>
+{% endblock %}

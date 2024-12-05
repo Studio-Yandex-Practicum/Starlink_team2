@@ -25,8 +25,13 @@
       </a>
     </li>
     <li>
-      <a href="#" class="nav-link text-white">
+      <a href="{{ url_for('users_view') }}" class="nav-link {% if request.path == '/users/' %} active {% else %} text-white {% endif %}">
         Пользователи
+      </a>
+    </li>
+    <li>
+      <a href="{{ url_for('roles_view') }}" class="nav-link {% if request.path == '/roles/' %} active {% else %} text-white {% endif %}">
+        Роли
       </a>
     </li>
   </ul>
