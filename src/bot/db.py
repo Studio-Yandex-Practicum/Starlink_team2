@@ -12,7 +12,7 @@ load_dotenv()
 engine = create_async_engine(
     f'postgresql+asyncpg://{settings.postgres_user}:'
     f'{settings.postgres_password}@{settings.postgres_host}/'
-    f'{settings.postgres_db_name}',
+    f'{settings.postgres_db}',
     echo=True,
 )
 async_session = async_sessionmaker(
