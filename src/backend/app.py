@@ -16,8 +16,8 @@ from backend.pages.dashboard import router as dashboard_router
 from backend.pages.index import router as index_router
 from backend.pages.menus import router as menus_router
 from backend.pages.parse_csv import router as parse_csv_router
-from backend.pages.users import router as users_router
 from backend.pages.roles import router as roles_router
+from backend.pages.users import router as users_router
 
 load_dotenv()
 
