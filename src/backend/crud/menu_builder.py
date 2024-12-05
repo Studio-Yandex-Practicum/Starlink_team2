@@ -81,10 +81,15 @@ class CRUDMenuBuilder(CRUDBase):
         """Получение объекта ио ID."""
         async with get_async_session() as session:
             db_obj = await session.execute(
-                select(self.model).where(
+                select(self.model)
+                .where(
                     self.model.unique_id == obj_id,
-                )  # noqa
-            )
+                )
+                .options(
+                    selectinload(self.model.role),
+                    selectinload(self.model.parent_menu),
+                ),
+            )  # noqa
         return db_obj.scalars().first()
 
 
