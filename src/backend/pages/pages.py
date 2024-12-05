@@ -1,9 +1,6 @@
-import os
-from typing import List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import Depends, HTTPException, Request, status
 from fastapi.responses import HTMLResponse, RedirectResponse, Response
-from fastapi.templating import Jinja2Templates
 from rich.console import Console
 
 from backend.core.auth import (
@@ -11,15 +8,13 @@ from backend.core.auth import (
     get_current_user_from_token,
     login_for_access_token,
 )
-from backend.core.config import settings
+from backend.core.config import settings, templates
 from backend.models.admin import Admin
 
-router = APIRouter()
-console = Console()
+from .forms import LoginForm
+from .routers import main_router as router
 
-base_dir = os.path.dirname(os.path.abspath(__file__))
-template_dir = os.path.join(base_dir, '..', 'templates')
-templates = Jinja2Templates(directory=template_dir)
+console = Console()
 
 
 @router.get("/", response_class=HTMLResponse)
@@ -104,33 +99,6 @@ async def login_get(request: Request) -> HTMLResponse:
         "request": request,
     }
     return templates.TemplateResponse("index.html", context)
-
-
-class LoginForm:
-    """Класс для обработки формы входа в систему."""
-
-    def __init__(self, request: Request) -> None:
-        """Инициализация класса."""
-        self.request: Request = request
-        self.errors: List = []
-        self.username: Optional[str] = None
-        self.password: Optional[str] = None
-
-    async def load_data(self) -> None:
-        """Получение данных из формы входа."""
-        form = await self.request.form()
-        self.username = form.get("username")
-        self.password = form.get("password")
-
-    async def is_valid(self) -> bool:
-        """Валидация параметров введенных в форму."""
-        if not self.username or not (self.username.__contains__("@")):
-            self.errors.append("Email is required")
-        if not self.password or not len(self.password) >= 4:
-            self.errors.append("A valid password is required")
-        if not self.errors:
-            return True
-        return False
 
 
 @router.post("/auth/login", response_class=HTMLResponse)

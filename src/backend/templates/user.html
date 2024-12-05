@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Редактирование пользователя {{ tguser.last_name }} {{ tguser.first_name }} ({{ tguser.username }}){% endblock %}
+{% block content %}
+<div class="col-sm-3">
+<form method="post" action="{{ url_for('user_edit', unique_id=tguser.unique_id) }}">
+  <div class="mb-3">
+    <label class="form-check-label" for="first_name">Имя</label>
+    <input type="text" class="form-control" id="first_name" name="first_name" value="{{ tguser.first_name }}">
+  </div>
+  <div class="mb-3">
+    <label for="last_name">Фамилия</label>
+    <input type="text" class="form-control" id="last_name" name="last_name" value="{{ tguser.last_name }}">
+  </div>
+  <div class="mb-3">
+    <label for="role_id">Роль</label>
+    <select class="form-select" id="role_id" name="role_id">
+      {% for role in roles %}
+      <option value="{{ role.unique_id }}">{{ role.title }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="mb-3">
+    <label for="email_id" class="form-label">E-Mail</label>
+    <select class="form-select" id="email_id" name="email_id">
+      <option value="{{ tguser.email.unique_id }}">{{ tguser.email.title }}</option>
+      {% for email in emails %}
+        <option value="{{ email.unique_id }}">{{ email.title }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+  <button type="submit" class="btn btn-primary">Сохранить</button>
+  </div>
+</form>
+</div>
+{% endblock %}

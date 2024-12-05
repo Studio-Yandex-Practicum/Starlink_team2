@@ -12,5 +12,6 @@ class Admin(Base):
     """
 
     __tablename__ = 'admins'
+
     username = Column(String, unique=True)
     hashed_password = Column(String)
