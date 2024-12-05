@@ -24,7 +24,7 @@ class CRUDTelegramUsers:
         telegram_id: int,
         session: async_sessionmaker[AsyncSession],
     ) -> bool:
-        """ "Проверка существования пользователя в БД.
+        """Проверка существования пользователя в БД.
 
         Args:
             telegram_id (int): telegram id пользователя

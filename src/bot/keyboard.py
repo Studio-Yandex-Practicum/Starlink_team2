@@ -129,9 +129,9 @@ async def build_menu_buttons(
             return [
                 [
                     InlineKeyboardButton(
-                        constants.NO_ITEMS_TEXT, callback_data=constants.NOOP
-                    )
-                ]
+                        constants.NO_ITEMS_TEXT, callback_data=constants.NOOP,
+                    ),
+                ],
             ]
         return [[KeyboardButton(constants.NO_ITEMS_TEXT)]]
 
@@ -150,7 +150,7 @@ async def build_menu_buttons(
                     f'{item[constants.UNIQUE_ID_KEY]}'
                 )
             return InlineKeyboardButton(
-                text=item[constants.NAME_KEY], callback_data=callback_data
+                text=item[constants.NAME_KEY], callback_data=callback_data,
             )
         return KeyboardButton(item[constants.NAME_KEY])
 

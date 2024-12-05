@@ -61,7 +61,7 @@ async def handle_start(message: Message) -> None:
     reply_markup = await build_reply_keyboard(menu_items=menu_items, page=page)
 
     await bot.send_message(
-        message.chat.id, message_to_send, reply_markup=reply_markup
+        message.chat.id, message_to_send, reply_markup=reply_markup,
     )
 
     logger.info(f'{message.from_user.username} запустил бота')
@@ -95,6 +95,7 @@ async def handle_db(message: Message) -> None:
 
 @bot.message_handler(content_types=['text'])
 async def get_data_from_db(message: Message) -> None:
+    """Обработчик текстовых сообщений."""
     global page
 
     menu_items = await get_menu_for_user_roles(
@@ -114,13 +115,13 @@ async def get_data_from_db(message: Message) -> None:
     elif message.text == constants.FORWARD_NAV_TEXT:
         page += 1
         reply_markup = await build_reply_keyboard(
-            menu_items=menu_items, page=page
+            menu_items=menu_items, page=page,
         )
 
         message_to_send = 'Переходим на след. страницу'
 
         await bot.send_message(
-            message.chat.id, message_to_send, reply_markup=reply_markup
+            message.chat.id, message_to_send, reply_markup=reply_markup,
         )
 
         logger.info(f'{message.from_user.username} перешел на стр. #{page}')
@@ -128,13 +129,13 @@ async def get_data_from_db(message: Message) -> None:
         page -= 1
 
         reply_markup = await build_reply_keyboard(
-            menu_items=menu_items, page=page
+            menu_items=menu_items, page=page,
         )
 
         message_to_send = 'Переходим на пред. страницу'
 
         await bot.send_message(
-            message.chat.id, message_to_send, reply_markup=reply_markup
+            message.chat.id, message_to_send, reply_markup=reply_markup,
         )
 
         logger.info(f'{message.from_user.username} на перешел на стр. #{page}')
