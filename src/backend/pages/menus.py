@@ -54,7 +54,7 @@ async def menu_item_page(
     return templates.TemplateResponse('create_menu_item.html', context)
 
 
-@router.post('/munus/create', response_class=HTMLResponse)
+@router.post('/create', response_class=HTMLResponse)
 async def create_menu_item_page(
     request: Request,
     menu_image: UploadFile = Form(),
@@ -102,3 +102,28 @@ async def create_menu_item_page(
         'roles': roles,
     }
     return templates.TemplateResponse('create_menu_item.html', context)
+
+
+@router.get('/edit/{unique_id}', response_class=HTMLResponse)
+async def edit_menu_item_page(
+    request: Request,
+    unique_id: str,
+    user: Admin = Depends(get_current_user_from_token),
+) -> HTMLResponse:
+    """Отображение страницы с формой для редактирования элемента меню."""
+    item = await menu_builder_crud.get(unique_id)
+    if not item:
+        return templates.TemplateResponse(
+            '404.html', context={'request': request},
+        )
+    folder_items = await menu_builder_crud.menus_folders()
+    roles = await menu_builder_crud.get_roles()
+    context = {
+        'request': request,
+        'user': user,
+        'folders': folder_items,
+        'roles': roles,
+        'item': item,
+        'selected_roles': [role.unique_id for role in item.role],
+    }
+    return templates.TemplateResponse('edit_menu_item.html', context)
