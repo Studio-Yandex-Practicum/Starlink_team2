@@ -1,5 +1,7 @@
 import os
 
+import os
+
 from dotenv import load_dotenv
 from fastapi.templating import Jinja2Templates
 from pydantic import EmailStr, Field

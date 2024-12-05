@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Form, Request
+from fastapi import APIRouter, Depends, Form, HTTPException, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 
 from backend.core.auth import get_current_user_from_token
@@ -51,7 +51,14 @@ async def user_view(
     :param unique_id: ID Роли
     :param user: Текущий пользователь (извлекается из токена).
     """
-    tguser = await telegramuser_crud.get(unique_id)
+    try:
+        tguser = await telegramuser_crud.get(unique_id)
+    except Exception:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Пользователь с ID {unique_id} не найден.",
+        )
+
     roles = await role_crud.get_multi()
     emails = await employee_email_crud.get_free_emails()
 

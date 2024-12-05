@@ -118,7 +118,9 @@ async def decode_token(token: str) -> Admin:
     token = token.removeprefix("Bearer").strip()
     try:
         payload = jwt.decode(
-            token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM],
+            token,
+            settings.SECRET_KEY,
+            algorithms=[settings.ALGORITHM],
         )
         username: str = payload.get("username")
         if username is None:

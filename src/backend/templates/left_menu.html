@@ -1,7 +1,12 @@
 <ul class="nav nav-pills flex-column mb-auto">
     <li class="nav-item">
-      <a href="{{ url_for('dashboard') }}" class="nav-link {% if request.path == '/dashboard' %} active {% else %} text-white {% endif %}">
+      <a href="{{ url_for('dashboard') }}" class="nav-link text-white {% if request.url==url_for('dashboard')%}active{% endif %}">
         Главная
+      </a>
+    </li>
+    <li>
+      <a href="{{ url_for('main_parse') }}" class="nav-link text-white {% if request.url==url_for('main_parse')%}active{% endif %}">
+        Загрузка электронных адресов
       </a>
     </li>
     <li>
