@@ -4,8 +4,8 @@ import logging
 import uvicorn
 
 import bot.handlers  # noqa
+from bot.loader import bot_instance
 from bot.utils.logger import get_logger
-from loader import bot_instance
 
 
 async def run_fastapi() -> None:

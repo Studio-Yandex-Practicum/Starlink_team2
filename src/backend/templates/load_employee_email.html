@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Загрузка электронных адресов.{% endblock %}
+
+{% block content %}
+<body>
+    {% if errors %}
+    <div class="alert alert-warning " role="alert">
+        {{ errors }}
+    </div>
+    {% endif %}
+    <div style="padding-top: 3%">
+    {% if total_add %}
+      <label class="d-flex justify-content-center center-block">Количество добавленых сотрудников: {{ total_add }}</label>
+    {% endif %}
+    {% if total_remove %}
+      <label class="d-flex justify-content-center center-block">Количество удаленых сотрудников: {{ total_remove }}</label>
+    {% endif %}
+    </div>
+    <div class="d-flex justify-content-center center-block" style="padding-top: 10%" >
+
+        <form action="{{ url_for('load_data') }}" method="post" enctype="multipart/form-data">
+
+            <div class="container-fluid" >
+                <input class="form-control" type="file" accept=".csv, text/csv" name="file" id="formFile">
+                <br>
+
+            <button type="submit" class="btn btn-success">Загрузить</button>
+            </div>
+        </form>
+    </div>
+
+</body>
+
+{% endblock %}

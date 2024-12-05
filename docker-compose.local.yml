@@ -1,0 +1,42 @@
+version: "3.9"
+
+volumes:
+  pg_data:
+  static:
+  media:
+
+services:
+  postgres:
+    container_name: starlink-database
+    image: postgres:17.1-alpine3.20
+    env_file: .env
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}
+      interval: 5s
+      timeout: 10s
+      retries: 5
+  app:
+    container_name: starlink-app
+    build: ./src/
+    env_file: .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - static:/backend_static
+      - media:/var/www/starlink/media
+  nginx:
+    container_name: starlink-nginx
+    depends_on:
+      - app
+    build: ./nginx/
+    env_file: .env
+    ports:
+      - 8000:80
+    volumes:
+      - static:/static
+      - media:/var/www/starlink/media

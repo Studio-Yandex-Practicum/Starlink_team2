@@ -9,3 +9,4 @@ from backend.models.user import User  # noqa
 from backend.models.quiz_answer import QuizAnswer  # noqa
 from backend.models.quiz_question import QuizQuestion  # noqa
 from backend.models.taken_answer import TakenAnswer  # noqa
+from backend.models.admin import Admin  # noqa

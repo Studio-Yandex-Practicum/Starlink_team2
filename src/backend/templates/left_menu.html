@@ -1,0 +1,37 @@
+<ul class="nav nav-pills flex-column mb-auto">
+    <li class="nav-item">
+      <a href="{{ url_for('dashboard') }}" class="nav-link text-white {% if request.url==url_for('dashboard')%}active{% endif %}">
+        Главная
+      </a>
+    </li>
+    <li>
+      <a href="{{ url_for('main_parse') }}" class="nav-link text-white {% if request.url==url_for('main_parse')%}active{% endif %}">
+        Загрузка электронных адресов
+      </a>
+    </li>
+    <li>
+      <a href="#" class="nav-link text-white">
+        Квизы
+      </a>
+    </li>
+    <li>
+      <a href="{{ url_for ('get_menus') }}" class="nav-link text-white {% if request.url==url_for('get_menus')%}active{% endif %}">
+        Построитель меню
+      </a>
+    </li>
+    <li>
+      <a href="#" class="nav-link text-white">
+        Products
+      </a>
+    </li>
+    <li>
+      <a href="{{ url_for('users_view') }}" class="nav-link {% if request.path == '/users/' %} active {% else %} text-white {% endif %}">
+        Пользователи
+      </a>
+    </li>
+    <li>
+      <a href="{{ url_for('roles_view') }}" class="nav-link {% if request.path == '/roles/' %} active {% else %} text-white {% endif %}">
+        Роли
+      </a>
+    </li>
+  </ul>
