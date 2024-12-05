@@ -19,9 +19,11 @@ class CRUDTelegramUsers:
         self.model = model
 
     async def check_user_exists(
-        self, telegram_id: int, session: async_sessionmaker[AsyncSession],
+        self,
+        telegram_id: int,
+        session: async_sessionmaker[AsyncSession],
     ) -> bool:
-        """"Проверка существования пользователя в БД.
+        """ "Проверка существования пользователя в БД.
 
         Args:
             telegram_id (int): telegram id пользователя
@@ -36,7 +38,7 @@ class CRUDTelegramUsers:
                 (
                     await asession.execute(
                         select(self.model).where(
-                            self.model.telegram_id == str(telegram_id),
+                            self.model.telegram_id == telegram_id,
                         ),
                     )
                 )
@@ -46,9 +48,9 @@ class CRUDTelegramUsers:
             return True if user_check else False
 
     async def check_user_email(
-            self,
-            session: async_sessionmaker[AsyncSession],
-            username: str,
+        self,
+        session: async_sessionmaker[AsyncSession],
+        username: str,
     ) -> bool:
         """Проверяет наличие email у пользователя.
 
@@ -68,9 +70,9 @@ class CRUDTelegramUsers:
         return user.email_id is not None if user else False
 
     async def check_user_role(
-            self,
-            session: async_sessionmaker[AsyncSession],
-            username: str,
+        self,
+        session: async_sessionmaker[AsyncSession],
+        username: str,
     ) -> Optional[str]:
         """Проверяет роль пользователя.
 

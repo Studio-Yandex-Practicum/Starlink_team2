@@ -63,7 +63,7 @@ async def generate_menu(role_name: str) -> list[dict]:
         role_access = role_access.unique_id
     count = 1
     menu_with_role = []
-    while count < 6:
+    while count < 30:
         menu_dict = {
             'name': f'Меню для {role_name} {count}',
             'content': f'Контент для {role_name} {count}',
