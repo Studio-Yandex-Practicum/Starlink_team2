@@ -61,8 +61,8 @@ app.include_router(menus_router)
 app.include_router(index_router)
 app.include_router(auth_login_router)
 app.include_router(dashboard_router)
-app.include_router(users_router)
-app.include_router(roles_router)
+app.include_router(users_router, prefix="/users")
+app.include_router(roles_router, prefix="/roles")
 
 
 base_dir = os.path.dirname(os.path.abspath(__file__))

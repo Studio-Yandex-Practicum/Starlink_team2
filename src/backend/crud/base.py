@@ -26,7 +26,9 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         """Получение объекта ио ID."""
         async with get_async_session() as session:
             db_obj = await session.execute(
-                select(self.model).where(self.model.unique_id == obj_id),  # noqa
+                select(self.model).where(
+                    self.model.unique_id == obj_id,
+                ),  # noqa
             )
         return db_obj.scalars().first()
 

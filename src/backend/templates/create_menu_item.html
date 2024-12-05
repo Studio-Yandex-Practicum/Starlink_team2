@@ -2,7 +2,7 @@
 {% block content %}
 <div>
     {% if user %}
-    <form action="{{ url_for('create_menu_item_page') }}" method="post" class="mx-auto w-50">
+    <form action="{{ url_for('create_menu_item_page') }}" method="post" class="mx-auto w-50" enctype="multipart/form-data">
         <div class="mb-3">
             <label for="name" class="form-label">Название</label>
             <input type="text" class="form-control" name="item_name">
@@ -10,13 +10,11 @@
         <div class="mb-3">
             <label for="parent" class="form-label">Родитель</label>
             <select class="form-select" name="parent">
-                {% if not folders %}
-                <option selected>----</option>
-                {% else %}
+
+                <option value="none" selected>----</option>
                 {% for folder in folders %}
-                    <option value="{{ folder.id }}">{{ folder.name }}</option>
+                    <option value="{{ folder.unique_id }}">{{ folder.name }}</option>
                 {% endfor %}
-                {% endif %}
             </select>
         </div>
         <div class="form-check">
@@ -25,18 +23,35 @@
         </div>
         <div class="mb-3">
             <label for="formFile" class="form-label">Картинка для отображения контента</label>
-            <input class="form-control" type="file" accept=".jpg, .jpeg, .png">
+            <input class="form-control" type="file" accept=".jpg, .jpeg, .png" name="menu_image">
         </div>
         <div class="mb-3">
             <p>Выберите Роли, кому будет предоставлен доступ:</p>
             {% if not roles %}
                 <p>Не создано ни одной Роли</p>
             {% else %}
-                <p>Вывести роли!</p>
+                <fieldset>
+                    <legend>Роли</legend>
+                {% for role in roles %}
+                    <div class="form-check">                    
+                        <input class="form-check-input" type="checkbox" name="roles" value="{{ role.unique_id }}">
+                        <label class="form-check-label">{{ role.role_name }}</label>
+                    </div>
+                {% endfor %}
+                </fieldset>
             {% endif %}
-
         </div>
-
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" name="for_quest"
+            <label for="is_folder" class="form-check-label">Доступно для гостя</label>
+        </div>
+        <div class="mb-3">
+            <label for="content" class="form-label">Текст сообщения</label>
+            <textarea class="form-control" name="content" rows="5"></textarea>
+          </div>
+        <div class="mb-3">
+            <button type="submit" class="btn btn-primary">Создать</button>
+        </div>
     </form>
 {% else %}
     <h2>You are NOT logged in :(</h2>
