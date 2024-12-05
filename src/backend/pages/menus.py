@@ -76,7 +76,7 @@ async def create_menu_item_page(
         parent = await menu_builder_crud.get(parent)
         parent = parent.unique_id
     item = {
-        'name': item_name,
+        'title': item_name,
         'parent': parent,
         'content': content,
         'is_folder': is_folder,

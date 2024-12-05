@@ -28,7 +28,7 @@ active
             <td>
               {{ loop.index }}
             </td>
-            <td>{{ item.name }}</td>
+            <td>{{ item.title }}</td>
             {% if item.image_link != '' %}
               <td><img src="/static/images/{{ item.image_link }}" width="100" height="50"></td>            
             {% else %}
@@ -48,7 +48,7 @@ active
             </td>
             <td>
               {% for role in item.role %}
-                {{ role.role_name }}, 
+                {{ role.title }}, 
               {% endfor %}
             </td>
             <td>
