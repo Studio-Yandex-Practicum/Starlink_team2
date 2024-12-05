@@ -16,6 +16,8 @@ from backend.pages.dashboard import router as dashboard_router
 from backend.pages.index import router as index_router
 from backend.pages.menus import router as menus_router
 from backend.pages.parse_csv import router as parse_csv_router
+from backend.pages.users import router as users_router
+from backend.pages.roles import router as roles_router
 
 load_dotenv()
 
@@ -59,6 +61,8 @@ app.include_router(menus_router)
 app.include_router(index_router)
 app.include_router(auth_login_router)
 app.include_router(dashboard_router)
+app.include_router(users_router)
+app.include_router(roles_router)
 
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
