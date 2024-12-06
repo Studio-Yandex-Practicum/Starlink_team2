@@ -99,15 +99,12 @@ async def handle_db(message: Message) -> None:
     model = Menu
     data = []
     for parent_id in parent_list_id:
-        # print(parent_id)
         for role in ROLES:
             role_name = role['title']
             data_to_extend = await generate_parent_menu(
                 role_name=role_name, parent_id=parent_id,
             )
-            # print(data_to_extend)
             data.extend(data_to_extend)
-    # print(data)
     message_to_send = await create_data_in_db_no_check(model, data)
 
     await bot.send_message(
