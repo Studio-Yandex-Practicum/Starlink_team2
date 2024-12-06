@@ -29,7 +29,7 @@ class Menu(AbstractModelForTime):
     - edited_at: Дата и время редактирования.
     """
 
-    __table_args__ = (CheckConstraint("name != ''", name='name_empty'),)
+    __table_args__ = (CheckConstraint("title != ''", name='name_empty'),)
 
     title = Column(String(settings.menu_name_length), unique=True)
     parent = Column(

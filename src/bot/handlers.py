@@ -29,7 +29,7 @@ async def handle_start(message: Message) -> None:
     page = constants.PAGE
 
     username = message.from_user.username
-    name = message.from_user.first_name
+    first_name = message.from_user.first_name
     lastname = message.from_user.last_name
     telegram_id = message.from_user.id
 
@@ -42,7 +42,7 @@ async def handle_start(message: Message) -> None:
     if not user_exists:
         data = {
             'username': username,
-            'name': name,
+            'first_name': first_name,
             'last_name': lastname,
             'role_id': role_id,
             'telegram_id': telegram_id,
@@ -89,7 +89,7 @@ async def handle_db(message: Message) -> None:
     model = Menu
     data = MENUS
     for role in ROLES:
-        role_name = role['role_name']
+        role_name = role['title']
         data_to_extend = await generate_menu(role_name=role_name)
         data.extend(data_to_extend)
 
@@ -101,7 +101,7 @@ async def handle_db(message: Message) -> None:
     for parent_id in parent_list_id:
         # print(parent_id)
         for role in ROLES:
-            role_name = role['role_name']
+            role_name = role['title']
             data_to_extend = await generate_parent_menu(
                 role_name=role_name, parent_id=parent_id
             )

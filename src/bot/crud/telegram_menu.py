@@ -23,7 +23,8 @@ class CRUDTelegramMenu:
         async with session() as asession:
             result = await asession.execute(
                 select(Menu).where(
-                    Menu.parent == parent_id, Menu.role_access == role_id,
+                    Menu.parent == parent_id,
+                    Menu.role_access == role_id,
                 ),
             )
             result = result.scalars().all()
@@ -32,7 +33,7 @@ class CRUDTelegramMenu:
                 menu_list.append(
                     {
                         'UniqueID': elem.unique_id,
-                        'Name': elem.name,
+                        'Name': elem.title,
                         'Parent': elem.parent,
                         'Is_folder': elem.is_folder,
                         'Roles': elem.role_access,
@@ -43,25 +44,30 @@ class CRUDTelegramMenu:
             return menu_list
 
     async def get_role_id_by_name(
-        self, session: AsyncSession, role_name: str,
-    ) -> list[dict]:
+        self,
+        session: AsyncSession,
+        role_name: str,
+    ) -> list[dict] | None:
         """Получение id роли по имени."""
         async with session() as asession:
             role_access = await asession.execute(
-                select(Role).where(Role.role_name == role_name),
+                select(Role).where(Role.title == role_name),
             )
             role_access = role_access.scalars().first()
-        return role_access.unique_id
+        return role_access.unique_id if role_access else None
 
     async def get_content_by_menu_name(
-        self, session: AsyncSession, menu_name: str,
+        self,
+        session: AsyncSession,
+        menu_name: str,
     ) -> str:
         """Получение контента по имени меню."""
         async with session() as asession:
             content = await asession.execute(
-                select(Menu.content).where(Menu.name == menu_name),
+                select(Menu.content).where(Menu.title == menu_name),
             )
-        return content.scalars().first()
+            content = content.scalars().first()
+        return content if content else None
 
 
 telegram_menu_crud = CRUDTelegramMenu(Menu)
