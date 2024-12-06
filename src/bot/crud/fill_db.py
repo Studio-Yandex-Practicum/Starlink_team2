@@ -74,7 +74,7 @@ async def create_data_in_db_no_check(
     """Заполнение базы данных без проверки."""
     create_crud = CreateDataInDB(model)
     check_db = await create_crud.check_db_is_empty_parent(
-        session=async_session
+        session=async_session,
     )
     if check_db is not None:
         message_to_send = 'Inline меню БЫЛО создано до этого'
