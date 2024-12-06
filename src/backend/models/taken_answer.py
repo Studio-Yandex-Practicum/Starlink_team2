@@ -6,7 +6,7 @@ from .base import AbstractModelForTime
 from .quiz_answer import QuizAnswer
 from .quiz_question import QuizQuestion
 from .telegram_user import TelegramUser
-from .user_quizes import UserQuize
+from .user_quizes import UserQuiz
 
 
 class TakenAnswer(AbstractModelForTime):
@@ -22,11 +22,13 @@ class TakenAnswer(AbstractModelForTime):
     - edited_at: дата и время редактирования.
     """
 
+    __tablename__ = "takenanswers"
+
     user_quiz_id = Column(pg_UUID, ForeignKey('userquizes.unique_id'))
     question_id = Column(pg_UUID, ForeignKey('quizquestions.unique_id'))
     answer_id = Column(pg_UUID, ForeignKey('quizanswers.unique_id'))
     tg_user_id = Column(pg_UUID, ForeignKey('telegramusers.unique_id'))
-    quiz = relationship(UserQuize)
+    quiz = relationship(UserQuiz)
     question = relationship(QuizQuestion)
     answer = relationship(QuizAnswer)
     user = relationship(TelegramUser)

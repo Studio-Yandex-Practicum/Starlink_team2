@@ -31,19 +31,17 @@ async def parsing_email_addresses_from_csv_file(
         for row in files[1:]:
             for column in row.split(DELIMITER):
                 if not STARLINKRUSSIA_PATTERN.search(
-                        column,
+                    column,
                 ) and not MILESTONERUSSIA_PATTERN.search(column):
                     continue
 
-                email_is_exist = await employee_email_crud.get_email(
-                    session, column,
-                )
+                email_is_exist = await employee_email_crud.get_email(column)
 
                 if email_is_exist:
                     emails_for_remove.remove(email_is_exist)
                     continue
 
-                db_new = EmployeeEmail(email=column)
+                db_new = EmployeeEmail(title=column)
                 emails_for_adds_in_db.append(db_new)
 
     return emails_for_adds_in_db

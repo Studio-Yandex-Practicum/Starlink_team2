@@ -10,7 +10,7 @@ from backend.models.user import User
 class Quiz(AbstractModelForTime):
     """Модель квиза.
 
-    - name: Название квиза;
+    - title: Название квиза;
     - description: Описание квиза;
     - active: Активен ли квиз
     - edited_by: Кто изменил квиз;
@@ -19,9 +19,9 @@ class Quiz(AbstractModelForTime):
     - edited_at: Дата и время редактирования.
     """
 
-    name = Column(String(settings.quiz_name_length), unique=True)
+    title = Column(String(settings.quiz_name_length), unique=True)
     description = Column(Text, nullable=True)
-    active = Column(Boolean, default=False)
+    is_active = Column(Boolean, default=False)
     edited_by = Column(pg_UUID, ForeignKey('users.unique_id'), nullable=True)
     created_by = Column(
         pg_UUID,
@@ -38,6 +38,6 @@ class Quiz(AbstractModelForTime):
 
     def __repr__(self) -> str:
         return (
-            f'{self.name=}; {self.description[:30]=}; {self.active=}; '
+            f'{self.title=}; {self.description[:30]=}; {self.active=}; '
             f'{self.edited_by=}; {self.created=}; {super().__repr__()}'
         )

@@ -14,12 +14,12 @@ from .quiz import Quiz
 from .telegram_user import TelegramUser
 
 
-class UserQuize(AbstractModelForTime):
+class UserQuiz(AbstractModelForTime):
     """Модель участника квиза.
 
     Модель содержит:
     - tg_user_id: Идентификатор телеграма пользователя;
-    - quize_id: Идентификатор квиза
+    - quiz_id: Идентификатор квиза
     - status: Статус квиза для пользователя;
     - started_time: начало прохождения квиза;
     - finished_time: Когда пользователь закончил квиз;
@@ -27,17 +27,19 @@ class UserQuize(AbstractModelForTime):
     - edited_at: Дата и время редактирования.
     """
 
+    __tablename__ = "userquizes"
+
     tg_user_id = Column(pg_UUID, ForeignKey('telegramusers.unique_id'))
-    quize_id = Column(pg_UUID, ForeignKey('quizs.unique_id'), unique=True)
+    quiz_id = Column(pg_UUID, ForeignKey('quizs.unique_id'), unique=True)
     status = Column(Boolean, default=True)
-    started_time = Column(DateTime, default=datetime.now)
-    finished_time = Column(DateTime, nullable=True)
+    started_at = Column(DateTime, default=datetime.now)
+    finished_at = Column(DateTime, nullable=True)
     telegram_user = relationship(TelegramUser)
     quiz = relationship(Quiz)
 
     def __repr__(self) -> str:
         return (
-            f'{self.tg_user_id=}; {self.quize_id=}; '
-            f'{self.status=}; {self.started_time=}; '
+            f'{self.tg_user_id=}; {self.quiz_id=}; '
+            f'{self.status=}; {self.started_at=}; '
             f'{super().__repr__()}'
         )
