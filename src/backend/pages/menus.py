@@ -2,8 +2,16 @@ from pathlib import Path
 from typing import Optional
 
 import aiofiles
-from fastapi import APIRouter, Depends, Form, Request, UploadFile
-from fastapi.responses import HTMLResponse
+from fastapi import (
+    APIRouter,
+    Depends,
+    Form,
+    Request,
+    Response,
+    UploadFile,
+    status,
+)
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
 from backend.core.auth import get_current_user_from_token
@@ -24,9 +32,6 @@ async def menu_view(
     """Отображение страницы с сгенерированным меню."""
     count = await menu_builder_crud.count_rows()
     items = await menu_builder_crud.get_multi()
-    # await menu_builder_crud.create_role('junior')
-    # await menu_builder_crud.create_role('middle')
-    # await menu_builder_crud.create_role('senior')
     context = {
         'request': request,
         'user': user,
@@ -104,7 +109,10 @@ async def create_menu_item_page(
     return templates.TemplateResponse('create_menu_item.html', context)
 
 
-@router.get('/edit/{unique_id}', response_class=HTMLResponse)
+@router.get(
+    '/edit/{unique_id}',
+    response_class=HTMLResponse,
+)
 async def edit_menu_item_page(
     request: Request,
     unique_id: str,
@@ -114,7 +122,8 @@ async def edit_menu_item_page(
     item = await menu_builder_crud.get(unique_id)
     if not item:
         return templates.TemplateResponse(
-            '404.html', context={'request': request},
+            '404.html',
+            context={'request': request},
         )
     folder_items = await menu_builder_crud.menus_folders()
     roles = await menu_builder_crud.get_roles()
@@ -127,3 +136,42 @@ async def edit_menu_item_page(
         'selected_roles': [role.unique_id for role in item.role],
     }
     return templates.TemplateResponse('edit_menu_item.html', context)
+
+
+@router.post('/edit', response_class=HTMLResponse)
+async def edit_menu_item(
+    request: Request,
+    menu_image: UploadFile = Form(),
+    item_name: str = Form(),
+    parent: str = Form(),
+    is_folder: Optional[bool] = Form(default=False),
+    roles: Optional[list] = Form(default=[]),
+    for_quest: Optional[bool] = Form(default=False),
+    content: Optional[str] = Form(default=''),
+    unique_id: str = Form(),
+    user: Admin = Depends(get_current_user_from_token),
+) -> Response:
+    """Редактирование меню."""
+    errors = []
+    item = await menu_builder_crud.get(unique_id)
+    if not item:
+        return templates.TemplateResponse(
+            '404.html', context={'request': request},
+        )
+    item.content = content
+
+    # if menu_image.filename:
+    #     data.image_link = menu_image.filename
+    try:
+        await menu_builder_crud.update(item)
+    except Exception as e:
+        errors.append(e)
+    print(errors)
+    if menu_image.filename:
+        contents = await menu_image.read()
+        async with aiofiles.open(
+            f'{BASE_DIR}/static/images/{menu_image.filename}',
+            'wb',
+        ) as f:
+            await f.write(contents)
+    return RedirectResponse('/menu', status_code=status.HTTP_302_FOUND)
