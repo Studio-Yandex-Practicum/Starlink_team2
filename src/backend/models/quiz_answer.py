@@ -23,6 +23,8 @@ class QuizAnswer(AbstractModelForTime):
     - edited_at: дата и время редактирования.
     """
 
+    __tablename__ = "quizanswers"
+
     quiz_id = Column(pg_UUID, ForeignKey('quizs.unique_id'))
     question_id = Column(pg_UUID, ForeignKey('quizquestions.unique_id'))
     correct_answer = Column(Boolean, default=False)
