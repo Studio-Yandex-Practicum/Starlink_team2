@@ -1,4 +1,5 @@
 from sqlalchemy import select
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from backend.models import EmployeeEmail, Menu, Role
@@ -53,6 +54,21 @@ async def create_data_in_db(
     return message_to_send
 
 
+async def create_data_in_db_no_check(
+    model: EmployeeEmail | Menu | Role,
+    data: list[dict],
+) -> str:
+    """Заполнение базы данных без проверки."""
+    create_crud = CreateDataInDB(model)
+    for item in data:
+        await create_crud.fill_db_from_json(
+            data=item,
+            session=async_session,
+        )
+    message_to_send = 'Создано inline меню'
+    return message_to_send
+
+
 async def generate_menu(role_name: str) -> list[dict]:
     """Генерация меню."""
     async with async_session() as asession:
@@ -72,3 +88,39 @@ async def generate_menu(role_name: str) -> list[dict]:
         menu_with_role.append(menu_dict)
         count += 1
     return menu_with_role
+
+
+async def generate_parent_menu(role_name: str, parent_id: UUID) -> list[dict]:
+    """Генерация меню."""
+    async with async_session() as asession:
+        role_access = await asession.execute(
+            select(Role).where(Role.role_name == role_name),
+        )
+        role_access = role_access.scalars().first()
+        role_access = role_access.unique_id
+    count = 1
+    async with async_session() as asession:
+        parent_menu_name = await asession.execute(
+            select(Menu.name).where(Menu.unique_id == parent_id),
+        )
+        parent_menu_name = parent_menu_name.scalars().first()
+    menu_with_parent = []
+    while count < 30:
+        menu_dict = {
+            'name': f'Inline {parent_menu_name} for {role_name} {count}',
+            'content': f'Content {parent_menu_name} for {role_name} {count}',
+            'role_access': role_access,
+            'parent': parent_id,
+        }
+        # print(menu_dict)
+        menu_with_parent.append(menu_dict)
+        count += 1
+    return menu_with_parent
+
+
+async def get_all_menu_id() -> list[dict]:
+    """Получение всех id ролей."""
+    async with async_session() as asession:
+        role_id = await asession.execute(select(Menu.unique_id))
+        role_id = role_id.scalars().all()
+    return role_id

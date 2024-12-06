@@ -1,7 +1,13 @@
 from telebot.types import Message
 
 from backend.models import EmployeeEmail, Menu, Role
-from bot.crud.fill_db import create_data_in_db, generate_menu
+from bot.crud.fill_db import (
+    create_data_in_db,
+    create_data_in_db_no_check,
+    generate_menu,
+    generate_parent_menu,
+    get_all_menu_id,
+)
 from bot.crud.telegram_menu import telegram_menu_crud
 from bot.crud.telegram_user import telegram_users_crud
 from bot.data.data import EMAILS, MENUS, ROLES
@@ -61,7 +67,9 @@ async def handle_start(message: Message) -> None:
     reply_markup = await build_reply_keyboard(menu_items=menu_items, page=page)
 
     await bot.send_message(
-        message.chat.id, message_to_send, reply_markup=reply_markup,
+        message.chat.id,
+        message_to_send,
+        reply_markup=reply_markup,
     )
 
     logger.info(f'{message.from_user.username} запустил бота')
@@ -86,6 +94,22 @@ async def handle_db(message: Message) -> None:
         data.extend(data_to_extend)
 
     message_to_send = await create_data_in_db(model, data)
+
+    parent_list_id = await get_all_menu_id()
+    model = Menu
+    data = []
+    for parent_id in parent_list_id:
+        # print(parent_id)
+        for role in ROLES:
+            role_name = role['role_name']
+            data_to_extend = await generate_parent_menu(
+                role_name=role_name, parent_id=parent_id
+            )
+            # print(data_to_extend)
+            data.extend(data_to_extend)
+    # print(data)
+    message_to_send = await create_data_in_db_no_check(model, data)
+
     await bot.send_message(
         message.chat.id,
         message_to_send,
@@ -115,13 +139,16 @@ async def get_data_from_db(message: Message) -> None:
     elif message.text == constants.FORWARD_NAV_TEXT:
         page += 1
         reply_markup = await build_reply_keyboard(
-            menu_items=menu_items, page=page,
+            menu_items=menu_items,
+            page=page,
         )
 
         message_to_send = 'Переходим на след. страницу'
 
         await bot.send_message(
-            message.chat.id, message_to_send, reply_markup=reply_markup,
+            message.chat.id,
+            message_to_send,
+            reply_markup=reply_markup,
         )
 
         logger.info(f'{message.from_user.username} перешел на стр. #{page}')
@@ -129,13 +156,16 @@ async def get_data_from_db(message: Message) -> None:
         page -= 1
 
         reply_markup = await build_reply_keyboard(
-            menu_items=menu_items, page=page,
+            menu_items=menu_items,
+            page=page,
         )
 
         message_to_send = 'Переходим на пред. страницу'
 
         await bot.send_message(
-            message.chat.id, message_to_send, reply_markup=reply_markup,
+            message.chat.id,
+            message_to_send,
+            reply_markup=reply_markup,
         )
 
         logger.info(f'{message.from_user.username} на перешел на стр. #{page}')
