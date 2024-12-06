@@ -4,7 +4,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import selectinload
 
 from backend.core.db import get_async_session
-from backend.crud.base import CRUDBase
+from backend.crud.base import CRUDBase, ModelType
 from backend.models.menu import Menu
 from backend.models.role import Role
 
@@ -91,6 +91,14 @@ class CRUDMenuBuilder(CRUDBase):
                 ),
             )  # noqa
         return db_obj.scalars().first()
+
+    async def update(self, db_obj: ModelType) -> ModelType:
+        """Обновление объекта в БД."""
+        async with get_async_session() as session:
+            session.add(db_obj)
+            await session.commit()
+            await session.refresh(db_obj)
+        return db_obj
 
 
 menu_builder_crud = CRUDMenuBuilder(Menu)
