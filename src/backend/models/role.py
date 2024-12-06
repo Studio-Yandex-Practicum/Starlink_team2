@@ -27,7 +27,11 @@ class Role(AbstractModelForTime):
         String(length=settings.role_name_max_length),
         unique=True,
     )
-    menus = relationship('Menu', back_populates='role', secondary='menu_role')
+    menus = relationship(
+        'Menu',
+        back_populates='role',
+        secondary='menu_role',
+    )
 
     def __repr__(self) -> str:
         return f'{self.title=}; {super().__repr__()}'
