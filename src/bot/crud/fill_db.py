@@ -65,8 +65,7 @@ async def create_data_in_db_no_check(
             data=item,
             session=async_session,
         )
-    message_to_send = 'Создано inline меню'
-    return message_to_send
+    return 'Создано inline меню'
 
 
 async def generate_menu(role_name: str) -> list[dict]:
@@ -122,5 +121,4 @@ async def get_all_menu_id() -> list[dict]:
     """Получение всех id ролей."""
     async with async_session() as asession:
         role_id = await asession.execute(select(Menu.unique_id))
-        role_id = role_id.scalars().all()
-    return role_id
+    return role_id.scalars().all()
