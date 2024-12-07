@@ -4,7 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.models import Menu
+from backend.models import Menu, Role
 from bot import constants
 
 
@@ -20,16 +20,24 @@ class CRUDTelegramMenu:
         session: AsyncSession,
         role_id: Optional[str] = None,
         parent_id: Optional[int] = None,
-    ) -> List[Menu]:
+    ) -> List[Menu] | None:
         """Получает элементы меню для replyKeyboard."""
         async with session() as asession:
             result = await asession.execute(
-                select(Menu).where(
-                    Menu.parent == parent_id,
-                    Menu.role_access == role_id,
-                ),
+                select(Menu).where(Menu.guest_access.is_(True))
             )
             result = result.scalars().all()
+
+            role_id_menus = await asession.execute(
+                select(Menu)
+                .join(Role.menus)
+                .filter(Role.unique_id == role_id, Menu.parent == parent_id),
+            )
+            role_id_menus = role_id_menus.scalars().all()
+
+            result.extend(role_id_menus)
+            result = sorted(result, key=lambda x: x.title)
+
             menu_list = []
             for elem in result:
                 menu_list.append(
@@ -38,7 +46,7 @@ class CRUDTelegramMenu:
                         constants.NAME_KEY: elem.title,
                         constants.PARENT_KEY: elem.parent,
                         constants.IS_FOLDER_KEY: elem.is_folder,
-                        constants.ROLES_KEY: elem.role_access,
+                        constants.ROLES_KEY: role_id,
                     },
                 )
             return menu_list

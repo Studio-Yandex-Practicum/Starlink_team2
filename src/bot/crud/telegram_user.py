@@ -142,17 +142,18 @@ class CRUDTelegramUsers:
         )
 
         # тестовые роли для проверки работы бота - УДАЛИТЬ ПОСЛЕ ТЕСТИРОВАНИЯ
-        test_role_id_1 = await self.get_role_id_by_name(
-            session=session,
-            role_name='Кандидат',
-        )
-        test_role_id_2 = await self.get_role_id_by_name(
-            session=session,
-            role_name='Сотрудник',
-        )
+        # user_role_id = await self.get_role_id_by_name(
+        #     session=session,
+        #     role_name='Кандидат',
+        # )
+        # user_role_id = await self.get_role_id_by_name(
+        #     session=session,
+        #     role_name='Сотрудник',
+        # )
         # тестовые роли для проверки работы бота - УДАЛИТЬ ПОСЛЕ ТЕСТИРОВАНИЯ
 
-        role_id_list = [user_role_id, test_role_id_1, test_role_id_2]
+        # role_id_list = [user_role_id, test_role_id_1, test_role_id_2]
+        role_id_list = [user_role_id]
         menu_items = []
         for role in role_id_list:
             menu_item = await telegram_menu_crud.get_menu_for_role(
