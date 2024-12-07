@@ -19,11 +19,6 @@ class Role(AbstractModelForTime):
             f'{settings.role_name_min_length} '
             f'AND {settings.role_name_max_length}',
         ),
-        CheckConstraint(
-            'SELECT COUNT(*) FROM roles WHERE '
-            'default_minimal_role = TRUE <= 1',
-            name='default_minimal_role_only_one',
-        ),
     )
 
     title = Column(
