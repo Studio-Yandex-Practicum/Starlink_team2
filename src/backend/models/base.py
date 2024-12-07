@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Column, DateTime
+from sqlalchemy import Column, DateTime, func
 
 from backend.core.db import Base
 
@@ -14,7 +14,7 @@ class AbstractModelForTime(Base):
 
     __abstract__ = True
 
-    created_at = Column(DateTime, default=datetime.now)
+    created_at = Column(DateTime, server_default=func.now())
     edited_at = Column(DateTime, nullable=True)
 
     def __repr__(self) -> str:

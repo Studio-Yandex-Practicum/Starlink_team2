@@ -21,7 +21,8 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         self.model = model
 
     async def get(
-        self, obj_id: uuid4,
+        self,
+        obj_id: uuid4,
     ) -> Optional[ModelType]:
         """Получение объекта ио ID."""
         async with get_async_session() as session:
@@ -33,11 +34,13 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         return db_obj.scalars().first()
 
     async def create(
-            self, obj_in_data: CreateSchemaType,
+        self,
+        obj_in_data: CreateSchemaType,
     ) -> list[ModelType]:
         """Создание нового объекта модели."""
         async with get_async_session() as session:
             db_obj = self.model(**obj_in_data.dict())
+            db_obj.created_at = datetime.now()
             session.add(db_obj)
             await session.commit()
             await session.refresh(db_obj)
@@ -46,11 +49,15 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     async def get_multi(self) -> list[ModelType]:
         """Получение всех объектов из модели."""
         async with get_async_session() as session:
-            db_objs = await session.execute(select(self.model))
+            db_objs = await session.execute(
+                select(self.model).order_by(self.model.created_at),
+            )
         return db_objs.scalars().all()
 
     async def update(
-            self, db_obj: ModelType, obj_in: UpdateSchemaType,
+        self,
+        db_obj: ModelType,
+        obj_in: UpdateSchemaType,
     ) -> ModelType:
         """Обновление объекта в БД."""
         obj_data = jsonable_encoder(db_obj)
