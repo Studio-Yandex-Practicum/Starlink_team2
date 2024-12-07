@@ -19,8 +19,8 @@ router = APIRouter()
     response_model_exclude_none=True,
 )
 async def roles_view(
-        request: Request,
-        user: Admin = Depends(get_current_user_from_token),
+    request: Request,
+    user: Admin = Depends(get_current_user_from_token),
 ) -> templates.TemplateResponse:
     """Обрабатывает запрос на страницу Роли.
 
@@ -42,9 +42,9 @@ async def roles_view(
     response_class=HTMLResponse,
 )
 async def roles_create(
-        request: Request,
-        title: str = Form(),
-        user: Admin = Depends(get_current_user_from_token),
+    request: Request,
+    title: str = Form(),
+    user: Admin = Depends(get_current_user_from_token),
 ) -> templates.TemplateResponse:
     """Обрабатывает запрос на страницу Роли.
 
@@ -75,9 +75,9 @@ async def roles_create(
     response_class=HTMLResponse,
 )
 async def role_view(
-        request: Request,
-        unique_id: str,
-        user: Admin = Depends(get_current_user_from_token),
+    request: Request,
+    unique_id: str,
+    user: Admin = Depends(get_current_user_from_token),
 ) -> templates.TemplateResponse:
     """Обрабатывает запрос на страницу Редактирование Роли.
 
@@ -101,9 +101,11 @@ async def role_view(
     response_model=RoleDB,
 )
 async def role_edit(
-        unique_id: str,
-        title: str = Form(),
-        user: Admin = Depends(get_current_user_from_token),
+    request: Request,
+    unique_id: str,
+    title: str = Form(),
+    is_minimal: bool = Form(False),
+    user: Admin = Depends(get_current_user_from_token),
 ) -> RedirectResponse:
     """Обрабатывает запрос на страницу Редактирование Роли.
 
@@ -111,15 +113,32 @@ async def role_edit(
     :param title: Название Роли
     :param user: Текущий пользователь (извлекается из токена).
     """
+    errors = {}
+    if is_minimal:
+        check_minimal_in_db = await role_crud.get_minimal_role()
+        if check_minimal_in_db:
+            errors['is_minimal'] = (
+                'Минимальная роль уже есть в базе! Отредактируйте роль: '
+                f'{check_minimal_in_db.title}'
+            )
     role = await role_crud.get(unique_id)
-    await role_crud.update(
-        role,
-        RoleDB(
-            title=title,
-            edited_at=datetime.now(),
-        ),
-    )
-    return RedirectResponse('/roles', status_code=301)
+    if not errors:
+        await role_crud.update(
+            role,
+            RoleDB(
+                title=title,
+                edited_at=datetime.now(),
+                default_minimal_role=is_minimal,
+            ),
+        )
+        return RedirectResponse('/roles', status_code=301)
+    context = {
+        "user": user,
+        "request": request,
+        "role": role,
+        "errors": errors,
+    }
+    return templates.TemplateResponse("role.html", context)
 
 
 @router.post(
@@ -128,8 +147,8 @@ async def role_edit(
     response_model=RoleDelete,
 )
 async def role_delete(
-        unique_id: str,
-        user: Admin = Depends(get_current_user_from_token),
+    unique_id: str,
+    user: Admin = Depends(get_current_user_from_token),
 ) -> RedirectResponse:
     """Обрабатывает запрос на страницу удаление Роли.
 

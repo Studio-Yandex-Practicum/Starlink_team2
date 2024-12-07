@@ -9,6 +9,7 @@
       <th scope="col">№</th>
       <th scope="col">Роль</th>
       <th scope="col"></th>
+      <th scope="col"></th>
     </tr>
   </thead>
   <tbody>
@@ -17,6 +18,11 @@
       <td class="col-1">{{ loop.index }}</td>
       <td class="col-8">
         <a href="{{ url_for('role_view', unique_id=role.unique_id) }}">{{ role.title }}</a>
+      </td>
+      <td>
+        {% if role.default_minimal_role %}
+          По-умолчанию
+        {% endif %}
       </td>
       <td class="col-1">
         <form action="{{ url_for('role_delete', unique_id=role.unique_id) }}" method="post" style="display: inline;">

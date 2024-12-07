@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 from uuid import uuid4
 
 from pydantic import BaseModel, Extra
@@ -35,4 +36,5 @@ class RoleCreate(RoleBase):
 class RoleDB(RoleCreate):
     """Схема RoleDB."""
 
-    edited_at: datetime = None
+    edited_at: Optional[datetime] = None
+    default_minimal_role: bool = False
