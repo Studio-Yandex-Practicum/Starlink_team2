@@ -1,10 +1,8 @@
-from sqlalchemy import CheckConstraint, Column, String
+from sqlalchemy import Boolean, CheckConstraint, Column, String
 from sqlalchemy.orm import relationship
 
 from backend.core.config import settings
 from backend.models.base import AbstractModelForTime
-
-# from backend.models.menu import Menu
 
 
 class Role(AbstractModelForTime):
@@ -21,12 +19,18 @@ class Role(AbstractModelForTime):
             f'{settings.role_name_min_length} '
             f'AND {settings.role_name_max_length}',
         ),
+        CheckConstraint(
+            'SELECT COUNT(*) FROM roles WHERE '
+            'default_minimal_role = TRUE <= 1',
+            name='default_minimal_role_only_one',
+        ),
     )
 
     title = Column(
         String(length=settings.role_name_max_length),
         unique=True,
     )
+    default_minimal_role = Column(Boolean, default=False)
     menus = relationship(
         'Menu',
         back_populates='role',
