@@ -12,7 +12,7 @@ from bot.crud.telegram_menu import telegram_menu_crud
 from bot.crud.telegram_user import telegram_users_crud
 from bot.data.data import EMAILS, MENUS, ROLES
 from bot.db import async_session
-from bot.keyboard import build_reply_keyboard
+from bot.keyboard import build_keyboard
 from bot.loader import bot_instance as bot
 from bot.utils.logger import get_logger
 
@@ -60,11 +60,12 @@ async def handle_start(message: Message) -> None:
             f'Ура мы нашли вас в базе данных: ' f'{username} {telegram_id}'
         )
 
-    menu_items = await get_menu_for_user_roles(
+    menu_items = await telegram_users_crud.get_menu_for_user_roles(
+        session=async_session,
         username=message.from_user.username,
     )
 
-    reply_markup = await build_reply_keyboard(menu_items=menu_items, page=page)
+    reply_markup = await build_keyboard(menu_items=menu_items, page=page)
 
     await bot.send_message(
         message.chat.id,
@@ -75,6 +76,7 @@ async def handle_start(message: Message) -> None:
     logger.info(f'{message.from_user.username} запустил бота')
 
 
+# ## УДАЛИТЬ # ## УДАЛИТЬ# ## УДАЛИТЬ# ## УДАЛИТЬ# ## УДАЛИТЬ# ## УДАЛИТЬ
 @bot.message_handler(commands=['db'])
 async def handle_db(message: Message) -> None:
     """Обработчик команды /db."""
@@ -115,28 +117,59 @@ async def handle_db(message: Message) -> None:
     logger.info(f'{message.from_user.username} работал с базой данных')
 
 
+# ## УДАЛИТЬ # ## УДАЛИТЬ# ## УДАЛИТЬ# ## УДАЛИТЬ# ## УДАЛИТЬ# ## УДАЛИТЬ
+
+
 @bot.message_handler(content_types=['text'])
 async def get_data_from_db(message: Message) -> None:
     """Обработчик текстовых сообщений."""
     global page
 
-    menu_items = await get_menu_for_user_roles(
+    menu_items = await telegram_users_crud.get_menu_for_user_roles(
+        session=async_session,
         username=message.from_user.username,
     )
 
-    text_from_db = await telegram_menu_crud.get_content_by_menu_name(
+    menu_from_db = await telegram_menu_crud.get_content_by_menu_name(
         session=async_session,
         menu_name=message.text,
     )
 
-    if text_from_db is not None:
+    if menu_from_db is not None:
+        unique_id = menu_from_db.unique_id
+    else:
+        unique_id = None
+
+    menu_child_from_db = await telegram_menu_crud.get_menu_child_by_parent_id(
+        session=async_session,
+        parent_id=unique_id,
+    )
+
+    if menu_child_from_db is not None:
+        if unique_id is not None:
+            menu_items = await telegram_users_crud.get_menu_for_user_roles(
+                session=async_session,
+                username=message.from_user.username,
+                parent_id=unique_id,
+            )
+            inline_keyboard = await build_keyboard(
+                menu_items=menu_items,
+                parent_id=unique_id,
+                is_inline=True,
+            )
+            await bot.send_message(
+                message.chat.id,
+                text=menu_from_db.content,
+                reply_markup=inline_keyboard,
+            )
+    else:
         await bot.send_message(
             message.chat.id,
-            text=text_from_db,
+            text=menu_from_db.content,
         )
-    elif message.text == constants.FORWARD_NAV_TEXT:
+    if message.text == constants.FORWARD_NAV_TEXT:
         page += 1
-        reply_markup = await build_reply_keyboard(
+        reply_markup = await build_keyboard(
             menu_items=menu_items,
             page=page,
         )
@@ -150,10 +183,10 @@ async def get_data_from_db(message: Message) -> None:
         )
 
         logger.info(f'{message.from_user.username} перешел на стр. #{page}')
-    elif message.text == constants.BACK_NAV_TEXT:
+    if message.text == constants.BACK_NAV_TEXT:
         page -= 1
 
-        reply_markup = await build_reply_keyboard(
+        reply_markup = await build_keyboard(
             menu_items=menu_items,
             page=page,
         )
@@ -169,29 +202,40 @@ async def get_data_from_db(message: Message) -> None:
         logger.info(f'{message.from_user.username} на перешел на стр. #{page}')
 
 
-async def get_menu_for_user_roles(username: str) -> list[dict] | None:
-    """Функция для получения меню для пользователя."""
-    user_role_id = await telegram_users_crud.get_user_role(
-        session=async_session,
-        username=username,
-    )
-
-    # тестовые роли для проверки работы бота
-    test_role_id_1 = await telegram_menu_crud.get_role_id_by_name(
-        session=async_session,
-        role_name='Кандидат',
-    )
-    test_role_id_2 = await telegram_menu_crud.get_role_id_by_name(
-        session=async_session,
-        role_name='Сотрудник',
-    )
-
-    role_id_list = [user_role_id, test_role_id_1, test_role_id_2]
-    menu_items = []
-    for role in role_id_list:
-        menu_item = await telegram_menu_crud.get_menu_for_role(
+@bot.callback_query_handler(func=lambda call: True)
+async def handle_callback(call):
+    call_data = call.data.split('_')
+    if call_data[0] == constants.SELECT_CALLBACK_PREFIX.split('_')[0]:
+        message_to_send = await telegram_menu_crud.get_content_by_menu_id(
             session=async_session,
-            role_id=role,
+            unique_id=call_data[-1],
         )
-        menu_items.extend(menu_item)
-    return menu_items
+        await bot.edit_message_text(
+            text=message_to_send.content,
+            chat_id=call.message.chat.id,
+            message_id=call.message.message_id,
+            reply_markup=call.message.reply_markup,
+        )
+    if call_data[0] == constants.NAV_CALLBACK_PREFIX.split('_')[0]:
+        menu_from_db = await telegram_menu_crud.get_content_by_menu_id(
+            session=async_session,
+            unique_id=call_data[-1],
+        )
+        menu_items = await telegram_users_crud.get_menu_for_user_roles(
+            session=async_session,
+            username=call.from_user.username,
+            parent_id=menu_from_db.unique_id,
+        )
+        inline_keyboard = await build_keyboard(
+            menu_items=menu_items,
+            parent_id=menu_from_db.unique_id,
+            is_inline=True,
+            page=int(call_data[1]),
+        )
+        message_to_send = f'Вы перешли на страницу {call_data[1]}'
+        await bot.edit_message_text(
+            text=message_to_send,
+            chat_id=call.message.chat.id,
+            message_id=call.message.message_id,
+            reply_markup=inline_keyboard,
+        )

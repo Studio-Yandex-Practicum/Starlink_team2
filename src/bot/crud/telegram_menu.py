@@ -1,9 +1,11 @@
 from typing import List, Optional
 
 from sqlalchemy import select
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.models import Menu, Role
+from backend.models import Menu
+from bot import constants
 
 
 class CRUDTelegramMenu:
@@ -32,39 +34,50 @@ class CRUDTelegramMenu:
             for elem in result:
                 menu_list.append(
                     {
-                        'UniqueID': elem.unique_id,
-                        'Name': elem.title,
-                        'Parent': elem.parent,
-                        'Is_folder': elem.is_folder,
-                        'Roles': elem.role_access,
+                        constants.UNIQUE_ID_KEY: elem.unique_id,
+                        constants.NAME_KEY: elem.title,
+                        constants.PARENT_KEY: elem.parent,
+                        constants.IS_FOLDER_KEY: elem.is_folder,
+                        constants.ROLES_KEY: elem.role_access,
                     },
                 )
-
-                # res.append(menu_list.unique_id)
             return menu_list
-
-    async def get_role_id_by_name(
-        self,
-        session: AsyncSession,
-        role_name: str,
-    ) -> list[dict] | None:
-        """Получение id роли по имени."""
-        async with session() as asession:
-            role_access = await asession.execute(
-                select(Role).where(Role.title == role_name),
-            )
-            role_access = role_access.scalars().first()
-        return role_access.unique_id if role_access else None
 
     async def get_content_by_menu_name(
         self,
         session: AsyncSession,
         menu_name: str,
-    ) -> str:
+    ) -> Menu | None:
         """Получение контента по имени меню."""
         async with session() as asession:
             content = await asession.execute(
-                select(Menu.content).where(Menu.title == menu_name),
+                select(Menu).where(Menu.title == menu_name),
+            )
+            content = content.scalars().first()
+        return content if content else None
+
+    async def get_content_by_menu_id(
+        self,
+        session: AsyncSession,
+        unique_id: UUID,
+    ) -> Menu | None:
+        """Получение контента по ID меню."""
+        async with session() as asession:
+            content = await asession.execute(
+                select(Menu).where(Menu.unique_id == unique_id),
+            )
+            content = content.scalars().first()
+        return content if content else None
+
+    async def get_menu_child_by_parent_id(
+        self,
+        session: AsyncSession,
+        parent_id: UUID,
+    ) -> Menu | None:
+        """Получение контента по ID меню."""
+        async with session() as asession:
+            content = await asession.execute(
+                select(Menu).where(Menu.parent == parent_id),
             )
             content = content.scalars().first()
         return content if content else None

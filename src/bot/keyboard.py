@@ -129,7 +129,8 @@ async def build_menu_buttons(
             return [
                 [
                     InlineKeyboardButton(
-                        constants.NO_ITEMS_TEXT, callback_data=constants.NOOP,
+                        constants.NO_ITEMS_TEXT,
+                        callback_data=constants.NOOP,
                     ),
                 ],
             ]
@@ -150,7 +151,8 @@ async def build_menu_buttons(
                     f'{item[constants.UNIQUE_ID_KEY]}'
                 )
             return InlineKeyboardButton(
-                text=item[constants.NAME_KEY], callback_data=callback_data,
+                text=item[constants.NAME_KEY],
+                callback_data=callback_data,
             )
         return KeyboardButton(item[constants.NAME_KEY])
 
@@ -206,17 +208,18 @@ async def build_keyboard(
     )
     if navigation_buttons:
         keyboard.append(navigation_buttons)
-    if parent_id is not None:
-        back_button = (
-            InlineKeyboardButton(
-                constants.BACK_TEXT,
-                callback_data=f'{constants.BACK_CALLBACK_PREFIX}'
-                f'{parent_id}',
-            )
-            if is_inline
-            else KeyboardButton(constants.BACK_TEXT)
-        )
-        keyboard.append([back_button])
+    # Нужно проработать кнопку возвращения назад (на уровень родителя)
+    # if parent_id is not None:
+    #     back_button = (
+    #         InlineKeyboardButton(
+    #             constants.BACK_TEXT,
+    #             callback_data=f'{constants.BACK_CALLBACK_PREFIX}'
+    #             f'{parent_id}',
+    #         )
+    #         if is_inline
+    #         else KeyboardButton(constants.BACK_TEXT)
+    #     )
+    #     keyboard.append([back_button])
 
     if is_inline:
         return InlineKeyboardMarkup(keyboard)
@@ -224,59 +227,3 @@ async def build_keyboard(
     for row in keyboard:
         reply_markup.row(*row)
     return reply_markup
-
-
-async def build_reply_keyboard(
-    menu_items: List[MenuItem],
-    # user_roles: List[str] = None,
-    parent_id: Optional[int] = None,
-    page: int = constants.PAGE,
-    items_per_page: int = constants.ITEMS_PER_PAGE,
-    buttons_per_row: int = constants.BUTTONS_PER_ROW,
-) -> ReplyKeyboardMarkup:
-    """Создает ReplyKeyboardMarkup с поддержкой иерархии и пагинации.
-
-    :param menu_items: Список всех элементов меню.
-    :param user_roles: Список ролей пользователя.
-    :param parent_id: Идентификатор родительского меню (None для корневого).
-    :param page: Текущая страница.
-    :param items_per_page: Максимальное количество кнопок на странице.
-    :param buttons_per_row: Количество кнопок в одной строке.
-    """
-    return await build_keyboard(
-        menu_items,
-        # user_roles,
-        parent_id,
-        page,
-        items_per_page,
-        buttons_per_row,
-        is_inline=False,
-    )
-
-
-async def build_inline_keyboard(
-    menu_items: List[MenuItem],
-    user_roles: List[str],
-    parent_id: Optional[int] = None,
-    page: int = constants.PAGE,
-    items_per_page: int = constants.ITEMS_PER_PAGE,
-    buttons_per_row: int = constants.BUTTONS_PER_ROW,
-) -> InlineKeyboardMarkup:
-    """Создает InlineKeyboardMarkup с поддержкой иерархии и пагинации.
-
-    :param menu_items: Список всех элементов меню.
-    :param user_roles: Список ролей пользователя.
-    :param parent_id: Идентификатор родительского меню (None для корневого).
-    :param page: Текущая страница.
-    :param items_per_page: Максимальное количество кнопок на странице.
-    :param buttons_per_row: Количество кнопок в одной строке.
-    """
-    return await build_keyboard(
-        menu_items,
-        user_roles,
-        parent_id,
-        page,
-        items_per_page,
-        buttons_per_row,
-        is_inline=True,
-    )

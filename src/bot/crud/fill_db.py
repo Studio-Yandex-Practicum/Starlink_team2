@@ -100,7 +100,7 @@ async def generate_menu(role_name: str) -> list[dict]:
     menu_with_role = []
     while count < COUNT_LIMIT:
         menu_dict = {
-            'title': f'Меню для {role_name} {count}',
+            'title': f'М_{role_name[0]}_{count}',
             'content': f'Контент для {role_name} {count}',
             'role_access': role_access,
         }
@@ -126,8 +126,8 @@ async def generate_parent_menu(role_name: str, parent_id: UUID) -> list[dict]:
     menu_with_parent = []
     while count < COUNT_LIMIT:
         menu_dict = {
-            'title': f'Inline {parent_menu_name} for {role_name} {count}',
-            'content': f'Content {parent_menu_name} for {role_name} {count}',
+            'title': f'{count}_Inline_{parent_menu_name}_{role_name}',
+            'content': f'{count} Content {parent_menu_name} for {role_name}',
             'role_access': role_access,
             'parent': parent_id,
         }
