@@ -1,16 +1,16 @@
 from telebot.types import Message
 
 from backend.models import EmployeeEmail, Menu, Role
-from bot.crud.fill_db import (
+from bot.crud.telegram_menu import telegram_menu_crud
+from bot.crud.telegram_user import telegram_users_crud
+from bot.data.data import EMAILS, MENUS, ROLES
+from bot.data.fill_db import (
     create_data_in_db,
     create_data_in_db_no_check,
     generate_menu,
     generate_parent_menu,
     get_all_menu_id,
 )
-from bot.crud.telegram_menu import telegram_menu_crud
-from bot.crud.telegram_user import telegram_users_crud
-from bot.data.data import EMAILS, MENUS, ROLES
 from bot.db import async_session
 from bot.keyboard import build_keyboard
 from bot.loader import bot_instance as bot
