@@ -176,4 +176,4 @@ cython_debug/
 # dev files
 .env copy
 docker-compose.yml
-src/bot/data/
+/backup
