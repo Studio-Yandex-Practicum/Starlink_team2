@@ -23,29 +23,37 @@ class CRUDTelegramMenu:
     ) -> List[Menu] | None:
         """Получает элементы меню для replyKeyboard."""
         async with session() as asession:
-            result = await asession.execute(
-                select(Menu).where(Menu.guest_access.is_(True)),
-            )
-            result = result.scalars().all()
-
-            role_id_menus = await asession.execute(
-                select(Menu)
-                .join(Role.menus)
-                .filter(Role.unique_id == role_id, Menu.parent == parent_id),
-            )
-            role_id_menus = role_id_menus.scalars().all()
-
-            result.extend(role_id_menus)
-            result = sorted(result, key=lambda x: x.title)
+            if role_id is None:
+                result_menu = await asession.execute(
+                    select(Menu).where(
+                        Menu.guest_access.is_(True), Menu.parent == parent_id
+                    ),
+                )
+            else:
+                result_menu = await asession.execute(
+                    select(Menu)
+                    .where(
+                        Menu.guest_access.is_(True), Menu.parent == parent_id
+                    )
+                    .union(
+                        select(Menu)
+                        .join(Role.menus)
+                        .filter(
+                            Role.unique_id == role_id, Menu.parent == parent_id
+                        )
+                    )
+                    .order_by(Menu.title)
+                )
+            result_menu = result_menu.scalars().all()
 
             menu_list = []
-            for elem in result:
+            for menu in result_menu:
                 menu_list.append(
                     {
-                        constants.UNIQUE_ID_KEY: elem.unique_id,
-                        constants.NAME_KEY: elem.title,
-                        constants.PARENT_KEY: elem.parent,
-                        constants.IS_FOLDER_KEY: elem.is_folder,
+                        constants.UNIQUE_ID_KEY: menu.unique_id,
+                        constants.NAME_KEY: menu.title,
+                        constants.PARENT_KEY: menu.parent,
+                        constants.IS_FOLDER_KEY: menu.is_folder,
                         constants.ROLES_KEY: role_id,
                     },
                 )
