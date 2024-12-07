@@ -92,13 +92,26 @@ class CRUDMenuBuilder(CRUDBase):
             )  # noqa
         return db_obj.scalars().first()
 
-    async def update(self, db_obj: ModelType) -> ModelType:
+    async def update(self, db_obj: ModelType, roles: list) -> ModelType:
         """Обновление объекта в БД."""
         async with get_async_session() as session:
+            db_obj.role = []
+            session.add(db_obj)
+            await session.flush()
+            db_obj.role = roles
             session.add(db_obj)
             await session.commit()
-            await session.refresh(db_obj)
         return db_obj
+
+    async def delete(self, obj_id: str) -> None:
+        """Удаление объекта из БД."""
+        async with get_async_session() as session:
+            item: Menu = await self.get(obj_id)
+            item.role = []
+            session.add(item)
+            await session.flush()
+            await session.delete(item)
+            await session.commit()
 
 
 menu_builder_crud = CRUDMenuBuilder(Menu)

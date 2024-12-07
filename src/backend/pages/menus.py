@@ -156,14 +156,20 @@ async def edit_menu_item(
     item = await menu_builder_crud.get(unique_id)
     if not item:
         return templates.TemplateResponse(
-            '404.html', context={'request': request},
+            '404.html',
+            context={'request': request},
         )
+    item.title = item_name
+    item.parent = parent
+    item.is_folder = is_folder
+    item.guest_access = for_quest
     item.content = content
-
-    # if menu_image.filename:
-    #     data.image_link = menu_image.filename
+    roles = [await menu_builder_crud.get_role(role) for role in roles]
+    print(roles)
+    if menu_image.filename:
+        item.image_link = menu_image.filename
     try:
-        await menu_builder_crud.update(item)
+        await menu_builder_crud.update(item, roles)
     except Exception as e:
         errors.append(e)
     print(errors)
@@ -175,3 +181,10 @@ async def edit_menu_item(
         ) as f:
             await f.write(contents)
     return RedirectResponse('/menu', status_code=status.HTTP_302_FOUND)
+
+
+@router.get('/delete/{unique_id}', response_class=HTMLResponse)
+async def delete_menu_item(request: Request, unique_id: str) -> Response:
+    """Удаление меню."""
+    await menu_builder_crud.delete(unique_id)
+    return RedirectResponse('/menu')

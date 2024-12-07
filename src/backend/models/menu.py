@@ -40,8 +40,11 @@ class Menu(AbstractModelForTime):
     content = Column(Text)
     is_folder = Column(Boolean, default=False)
     image_link = Column(String(settings.image_link_max_length), nullable=True)
-    role_access = Column(pg_UUID, ForeignKey('roles.unique_id'))
-    role = relationship(Role, secondary='menu_role', back_populates='menus')
+    role = relationship(
+        Role,
+        secondary='menu_role',
+        back_populates='menus',
+    )
     parent_menu = relationship(
         'Menu',
         remote_side='Menu.unique_id',
@@ -62,5 +65,13 @@ class MenuRole(Base):
 
     __tablename__ = 'menu_role'
 
-    menu_id = Column(pg_UUID(as_uuid=True), ForeignKey('menus.unique_id'))
-    role_id = Column(pg_UUID(as_uuid=True), ForeignKey('roles.unique_id'))
+    menu_id = Column(
+        pg_UUID(as_uuid=True),
+        ForeignKey('menus.unique_id'),
+    )
+    role_id = Column(
+        pg_UUID(as_uuid=True),
+        ForeignKey(
+            'roles.unique_id',
+        ),
+    )
