@@ -24,7 +24,7 @@ class CRUDTelegramMenu:
         """Получает элементы меню для replyKeyboard."""
         async with session() as asession:
             result = await asession.execute(
-                select(Menu).where(Menu.guest_access.is_(True))
+                select(Menu).where(Menu.guest_access.is_(True)),
             )
             result = result.scalars().all()
 

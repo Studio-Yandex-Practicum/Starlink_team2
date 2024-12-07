@@ -1,16 +1,7 @@
-from telebot.types import Message
+from telebot.types import CallbackQuery, Message
 
-from backend.models import EmployeeEmail, Menu, Role
 from bot.crud.telegram_menu import telegram_menu_crud
 from bot.crud.telegram_user import telegram_users_crud
-from bot.data.data import EMAILS, MENUS, ROLES
-from bot.data.fill_db import (
-    create_data_in_db,
-    create_data_in_db_no_check,
-    generate_menu,
-    generate_parent_menu,
-    get_all_menu_id,
-)
 from bot.db import async_session
 from bot.keyboard import build_keyboard
 from bot.loader import bot_instance as bot
@@ -74,50 +65,6 @@ async def handle_start(message: Message) -> None:
     )
 
     logger.info(f'{message.from_user.username} запустил бота')
-
-
-# ## УДАЛИТЬ # ## УДАЛИТЬ# ## УДАЛИТЬ# ## УДАЛИТЬ# ## УДАЛИТЬ# ## УДАЛИТЬ
-@bot.message_handler(commands=['db'])
-async def handle_db(message: Message) -> None:
-    """Обработчик команды /db."""
-    model = EmployeeEmail
-    data = EMAILS
-    await create_data_in_db(model, data)
-
-    model = Role
-    data = ROLES
-    await create_data_in_db(model, data)
-
-    model = Menu
-    data = MENUS
-    for role in ROLES:
-        role_name = role['title']
-        data_to_extend = await generate_menu(role_name=role_name)
-        data.extend(data_to_extend)
-
-    message_to_send = await create_data_in_db(model, data)
-
-    parent_list_id = await get_all_menu_id()
-    model = Menu
-    data = []
-    for parent_id in parent_list_id:
-        for role in ROLES:
-            role_name = role['title']
-            data_to_extend = await generate_parent_menu(
-                role_name=role_name,
-                parent_id=parent_id,
-            )
-            data.extend(data_to_extend)
-    message_to_send = await create_data_in_db_no_check(model, data)
-
-    await bot.send_message(
-        message.chat.id,
-        message_to_send,
-    )
-    logger.info(f'{message.from_user.username} работал с базой данных')
-
-
-# ## УДАЛИТЬ # ## УДАЛИТЬ# ## УДАЛИТЬ# ## УДАЛИТЬ# ## УДАЛИТЬ# ## УДАЛИТЬ
 
 
 @bot.message_handler(content_types=['text'])
@@ -203,7 +150,8 @@ async def get_data_from_db(message: Message) -> None:
 
 
 @bot.callback_query_handler(func=lambda call: True)
-async def handle_callback(call):
+async def handle_callback(call: CallbackQuery) -> None:
+    """Функция обработки callback-запросов."""
     call_data = call.data.split('_')
     if call_data[0] == constants.SELECT_CALLBACK_PREFIX.split('_')[0]:
         message_to_send = await telegram_menu_crud.get_content_by_menu_id(

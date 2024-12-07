@@ -4,7 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-from backend.models import Role, TelegramUser
+from backend.models import TelegramUser
 
 from .telegram_menu import telegram_menu_crud
 
@@ -141,42 +141,11 @@ class CRUDTelegramUsers:
             username=username,
         )
 
-        # тестовые роли для проверки работы бота - УДАЛИТЬ ПОСЛЕ ТЕСТИРОВАНИЯ
-        # user_role_id = await self.get_role_id_by_name(
-        #     session=session,
-        #     role_name='Кандидат',
-        # )
-        # user_role_id = await self.get_role_id_by_name(
-        #     session=session,
-        #     role_name='Сотрудник',
-        # )
-        # тестовые роли для проверки работы бота - УДАЛИТЬ ПОСЛЕ ТЕСТИРОВАНИЯ
-
-        # role_id_list = [user_role_id, test_role_id_1, test_role_id_2]
-        role_id_list = [user_role_id]
-        menu_items = []
-        for role in role_id_list:
-            menu_item = await telegram_menu_crud.get_menu_for_role(
-                session=session,
-                role_id=role,
-                parent_id=parent_id,
-            )
-            menu_items.extend(menu_item)
-        return menu_items
-
-    # TO DELETE# TO DELETE# TO DELETE# TO DELETE# TO DELETE# TO DELETE
-    async def get_role_id_by_name(
-        self,
-        session: AsyncSession,
-        role_name: str,
-    ) -> list[dict] | None:
-        """Получение id роли по имени."""
-        async with session() as asession:
-            role_access = await asession.execute(
-                select(Role).where(Role.title == role_name),
-            )
-            role_access = role_access.scalars().first()
-        return role_access.unique_id if role_access else None
+        return await telegram_menu_crud.get_menu_for_role(
+            session=session,
+            role_id=user_role_id,
+            parent_id=parent_id,
+        )
 
 
 telegram_users_crud = CRUDTelegramUsers(TelegramUser)

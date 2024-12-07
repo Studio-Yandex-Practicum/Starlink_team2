@@ -96,7 +96,6 @@ async def build_navigation_buttons(
 
 async def build_menu_buttons(
     menu_items: List[MenuItem],
-    # user_roles: List[str],
     parent_id: Optional[int] = None,
     page: int = constants.PAGE,
     items_per_page: int = constants.ITEMS_PER_PAGE,
@@ -165,7 +164,6 @@ async def build_menu_buttons(
 
 async def build_keyboard(
     menu_items: List[MenuItem],
-    # user_roles: List[str],
     parent_id: Optional[int] = None,
     page: int = constants.PAGE,
     items_per_page: int = constants.ITEMS_PER_PAGE,
@@ -193,7 +191,6 @@ async def build_keyboard(
     )
     keyboard = await build_menu_buttons(
         menu_items,
-        # user_roles,
         parent_id,
         page,
         items_per_page,
