@@ -95,15 +95,20 @@ async def generate_menu(role_name: str) -> list[dict]:
             select(Role).where(Role.title == role_name),
         )
         role_access = role_access.scalars().first()
-        role_access = role_access.unique_id
+        # role_access = role_access.scalars()
+        # print(role_access)
+        # if role_access is not None:
+        #     role_access = role_access.unique_id
     count = 1
     menu_with_role = []
     while count < COUNT_LIMIT:
+        # print(role_access)
         menu_dict = {
             'title': f'М_{role_name[0]}_{count}',
             'content': f'Контент для {role_name} {count}',
-            'role_access': role_access,
+            'role': [role_access],
         }
+        # print(menu_dict)
         menu_with_role.append(menu_dict)
         count += 1
     return menu_with_role
@@ -116,7 +121,10 @@ async def generate_parent_menu(role_name: str, parent_id: UUID) -> list[dict]:
             select(Role).where(Role.title == role_name),
         )
         role_access = role_access.scalars().first()
-        role_access = role_access.unique_id
+        # role_access = role_access.scalars()
+        # print(role_access)
+        # if role_access is not None:
+        #     role_access = role_access.unique_id
     count = 1
     async with async_session() as asession:
         parent_menu_name = await asession.execute(
@@ -128,7 +136,7 @@ async def generate_parent_menu(role_name: str, parent_id: UUID) -> list[dict]:
         menu_dict = {
             'title': f'{count}_Inline_{parent_menu_name}_{role_name}',
             'content': f'{count} Content {parent_menu_name} for {role_name}',
-            'role_access': role_access,
+            'role': [role_access],
             'parent': parent_id,
         }
         menu_with_parent.append(menu_dict)
