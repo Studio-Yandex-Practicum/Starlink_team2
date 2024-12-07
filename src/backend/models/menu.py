@@ -40,7 +40,6 @@ class Menu(AbstractModelForTime):
     content = Column(Text)
     is_folder = Column(Boolean, default=False)
     image_link = Column(String(settings.image_link_max_length), nullable=True)
-    role_access = Column(pg_UUID, ForeignKey('roles.unique_id'))
     role = relationship(
         Role,
         secondary='menu_role',
