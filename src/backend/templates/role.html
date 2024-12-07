@@ -8,7 +8,7 @@
     <input type="text" class="form-control" name="title" id="role_title" value="{{ role.title }}">
   </div>
   <div class="form-check">
-    <input type="checkbox" class="form-check-input" name="is_minimal">
+    <input type="checkbox" class="form-check-input" name="is_minimal" {% if role.default_minimal_role == True %}checked{% endif %}>
     <label for="is_minimal" class="form-check-label">Роль для минимального доступа после авторизации</label>
   </div>
   <div class="col-4">
