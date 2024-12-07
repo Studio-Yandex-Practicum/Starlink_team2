@@ -12,7 +12,7 @@ FORWARD_NAV_TEXT = "Вперед »"
 BACK_CALLBACK_PREFIX = "back_"
 SELECT_CALLBACK_PREFIX = "select_"
 OPEN_CALLBACK_PREFIX = "open_"
-NAV_CALLBACK_PREFIX = "menu_page_"
+NAV_CALLBACK_PREFIX = "menu-page_"
 NOOP = "noop"
 NO_ITEMS_TEXT = "Элементов нет"
 

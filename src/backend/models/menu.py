@@ -22,7 +22,6 @@ class Menu(AbstractModelForTime):
     - content: Наполнение кнопки;
     - is_folder: Является ли меню папкой;
     - image_link: Ссылка на картинку;
-    - role_access: Роль для отображения меню;
     - created_at: Дата и время создания;
     - edited_at: Дата и время редактирования;
     - created_at: Дата и время создания;
@@ -40,11 +39,7 @@ class Menu(AbstractModelForTime):
     content = Column(Text)
     is_folder = Column(Boolean, default=False)
     image_link = Column(String(settings.image_link_max_length), nullable=True)
-    role = relationship(
-        Role,
-        secondary='menu_role',
-        back_populates='menus',
-    )
+    role = relationship(Role, secondary='menu_role', back_populates='menus')
     parent_menu = relationship(
         'Menu',
         remote_side='Menu.unique_id',
@@ -55,7 +50,7 @@ class Menu(AbstractModelForTime):
         return (
             f'{self.title=}; {self.parent=}; '
             f'{self.content[:30]=}; {self.is_folder=}; '
-            f'{self.image_link=}; {self.role_access=}'
+            f'{self.image_link=}; {self.guest_access=}; '
             f'{super().__repr__()}'
         )
 
