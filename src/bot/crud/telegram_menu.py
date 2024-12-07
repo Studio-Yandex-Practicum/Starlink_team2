@@ -26,23 +26,26 @@ class CRUDTelegramMenu:
             if role_id is None:
                 result_menu = await asession.execute(
                     select(Menu).where(
-                        Menu.guest_access.is_(True), Menu.parent == parent_id
+                        Menu.guest_access.is_(True),
+                        Menu.parent == parent_id,
                     ),
                 )
             else:
                 result_menu = await asession.execute(
                     select(Menu)
                     .where(
-                        Menu.guest_access.is_(True), Menu.parent == parent_id
+                        Menu.guest_access.is_(True),
+                        Menu.parent == parent_id,
                     )
                     .union(
                         select(Menu)
                         .join(Role.menus)
                         .filter(
-                            Role.unique_id == role_id, Menu.parent == parent_id
-                        )
+                            Role.unique_id == role_id,
+                            Menu.parent == parent_id,
+                        ),
                     )
-                    .order_by(Menu.title)
+                    .order_by(Menu.title),
                 )
             result_menu = result_menu.scalars().all()
 
