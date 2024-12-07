@@ -106,7 +106,7 @@ class CRUDMenuBuilder(CRUDBase):
     async def delete(self, obj_id: str) -> None:
         """Удаление объекта из БД."""
         async with get_async_session() as session:
-            item = await self.get(obj_id)
+            item: Menu = await self.get(obj_id)
             item.role = []
             session.add(item)
             await session.flush()
