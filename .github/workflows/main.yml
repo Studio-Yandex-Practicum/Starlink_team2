@@ -1,0 +1,96 @@
+name: Starlink Docker Build and Push
+
+on:
+  push:
+    branches: [ develop ]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Lint ruff.toml
+        uses: ruff/lint-action@v2
+        with:
+          args: --config=ruff.toml
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push backend image
+        uses: docker/build-push-action@v2
+        with:
+          context: src/backend
+          push: true
+          tags: ${{secrets.DOCKER_USERNAME}}/starlink_app:latest
+
+      - name: Build and push nginx image
+        uses: docker/build-push-action@v2
+        with:
+          context: src/nginx
+          push: true
+          tags: ${{secrets.DOCKER_USERNAME}}/starlink_nginx:latest
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Copy docker-compose.yml to server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "docker-compose.production.yml"
+          target: "/opt/starlink/"
+
+      - name: Generate .env on server
+        uses: appleboy/ssh-action@master
+        with:
+          host: secrets.SERVER_HOST 
+          username: secrets.SERVER_USERNAME 
+          key: secrets.SSH_PRIVATE_KEY 
+          script: |
+            mkdir -p /opt/starlink/
+            touch /opt/starlink/.env
+            sed -i "BOT_TOKEN=%s\n" "${{ secrets.BOT_TOKEN }}" >> /opt/starlink/.env
+            sed -i "APP_TITLE='%s'\n" "Административная панель Starlink бот" >> /opt/starlink/.env
+            sed -i "APP_DESCRIPTION='%s'\n" "Управление справочным чат ботом для сотрудников" >> /opt/starlink/.env
+            sed -i "APP_VERSION='%s'\n" "1.0.0" >> /opt/starlink/.env
+            sed -i "POSTGRES_USER=%s\n" "user" >> /opt/starlink/.env
+            sed -i "POSTGRES_PASSWORD=%s\n" "${{ secrets.POSTGRES_PASSWORD }}" >> /opt/starlink/.env
+            sed -i "POSTGRES_HOST=%s\n" "127.0.0.1" >> /opt/starlink/.env
+            sed -i "POSTGRES_PORT=%s\n" "5432" >> /opt/starlink/.env
+            sed -i "POSTGRES_DB=%s\n" "${{ secrets.POSTGRES_DB }}" >> /opt/starlink/.env
+            sed -i "POSTGRES_DB_NAME=%s\n" "yourdbname" >> /opt/starlink/.env
+            sed -i "SECRET_KEY=%s\n" "${{ secrets.SECRET_KEY }}" >> /opt/starlink/.env
+            sed -i "ALGORITHM=%s\n" "HS256" >> /opt/starlink/.env
+            sed -i "ACCESS_TOKEN_EXPIRE_MINUTES=%s\n" "30" >> /opt/starlink/.env
+            sed -i "NOT_AUTHENTICATED='%s'\n" "Not authenticated" >> /opt/starlink/.env
+            sed -i "ADMIN1_EMAIL=%s\n" "user1@gmail.com" >> /opt/starlink/.env
+            sed -i "ADMIN1_PASSWORD=%s\n" "${{ secrets.ADMIN1_PASSWORD }}" >> /opt/starlink/.env
+            sed -i "ADMIN2_EMAIL=%s\n" "user2@gmail.com" >> /opt/starlink/.env
+            sed -i "ADMIN2_PASSWORD=%s\n" "${{ secrets.ADMIN2_PASSWORD }}" >> /opt/starlink/.env
+            chmod 600 /opt/starlink/.env
+
+      - name: Deploy to server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /opt/starlink/
+            docker compose -f docker-compose.production.yml down
+            docker compose -f docker-compose.production.yml pull
+            docker compose -f docker-compose.production.yml up -d
