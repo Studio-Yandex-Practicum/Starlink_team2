@@ -4,7 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-from backend.models import TelegramUser
+from backend.models import EmployeeEmail, Role, TelegramUser
 
 from .telegram_menu import telegram_menu_crud
 
@@ -126,8 +126,19 @@ class CRUDTelegramUsers:
             user = await asession.execute(
                 select(TelegramUser).where(TelegramUser.username == username),
             )
-        user = user.scalar_one_or_none()
-        return user.role_id
+            user = user.scalar_one_or_none()
+            return user.role_id
+
+    async def get_minimal_user_role(
+        self,
+        session: async_sessionmaker[AsyncSession],
+    ) -> Optional[UUID]:
+        """Получение минимальной роли для пользователя."""
+        async with session() as asession:
+            minimal_role = await asession.execute(
+                select(Role).where(Role.default_minimal_role.is_(True)),
+            )
+            return minimal_role.scalars().first()
 
     async def get_menu_for_user_roles(
         self,
@@ -146,6 +157,52 @@ class CRUDTelegramUsers:
             role_id=user_role_id,
             parent_id=parent_id,
         )
+
+    async def get_email_id_from_db(
+        self,
+        session: async_sessionmaker[AsyncSession],
+        email: str,
+    ) -> str | None:
+        """Получение email_id из БД."""
+        async with session() as asession:
+            email_id = await asession.execute(
+                select(EmployeeEmail).where(EmployeeEmail.title == email),
+            )
+        return email_id.scalars().first() if email_id else None
+
+    async def add_email_to_telegram_user(
+        self,
+        session: async_sessionmaker[AsyncSession],
+        username: str,
+        email_id: UUID,
+    ) -> Optional[TelegramUser]:
+        """Добавление email_id в telegram_user."""
+        async with session() as asession:
+            user = await asession.execute(
+                select(TelegramUser).where(
+                    TelegramUser.username == username,
+                ),
+            )
+            check_email = await asession.execute(
+                select(TelegramUser).where(
+                    TelegramUser.email_id == email_id,
+                ),
+            )
+            check_email = check_email.scalar_one_or_none()
+            if check_email is not None:
+                return None
+            user = user.scalar_one_or_none()
+            role_id = await telegram_users_crud.get_minimal_user_role(
+                session=session,
+            )
+            if user is not None:
+                user.email_id = email_id
+                if role_id is not None:
+                    user.role_id = role_id.unique_id
+                asession.add(user)
+                await asession.commit()
+                return user
+            return None
 
 
 telegram_users_crud = CRUDTelegramUsers(TelegramUser)
