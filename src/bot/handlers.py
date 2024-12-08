@@ -152,7 +152,8 @@ async def get_data_from_db(message: Message) -> None:
         logger.info(f'{message.from_user.username} на перешел на стр. #{page}')
     if message.text == constants.NO_REGISTER_BUTTON_TEXT:
         reply_markup = await build_keyboard(
-            menu_items=menu_items, page=constants.PAGE
+            menu_items=menu_items,
+            page=constants.PAGE,
         )
         message_to_send = constants.START_MESSAGE_NO_EMAIL_CONTINUE
 
@@ -168,33 +169,43 @@ async def get_data_from_db(message: Message) -> None:
             message_to_send,
         )
     if re.match(constants.EMAIL_PATTERN, message.text):
-        check_user_email = await telegram_users_crud.check_user_email(
-            session=async_session,
-            username=message.from_user.username,
-        )
-        if check_user_email is True:
-            return await bot.send_message(
-                message.chat.id,
-                constants.REGISTERED,
-            )
+        await email_register(message)
 
+
+async def email_register(message: Message) -> None:
+    """Функция обработки регистрации по email."""
+    check_user_email = await telegram_users_crud.check_user_email(
+        session=async_session,
+        username=message.from_user.username,
+    )
+    if check_user_email is True:
+        await bot.send_message(
+            message.chat.id,
+            constants.REGISTERED,
+        )
+    else:
         email_id = await telegram_users_crud.get_email_id_from_db(
             session=async_session,
             email=message.text,
         )
         if email_id is not None:
-            add_email = await telegram_users_crud.add_email_to_telegram_user(
-                session=async_session,
-                username=message.from_user.username,
-                email_id=email_id.unique_id,
-            )
-            if add_email is not None:
-                menu_items = await telegram_users_crud.get_menu_for_user_roles(
+            add_email = (
+                await telegram_users_crud.add_email_to_telegram_user(
                     session=async_session,
                     username=message.from_user.username,
+                    email_id=email_id.unique_id,
+                )
+            )
+            if add_email is not None:
+                menu_items = (
+                    await telegram_users_crud.get_menu_for_user_roles(
+                        session=async_session,
+                        username=message.from_user.username,
+                    )
                 )
                 reply_markup = await build_keyboard(
-                    menu_items=menu_items, page=constants.PAGE
+                    menu_items=menu_items,
+                    page=constants.PAGE,
                 )
                 await bot.send_message(
                     message.chat.id,

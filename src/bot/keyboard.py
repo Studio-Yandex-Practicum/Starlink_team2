@@ -227,6 +227,7 @@ async def build_keyboard(
 
 
 async def build_register_keyboard() -> ReplyKeyboardMarkup:
+    """Создает клавиатуру для регистрации пользователя."""
     registration_keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
     registration_keyboard.row(constants.REGISTER_BUTTON_TEXT)
     registration_keyboard.row(constants.NO_REGISTER_BUTTON_TEXT)

@@ -159,11 +159,14 @@ class CRUDTelegramUsers:
         )
 
     async def get_email_id_from_db(
-        self, session: async_sessionmaker[AsyncSession], email: str
+        self,
+        session: async_sessionmaker[AsyncSession],
+        email: str,
     ) -> str | None:
+        """Получение email_id из БД."""
         async with session() as asession:
             email_id = await asession.execute(
-                select(EmployeeEmail).where(EmployeeEmail.title == email)
+                select(EmployeeEmail).where(EmployeeEmail.title == email),
             )
         return email_id.scalars().first() if email_id else None
 
@@ -173,6 +176,7 @@ class CRUDTelegramUsers:
         username: str,
         email_id: UUID,
     ) -> Optional[TelegramUser]:
+        """Добавление email_id в telegram_user."""
         async with session() as asession:
             user = await asession.execute(
                 select(TelegramUser).where(
@@ -198,6 +202,7 @@ class CRUDTelegramUsers:
                 asession.add(user)
                 await asession.commit()
                 return user
+            return None
 
 
 telegram_users_crud = CRUDTelegramUsers(TelegramUser)

@@ -32,7 +32,7 @@ EMAIL_ALREADY_REGISTERED = 'Этот email уже зарегистрирован
 EMAIL_SUCCESS_REGISTERED = 'Вы успешно зарегистрировались.'
 EMAIL_NOT_FOUND = 'Мы не смогли наити ваш email в базе данных.'
 EMAIL_PATTERN = re.compile(
-    r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+    r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b',
 )
 
 # Константы для создания пользователя
