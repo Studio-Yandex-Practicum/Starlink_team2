@@ -14,15 +14,17 @@
   <div class="mb-3">
     <label for="role_id">Роль</label>
     <select class="form-select" id="role_id" name="role_id">
+      <option value="">Не выбрано</option>
       {% for role in roles %}
-      <option value="{{ role.unique_id }}">{{ role.title }}</option>
+        <option value="{{ role.unique_id }}" {% if role.unique_id == tguser.role_id  %}selected{% endif %}>{{ role.title }}</option>
       {% endfor %}
     </select>
   </div>
   <div class="mb-3">
     <label for="email_id" class="form-label">E-Mail</label>
     <select class="form-select" id="email_id" name="email_id">
-      <option value="{{ tguser.email.unique_id }}">{{ tguser.email.title }}</option>
+      <option value="">Не выбрано</option>
+      {% if tguser.email_id %}<option value="{{ tguser.email_id }}" selected>{{ tguser.email.title }}</option>{% endif %}
       {% for email in emails %}
         <option value="{{ email.unique_id }}">{{ email.title }}</option>
       {% endfor %}
