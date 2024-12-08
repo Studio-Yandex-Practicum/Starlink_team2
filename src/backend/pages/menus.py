@@ -146,7 +146,7 @@ async def edit_menu_item(
     parent: str = Form(),
     is_folder: Optional[bool] = Form(default=False),
     roles: Optional[list] = Form(default=[]),
-    for_quest: Optional[bool] = Form(default=False),
+    guest_access: Optional[bool] = Form(default=False),
     content: Optional[str] = Form(default=''),
     unique_id: str = Form(),
     user: Admin = Depends(get_current_user_from_token),
@@ -160,19 +160,21 @@ async def edit_menu_item(
             context={'request': request},
         )
     item.title = item_name
+    if parent == 'none':
+        parent: Optional[str] = None
     item.parent = parent
     item.is_folder = is_folder
-    item.guest_access = for_quest
+    item.guest_access = guest_access
     item.content = content
     roles = [await menu_builder_crud.get_role(role) for role in roles]
     print(roles)
     if menu_image.filename:
         item.image_link = menu_image.filename
-    try:
-        await menu_builder_crud.update(item, roles)
-    except Exception as e:
-        errors.append(e)
-    print(errors)
+    # try:
+    await menu_builder_crud.update(item, roles)
+    # except Exception as e:
+    #     errors.append(e)
+    # print(errors)
     if menu_image.filename:
         contents = await menu_image.read()
         async with aiofiles.open(

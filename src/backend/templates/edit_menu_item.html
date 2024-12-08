@@ -45,8 +45,8 @@
             {% endif %}
         </div>
         <div class="form-check">
-            <input type="checkbox" class="form-check-input" name="for_quest">
-            <label for="is_folder" class="form-check-label" {% if item.for_quest %}checked{% endif %}>Доступно для гостя</label>
+            <input type="checkbox" class="form-check-input" name="guest_access" {% if item.guest_access %}checked{% endif %}>
+            <label for="is_folder" class="form-check-label">Доступно для гостя</label>
         </div>
         <div class="mb-3">
             <label for="content" class="form-label">Текст сообщения</label>
