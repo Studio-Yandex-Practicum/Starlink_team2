@@ -36,7 +36,7 @@ async def parsing_email_addresses_from_csv_file(
                     continue
 
                 email_is_exist = await employee_email_crud.get_email(
-                    session, column
+                    session, column,
                 )
 
                 if email_is_exist:

@@ -1,6 +1,5 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy_utils import EmailType
 
 from backend.core.db import get_async_session
 from backend.crud.base import CRUDBase
@@ -44,10 +43,16 @@ class EmployeeEmailCRUD(
 
         return None
 
-    async def get_email(self, session, employee_email: str) -> EmployeeEmail:
+    async def get_email(
+        self,
+        session: AsyncSession,
+        employee_email: str,
+    ) -> EmployeeEmail:
         """Получение информации по E-Mail."""
         email = await session.execute(
-            select(self.model).where(self.model.title == employee_email),
+            select(self.model).where(
+                self.model.title == employee_email,
+            ),
         )
         return email.scalars().first()
 
@@ -58,15 +63,18 @@ class EmployeeEmailCRUD(
                 (
                     await session.execute(
                         select(self.model).where(
-                            self.model.users == None
-                        ),  # noqa
+                            self.model.users == None),  # noqa
                     )
                 )
                 .scalars()
                 .all()
             )
 
-    async def get_multi_emails(self, session) -> list[EmployeeEmail]:
+    async def get_multi_emails(
+        self,
+        session: AsyncSession,
+    ) -> list[EmployeeEmail]:
+        """Получение всех E-Mail."""
         db_objs = await session.execute(
             select(self.model).order_by(self.model.created_at),
         )
