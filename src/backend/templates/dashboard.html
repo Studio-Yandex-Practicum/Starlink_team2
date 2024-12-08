@@ -2,21 +2,6 @@
 {% block title %}Главная{% endblock %}
 {% block content %}
 
-    <h1 class="text-body-emphasis">Hello {{ user.username }}!</h1>
-    <p>Welcome to this private page. You can only see if you are logged in!
-  
-    </p>
-      {% if user %}
-      <h2>You are logged in :)</h2>
-      <p>
-          Hi {{ user.username }}! You are logged in, so you can access the private
-          page. <a href="/private">here</a>!
-      </p>
-  {% else %}
-      <h2>You are NOT logged in :(</h2>
-      <p>
-          Hello stranger. You are not logged. Please follow the link to
-          <a href="/auth/login" class="btn">login</a>!
-      </p>
-  {% endif %}
+    <h1 class="text-body-emphasis">Привет {{ user.username }}!</h1>
+
 {% endblock %}
