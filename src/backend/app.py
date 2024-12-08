@@ -1,12 +1,15 @@
 import os
 
 from dotenv import load_dotenv
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, HTTPException
 from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+from fastapi.responses import HTMLResponse
 from passlib.handlers.sha2_crypt import sha512_crypt as crypto
 from rich import print as rich_print
 from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from backend.core.config import settings
 from backend.core.db import AsyncGenerator, get_async_session
@@ -68,3 +71,31 @@ app.include_router(roles_router, prefix="/roles")
 base_dir = os.path.dirname(os.path.abspath(__file__))
 static_dir = os.path.join(base_dir, 'static')
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
+template_dir = os.path.join(base_dir, 'templates')
+templates = Jinja2Templates(directory=template_dir)
+
+
+@app.exception_handler(StarletteHTTPException)
+async def http_exception_handler(request: Request,
+                                 exc: StarletteHTTPException):
+    if exc.status_code == 404:
+        template = templates.get_template("404.html")
+        return HTMLResponse(template.render(request=request))
+    elif exc.status_code == 401:
+        template = templates.get_template("401.html")
+        return HTMLResponse(template.render(request=request))
+    elif exc.status_code == 403:
+        template = templates.get_template("403.html")
+        return HTMLResponse(template.render(request=request))
+
+@app.get("/nonexistent")
+async def nonexistent():
+    raise HTTPException(status_code=404, detail="Not Found")
+
+@app.get("/forbidden")
+async def forbidden():
+    raise HTTPException(status_code=403, detail="Forbidden")
+
+@app.get("/unauthorized")
+async def unauthorized():
+    raise HTTPException(status_code=401, detail="Unauthorized")
