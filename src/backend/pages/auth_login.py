@@ -6,8 +6,8 @@ from fastapi.templating import Jinja2Templates
 from rich.console import Console
 
 from backend.core.auth import (
-    login_for_access_token,
     get_current_user_from_cookie,
+    login_for_access_token,
 )
 from backend.core.config import settings
 from backend.pages.login_form import LoginForm
