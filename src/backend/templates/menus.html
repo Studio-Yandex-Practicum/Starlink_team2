@@ -2,12 +2,8 @@
 {% block left_menu_menus_active %}
 active
 {% endblock left_menu_menus_active %}
+{% block title %}Конструктор меню{% endblock %}
 {% block content %}
-<div class="d-flex align-items-center pb-3 mb-5 border-bottom">
-  <a href="/" class="d-flex align-items-center text-body-emphasis text-decoration-none">
-    <span class="fs-4">Конструктор меню</span>
-  </a>
-</div>
 <div>
     {% if user %}
     <div>Количество записей = {{ count_rows }}</div>

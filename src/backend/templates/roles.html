@@ -2,39 +2,7 @@
 {% block title %}Роли{% endblock %}
 {% block content %}
 <div>
-<div style="width: 30%; float: left">
-  <table class="table table-bordered border-info">
-    <thead>
-    <tr>
-      <th scope="col">№</th>
-      <th scope="col">Роль</th>
-      <th scope="col"></th>
-      <th scope="col"></th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for role in roles %}
-    <tr>
-      <td class="col-1">{{ loop.index }}</td>
-      <td class="col-8">
-        <a href="{{ url_for('role_view', unique_id=role.unique_id) }}">{{ role.title }}</a>
-      </td>
-      <td>
-        {% if role.default_minimal_role %}
-          По-умолчанию
-        {% endif %}
-      </td>
-      <td class="col-1">
-        <form action="{{ url_for('role_delete', unique_id=role.unique_id) }}" method="post" style="display: inline;">
-          <button type="submit" class="btn btn-danger" aria-label="Удалить">X</button>
-        </form>
-      </td>
-    </tr>
-    {% endfor %}
-  </tbody>
-  </table>
-</div>
-<div style="width: 70%; padding: 100px; float: left">
+<div style="width: 100%; padding: 1:">
     <form class="row g-3" method="post" action="{{ url_for('roles_create') }}">
   <div class="col-4">
     <label for="role_title" class="visually-hidden">Роль</label>
@@ -47,6 +15,40 @@
     <button type="submit" class="btn btn-primary mb-3">Добавить</button>
   </div>
 </form>
+</div>
+<div style="width: 30%; float: left">
+  <table class="table table-bordered border-info">
+    <thead>
+    <tr>
+      <th scope="col">№</th>
+      <th scope="col">Роль</th>
+      <th scope="col">Роль по умолчанию?</th>
+      <th scope="col">Удалить</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for role in roles %}
+    <tr>
+      <td class="col-1">{{ loop.index }}</td>
+      <td class="col-8">
+        <a href="{{ url_for('role_view', unique_id=role.unique_id) }}">{{ role.title|truncate(20) }}</a>
+      </td>
+      <td>
+        {% if role.default_minimal_role %}
+          <span>Да</span>
+        {% else %}
+            <span>Нет</span>
+        {% endif %}
+      </td>
+      <td class="col-1">
+        <form action="{{ url_for('role_delete', unique_id=role.unique_id) }}" method="post" style="display: inline;">
+          <button type="submit" class="btn btn-danger" aria-label="Удалить">X</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+  </table>
 </div>
 </div>
 {% endblock %}

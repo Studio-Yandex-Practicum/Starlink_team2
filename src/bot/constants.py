@@ -17,6 +17,7 @@ OPEN_CALLBACK_PREFIX = 'open_'
 NAV_CALLBACK_PREFIX = 'menu-page_'
 NOOP = 'noop'
 NO_ITEMS_TEXT = 'Элементов нет'
+NO_CONTENT_TEXT = 'Нет содержимого'
 
 # Константы для пагинации
 ITEMS_PER_PAGE = 10
@@ -31,6 +32,10 @@ REGISTERED = 'Вы уже зарегистрированы.'
 EMAIL_ALREADY_REGISTERED = 'Этот email уже зарегистрирован.'
 EMAIL_SUCCESS_REGISTERED = 'Вы успешно зарегистрировались.'
 EMAIL_NOT_FOUND = 'Мы не смогли наити ваш email в базе данных.'
+EMAIL_WITH_WRONG_PATTERN = (
+    'Введенный вами адрес электронной почты не похож на корпоративную почту '
+    'компании. Пройдите регистрацию еще раз.'
+)
 EMAIL_PATTERN = re.compile(
     r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b',
 )
