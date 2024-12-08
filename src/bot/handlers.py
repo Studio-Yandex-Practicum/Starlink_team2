@@ -1,18 +1,24 @@
-import re
+import telebot
+from telebot.states.asyncio.context import StateContext
+from telebot.types import CallbackQuery, Message, ReplyParameters
 
-from telebot.types import CallbackQuery, Message
-
+from backend.utils.parser_csv import (
+    MILESTONERUSSIA_PATTERN,
+    STARLINKRUSSIA_PATTERN,
+)
 from bot.crud.telegram_menu import telegram_menu_crud
 from bot.crud.telegram_user import telegram_users_crud
 from bot.db import async_session
 from bot.keyboard import build_keyboard, build_register_keyboard
 from bot.loader import bot_instance as bot
+from bot.states import MailRegistrationState
 from bot.utils.logger import get_logger
 
 from . import constants
 
 logger = get_logger(__name__)
 page = constants.PAGE
+bot.add_custom_filter(telebot.asyncio_filters.TextMatchFilter())
 
 
 @bot.message_handler(commands=['start'])
@@ -43,14 +49,16 @@ async def handle_start(message: Message) -> None:
             session=async_session,
         )
         message_to_send = constants.START_MESSAGE_NEW_USER + username
+        await bot.send_message(
+            message.chat.id,
+            message_to_send,
+        )
     else:
         message_to_send = constants.START_MESSAGE_EXIST_USER + username
-
     check_user_email = await telegram_users_crud.check_user_email(
         session=async_session,
         username=username,
     )
-
     if check_user_email is False:
         message_to_send = constants.START_MESSAGE_NO_EMAIL
         reply_markup = await build_register_keyboard()
@@ -68,6 +76,39 @@ async def handle_start(message: Message) -> None:
     )
 
     logger.info(f'{message.from_user.username} запустил бота')
+
+
+@bot.message_handler(text=[constants.REGISTER_BUTTON_TEXT])
+async def email_register_message(
+    message: Message,
+    state: StateContext,
+) -> None:
+    """Функция обработки регистрации по email."""
+    await state.set(MailRegistrationState.mail)
+    await bot.send_message(
+        message.chat.id,
+        constants.REGISTER_TEXT,
+        reply_parameters=ReplyParameters(message_id=message.message_id),
+    )
+
+
+@bot.message_handler(state=MailRegistrationState.mail)
+async def email_register_method(
+    message: Message,
+    state: StateContext,
+) -> None:
+    """Функция обработки регистрации по email."""
+    if message.text.count('@') != 1 or (
+        not MILESTONERUSSIA_PATTERN.search(message.text)
+        and not STARLINKRUSSIA_PATTERN.search(message.text)
+    ):
+        await bot.send_message(
+            message.chat.id,
+            constants.EMAIL_WITH_WRONG_PATTERN,
+        )
+    else:
+        await email_register(message)
+    await state.delete()
 
 
 @bot.message_handler(content_types=['text'])
@@ -154,7 +195,9 @@ async def get_data_from_db(message: Message) -> None:
             reply_markup=reply_markup,
         )
 
-        logger.info(f'{message.from_user.username} на перешел на стр. #{page}')
+        logger.info(
+            f'{message.from_user.username} на перешел на стр. #{page}',
+        )
     if message.text == constants.NO_REGISTER_BUTTON_TEXT:
         reply_markup = await build_keyboard(
             menu_items=menu_items,
@@ -167,14 +210,14 @@ async def get_data_from_db(message: Message) -> None:
             message_to_send,
             reply_markup=reply_markup,
         )
-    if message.text == constants.REGISTER_BUTTON_TEXT:
-        message_to_send = constants.REGISTER_TEXT
-        message = await bot.send_message(
-            message.chat.id,
-            message_to_send,
-        )
-    if re.match(constants.EMAIL_PATTERN, message.text):
-        await email_register(message)
+    # if message.text == constants.REGISTER_BUTTON_TEXT:
+    #     message_to_send = constants.REGISTER_TEXT
+    #     message = await bot.send_message(
+    #         message.chat.id,
+    #         message_to_send,
+    #     )
+    # if re.match(constants.EMAIL_PATTERN, message.text):
+    #     await email_register(message)
 
 
 async def email_register(message: Message) -> None:
@@ -200,9 +243,11 @@ async def email_register(message: Message) -> None:
                 email_id=email_id.unique_id,
             )
             if add_email is not None:
-                menu_items = await telegram_users_crud.get_menu_for_user_roles(
-                    session=async_session,
-                    username=message.from_user.username,
+                menu_items = (
+                    await telegram_users_crud.get_menu_for_user_roles(
+                        session=async_session,
+                        username=message.from_user.username,
+                    )
                 )
                 reply_markup = await build_keyboard(
                     menu_items=menu_items,
