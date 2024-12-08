@@ -95,6 +95,11 @@ async def get_data_from_db(message: Message) -> None:
         parent_id=unique_id,
     )
 
+    if menu_from_db is not None and menu_from_db.content == '':
+        text_to_send = constants.NO_CONTENT_TEXT
+    else:
+        text_to_send = menu_from_db.content
+
     if menu_child_from_db is not None:
         if unique_id is not None:
             menu_items = await telegram_users_crud.get_menu_for_user_roles(
@@ -109,13 +114,13 @@ async def get_data_from_db(message: Message) -> None:
             )
             await bot.send_message(
                 message.chat.id,
-                text=menu_from_db.content,
+                text=text_to_send,
                 reply_markup=inline_keyboard,
             )
     else:
         await bot.send_message(
             message.chat.id,
-            text=menu_from_db.content,
+            text=text_to_send,
         )
     if message.text == constants.FORWARD_NAV_TEXT:
         page += 1
@@ -258,7 +263,7 @@ async def handle_callback(call: CallbackQuery) -> None:
             message_to_send = menu_from_db.content
         if len(call_data) > 2:
             page = int(call_data[1])
-            message_to_send = f'Вы перешли на страницу {call_data[1]}'
+            message_to_send = f'Вы перешли на страницу {page}'
         else:
             page = constants.PAGE
         inline_keyboard = await build_keyboard(
