@@ -3,6 +3,7 @@ from uuid import uuid4
 
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from backend.core.db import get_async_session
@@ -33,9 +34,11 @@ class TelegramUserCRUD(
         """Возвращает объект TelegramUser по unique_id."""
         async with get_async_session() as session:
             db_obj = await session.execute(
-                select(self.model).where(
+                select(self.model)
+                .where(
                     self.model.unique_id == unique_id,
-                ).options(
+                )
+                .options(
                     selectinload(TelegramUser.role),
                     selectinload(TelegramUser.email),
                 ),
@@ -44,17 +47,18 @@ class TelegramUserCRUD(
 
     async def get_tg_user_by_email_id(
         self,
+        session: AsyncSession,
         email_id: uuid4,
     ) -> TelegramUser:
         """Находит пользователя по email_id."""
-        async with get_async_session() as session:
-            email = await session.execute(
-                select(self.model).where(self.model.email_id == email_id),  # noqa
-            )
+        email = await session.execute(
+            select(self.model).where(self.model.email_id == email_id),  # noqa
+        )
         return email.scalars().first()
 
     async def remove_role_id(
         self,
+        session: AsyncSession,
         db_obj: TelegramUser,
         data_obj: dict[str, None],
     ) -> TelegramUser:
@@ -63,10 +67,9 @@ class TelegramUserCRUD(
         for field in obj_data:
             if field in data_obj:
                 setattr(db_obj, field, data_obj[field])
-        async with get_async_session() as session:
-            session.add(db_obj)
-            await session.commit()
-            await session.refresh(db_obj)
+        session.add(db_obj)
+        await session.commit()
+        await session.refresh(db_obj)
         return db_obj
 
 

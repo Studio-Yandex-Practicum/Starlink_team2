@@ -49,10 +49,13 @@ async def load_data(
             async with await open_file(path, "wb") as f:
                 await f.write(file.file.read())
 
-            emails_for_remove = await employee_email_crud.get_multi()
+            emails_for_remove = await employee_email_crud.get_multi_emails(
+                session,
+            )
 
             emails_for_adds_in_db = (
                 await parsing_email_addresses_from_csv_file(
+                    session,
                     path,
                     emails_for_remove,
                 )
