@@ -1,4 +1,4 @@
-from uuid import UUID
+from typing import Optional
 
 from fastapi import APIRouter, Depends, Form, HTTPException, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
@@ -18,8 +18,8 @@ router = APIRouter()
     response_model_exclude_none=True,
 )
 async def users_view(
-        request: Request,
-        user: Admin = Depends(get_current_user_from_token),
+    request: Request,
+    user: Admin = Depends(get_current_user_from_token),
 ) -> templates.TemplateResponse:
     """Обрабатывает запрос на страницу Пользователи.
 
@@ -41,9 +41,9 @@ async def users_view(
     response_class=HTMLResponse,
 )
 async def user_view(
-        request: Request,
-        unique_id: str,
-        user: Admin = Depends(get_current_user_from_token),
+    request: Request,
+    unique_id: str,
+    user: Admin = Depends(get_current_user_from_token),
 ) -> templates.TemplateResponse:
     """Обрабатывает запрос на страницу Редактирование Пользователя.
 
@@ -79,12 +79,12 @@ async def user_view(
     response_model_exclude_none=True,
 )
 async def user_edit(
-        unique_id: str,
-        first_name: str = Form(None),
-        last_name: str = Form(None),
-        email_id: UUID = Form(None),
-        role_id: UUID = Form(None),
-        user: Admin = Depends(get_current_user_from_token),
+    unique_id: str,
+    first_name: str = Form(None),
+    last_name: str = Form(None),
+    email_id: Optional[str] = Form(None),
+    role_id: Optional[str] = Form(None),
+    user: Admin = Depends(get_current_user_from_token),
 ) -> RedirectResponse:
     """Обрабатывает запрос на страницу Редактирование Пользователя.
 
@@ -95,6 +95,10 @@ async def user_edit(
     :param role_id: ID Роли Пользователя
     :param user: Текущий пользователь (извлекается из токена).
     """
+    if email_id == '':
+        email_id = None
+    if role_id == '':
+        role_id = None
     await telegramuser_crud.update(
         await telegramuser_crud.get(unique_id),
         TelegramUserEdit(
@@ -113,8 +117,8 @@ async def user_edit(
     response_class=RedirectResponse,
 )
 async def user_delete(
-        unique_id: str,
-        user: Admin = Depends(get_current_user_from_token),
+    unique_id: str,
+    user: Admin = Depends(get_current_user_from_token),
 ) -> RedirectResponse:
     """Обрабатывает запрос на удаление Пользователя.
 
