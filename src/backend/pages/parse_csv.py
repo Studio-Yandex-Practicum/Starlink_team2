@@ -36,7 +36,10 @@ async def load_data(
         'user': user,
     }
     file_name = file.filename
-    path = BASE_DIR / FOLDER_DOWNLOADS / file_name
+    path = BASE_DIR / FOLDER_DOWNLOADS
+    path.mkdir(exist_ok=True)
+    path = path / file_name
+
     async with get_async_session() as session:
 
         try:
