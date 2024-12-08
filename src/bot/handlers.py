@@ -258,6 +258,7 @@ async def handle_callback(call: CallbackQuery) -> None:
             message_to_send = menu_from_db.content
         if len(call_data) > 2:
             page = int(call_data[1])
+            message_to_send = f'Вы перешли на страницу {call_data[1]}'
         else:
             page = constants.PAGE
         inline_keyboard = await build_keyboard(
