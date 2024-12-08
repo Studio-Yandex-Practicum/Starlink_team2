@@ -2,6 +2,8 @@ import telebot
 from telebot.states.asyncio.context import StateContext
 from telebot.types import CallbackQuery, Message, ReplyParameters
 
+import aiofiles
+
 from backend.utils.parser_csv import (
     MILESTONERUSSIA_PATTERN,
     STARLINKRUSSIA_PATTERN,
@@ -283,6 +285,16 @@ async def handle_callback(call: CallbackQuery) -> None:
             message_to_send = constants.NO_CONTENT_TEXT
         else:
             message_to_send = menu_from_db.content
+        if menu_from_db.image_link:
+            await bot.send_photo(
+                chat_id=call.message.chat.id,
+                photo=await aiofiles.open(
+                    f'backend/static/images/{menu_from_db.image_link}',
+                    'rb',
+                ),
+                caption=message_to_send,
+                reply_markup=call.message.reply_markup,
+            )
         await bot.edit_message_text(
             text=message_to_send,
             chat_id=call.message.chat.id,
