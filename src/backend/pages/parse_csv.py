@@ -36,7 +36,10 @@ async def load_data(
         'user': user,
     }
     file_name = file.filename
-    path = BASE_DIR / FOLDER_DOWNLOADS / file_name
+    path = BASE_DIR / FOLDER_DOWNLOADS
+    path.mkdir(exist_ok=True)
+    path = path / file_name
+
     async with get_async_session() as session:
 
         try:
@@ -46,7 +49,9 @@ async def load_data(
             async with await open_file(path, "wb") as f:
                 await f.write(file.file.read())
 
-            emails_for_remove = await employee_email_crud.get_multi()
+            emails_for_remove = await employee_email_crud.get_multi_emails(
+                session,
+            )
 
             emails_for_adds_in_db = (
                 await parsing_email_addresses_from_csv_file(

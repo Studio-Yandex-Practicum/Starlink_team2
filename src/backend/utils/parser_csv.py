@@ -35,7 +35,9 @@ async def parsing_email_addresses_from_csv_file(
                 ) and not MILESTONERUSSIA_PATTERN.search(column):
                     continue
 
-                email_is_exist = await employee_email_crud.get_email(column)
+                email_is_exist = await employee_email_crud.get_email(
+                    session, column,
+                )
 
                 if email_is_exist:
                     emails_for_remove.remove(email_is_exist)
