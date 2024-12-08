@@ -15,7 +15,6 @@ MAX_READ_BYTES = 10 * 1024 * 1024
 
 
 async def parsing_email_addresses_from_csv_file(
-    session: AsyncSession,
     path: Path,
     emails_for_remove: list[EmployeeEmail],
     encoding: str = 'utf-8',

@@ -13,16 +13,18 @@ class EmployeeEmailCRUD(
     """CRUD для работы с моделью EmployeeEmail."""
 
     async def remove_multi(
-            self,
-            emails: list[EmployeeEmail],
-            commit: bool = False,
+        self,
+        emails: list[EmployeeEmail],
+        commit: bool = False,
     ) -> None | list[EmployeeEmail]:
         """Массовое удаление E-Mail из БД."""
         from backend.crud import telegramuser_crud
+
         async with get_async_session() as session:
             for email_obj in emails:
                 tg_user = await telegramuser_crud.get_tg_user_by_email_id(
-                    session, email_obj.unique_id,
+                    session,
+                    email_obj.unique_id,
                 )
                 await session.delete(email_obj)
 
@@ -40,7 +42,7 @@ class EmployeeEmailCRUD(
 
         return None
 
-    async def get_email(self, employee_email: EmailType) -> EmployeeEmail:
+    async def get_email(self, employee_email: str) -> EmployeeEmail:
         """Получение информации по E-Mail."""
         async with get_async_session() as session:
             email = await session.execute(
@@ -51,9 +53,17 @@ class EmployeeEmailCRUD(
     async def get_free_emails(self) -> list[EmployeeEmail]:
         """Получение всех свободных E-Mail."""
         async with get_async_session() as session:
-            return (await session.execute(
-                select(self.model).where(self.model.users == None),  # noqa
-            )).scalars().all()
+            return (
+                (
+                    await session.execute(
+                        select(self.model).where(
+                            self.model.users == None
+                        ),  # noqa
+                    )
+                )
+                .scalars()
+                .all()
+            )
 
 
 employee_email_crud = EmployeeEmailCRUD(EmployeeEmail)

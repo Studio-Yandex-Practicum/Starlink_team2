@@ -50,7 +50,6 @@ async def load_data(
 
             emails_for_adds_in_db = (
                 await parsing_email_addresses_from_csv_file(
-                    session,
                     path,
                     emails_for_remove,
                 )
