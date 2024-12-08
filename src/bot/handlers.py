@@ -189,19 +189,15 @@ async def email_register(message: Message) -> None:
             email=message.text,
         )
         if email_id is not None:
-            add_email = (
-                await telegram_users_crud.add_email_to_telegram_user(
-                    session=async_session,
-                    username=message.from_user.username,
-                    email_id=email_id.unique_id,
-                )
+            add_email = await telegram_users_crud.add_email_to_telegram_user(
+                session=async_session,
+                username=message.from_user.username,
+                email_id=email_id.unique_id,
             )
             if add_email is not None:
-                menu_items = (
-                    await telegram_users_crud.get_menu_for_user_roles(
-                        session=async_session,
-                        username=message.from_user.username,
-                    )
+                menu_items = await telegram_users_crud.get_menu_for_user_roles(
+                    session=async_session,
+                    username=message.from_user.username,
                 )
                 reply_markup = await build_keyboard(
                     menu_items=menu_items,
@@ -228,21 +224,25 @@ async def email_register(message: Message) -> None:
 async def handle_callback(call: CallbackQuery) -> None:
     """Функция обработки callback-запросов."""
     call_data = call.data.split('_')
-    if (
-        call_data[0] == constants.SELECT_CALLBACK_PREFIX.split('_')[0]
-        or call_data[0] == constants.OPEN_CALLBACK_PREFIX.split('_')[0]
-    ):
-        message_to_send = await telegram_menu_crud.get_content_by_menu_id(
+    if call_data[0] == constants.SELECT_CALLBACK_PREFIX.split('_')[0]:
+        menu_from_db = await telegram_menu_crud.get_content_by_menu_id(
             session=async_session,
             unique_id=call_data[-1],
         )
+        if menu_from_db is not None and menu_from_db.content == '':
+            message_to_send = constants.NO_CONTENT_TEXT
+        else:
+            message_to_send = menu_from_db.content
         await bot.edit_message_text(
-            text=message_to_send.content,
+            text=message_to_send,
             chat_id=call.message.chat.id,
             message_id=call.message.message_id,
             reply_markup=call.message.reply_markup,
         )
-    if call_data[0] == constants.NAV_CALLBACK_PREFIX.split('_')[0]:
+    if (
+        call_data[0] == constants.NAV_CALLBACK_PREFIX.split('_')[0]
+        or call_data[0] == constants.OPEN_CALLBACK_PREFIX.split('_')[0]
+    ):
         menu_from_db = await telegram_menu_crud.get_content_by_menu_id(
             session=async_session,
             unique_id=call_data[-1],
@@ -252,13 +252,20 @@ async def handle_callback(call: CallbackQuery) -> None:
             username=call.from_user.username,
             parent_id=menu_from_db.unique_id,
         )
+        if menu_from_db is not None and menu_from_db.content == '':
+            message_to_send = constants.NO_CONTENT_TEXT
+        else:
+            message_to_send = menu_from_db.content
+        if len(call_data) > 2:
+            page = int(call_data[1])
+        else:
+            page = constants.PAGE
         inline_keyboard = await build_keyboard(
             menu_items=menu_items,
             parent_id=menu_from_db.unique_id,
             is_inline=True,
-            page=int(call_data[1]),
+            page=page,
         )
-        message_to_send = f'Вы перешли на страницу {call_data[1]}'
         await bot.edit_message_text(
             text=message_to_send,
             chat_id=call.message.chat.id,
