@@ -1,8 +1,7 @@
+import aiofiles
 import telebot
 from telebot.states.asyncio.context import StateContext
 from telebot.types import CallbackQuery, Message, ReplyParameters
-
-import aiofiles
 
 from backend.utils.parser_csv import (
     MILESTONERUSSIA_PATTERN,

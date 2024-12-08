@@ -1,10 +1,10 @@
 import os
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, Request, HTTPException
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse
 from passlib.handlers.sha2_crypt import sha512_crypt as crypto
 from rich import print as rich_print
 from sqlalchemy import select
@@ -76,26 +76,36 @@ templates = Jinja2Templates(directory=template_dir)
 
 
 @app.exception_handler(StarletteHTTPException)
-async def http_exception_handler(request: Request,
-                                 exc: StarletteHTTPException):
+async def http_exception_handler(
+    request: Request,
+    exc: StarletteHTTPException,
+) -> None:
+    """Обработчик исключений."""
     if exc.status_code == 404:
         template = templates.get_template("404.html")
         return HTMLResponse(template.render(request=request))
-    elif exc.status_code == 401:
+    if exc.status_code == 401:
         template = templates.get_template("401.html")
         return HTMLResponse(template.render(request=request))
-    elif exc.status_code == 403:
+    if exc.status_code == 403:
         template = templates.get_template("403.html")
         return HTMLResponse(template.render(request=request))
+    return None
+
 
 @app.get("/nonexistent")
-async def nonexistent():
+async def nonexistent() -> None:
+    """Несуществующая страница."""
     raise HTTPException(status_code=404, detail="Not Found")
 
+
 @app.get("/forbidden")
-async def forbidden():
+async def forbidden() -> None:
+    """Запрещенная страница."""
     raise HTTPException(status_code=403, detail="Forbidden")
 
+
 @app.get("/unauthorized")
-async def unauthorized():
+async def unauthorized() -> None:
+    """Неавторизованная страница."""
     raise HTTPException(status_code=401, detail="Unauthorized")

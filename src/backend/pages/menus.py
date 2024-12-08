@@ -152,7 +152,6 @@ async def edit_menu_item(
     user: Admin = Depends(get_current_user_from_token),
 ) -> Response:
     """Редактирование меню."""
-    errors = []
     item = await menu_builder_crud.get(unique_id)
     if not item:
         return templates.TemplateResponse(
