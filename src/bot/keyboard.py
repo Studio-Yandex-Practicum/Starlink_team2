@@ -224,3 +224,10 @@ async def build_keyboard(
     for row in keyboard:
         reply_markup.row(*row)
     return reply_markup
+
+
+async def build_register_keyboard() -> ReplyKeyboardMarkup:
+    registration_keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
+    registration_keyboard.row(constants.REGISTER_BUTTON_TEXT)
+    registration_keyboard.row(constants.NO_REGISTER_BUTTON_TEXT)
+    return registration_keyboard

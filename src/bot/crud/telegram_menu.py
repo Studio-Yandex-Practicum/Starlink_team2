@@ -18,18 +18,21 @@ class CRUDTelegramMenu:
     async def get_menu_for_role(
         self,
         session: AsyncSession,
-        role_id: Optional[str] = None,
-        parent_id: Optional[int] = None,
+        role_id: Optional[UUID] = None,
+        parent_id: Optional[UUID] = None,
     ) -> List[Menu] | None:
         """Получает элементы меню для replyKeyboard."""
         async with session() as asession:
             if role_id is None:
                 result_menu = await asession.execute(
-                    select(Menu).where(
+                    select(Menu)
+                    .where(
                         Menu.guest_access.is_(True),
                         Menu.parent == parent_id,
-                    ),
+                    )
+                    .order_by(Menu.title),
                 )
+                result_menu = result_menu.scalars().all()
             else:
                 result_menu = await asession.execute(
                     select(Menu)
@@ -47,7 +50,7 @@ class CRUDTelegramMenu:
                     )
                     .order_by(Menu.title),
                 )
-            result_menu = result_menu.scalars().all()
+                result_menu = result_menu.all()
 
             menu_list = []
             for menu in result_menu:
