@@ -17,6 +17,7 @@ OPEN_CALLBACK_PREFIX = 'open_'
 NAV_CALLBACK_PREFIX = 'menu-page_'
 NOOP = 'noop'
 NO_ITEMS_TEXT = 'Элементов нет'
+NO_CONTENT_TEXT = 'Нет содержимого'
 
 # Константы для пагинации
 ITEMS_PER_PAGE = 10
