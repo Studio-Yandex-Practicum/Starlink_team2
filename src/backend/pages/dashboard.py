@@ -30,16 +30,18 @@ async def dashboard(
     Функция получает информацию о пользователях Telegram,
         ролях и статистике регистрации
     для их последующего отображения на панели управления.
+    
     Args:
         request (Request): Объект запроса от клиента.
         user (Admin, optional): Текущий пользователь, извлекаемый из токена.
             По умолчанию равен None.
+
     Returns:
         HTMLResponse: HTML-ответ с контекстом страницы,
             включающим информацию о пользователях,
                 ролях и статистике регистрации.
     """
-    
+
     try:
         user = await get_current_user_from_cookie(request)
     except Exception as _:
