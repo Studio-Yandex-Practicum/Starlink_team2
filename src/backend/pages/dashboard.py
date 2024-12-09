@@ -6,12 +6,13 @@ from datetime import datetime, timedelta
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+
 from backend.crud import role_crud, telegramuser_crud
-from backend.models import Admin
 from backend.core.auth import (
     get_current_user_from_cookie,
     get_current_user_from_token,
 )
+from backend.models import Admin
 
 router = APIRouter()
 
@@ -26,7 +27,6 @@ async def dashboard(
     user: Admin = Depends(get_current_user_from_token),
 ) -> HTMLResponse:
     """Обрабатывает запрос на страницу управления ботом.
-
     Функция получает информацию о пользователях Telegram,
         ролях и статистике регистрации
             для их последующего отображения на панели управления.
@@ -40,8 +40,8 @@ async def dashboard(
         HTMLResponse: HTML-ответ с контекстом страницы,
             включающим информацию о пользователях,
                 ролях и статистике регистрации.
-    """
 
+    """
     try:
         user = await get_current_user_from_cookie(request)
     except Exception as _:
