@@ -45,6 +45,7 @@ USERNAME_KEY = 'username'
 FIRST_NAME_KEY = 'first_name'
 LAST_NAME_KEY = 'last_name'
 TELEGRAM_ID_KEY = 'telegram_id'
+CREATED_AT_KEY = 'created_at'
 
 # Константы стартовых сообщений
 START_MESSAGE_NEW_USER = 'Вас нет в базе данных, создан новый пользователь: '

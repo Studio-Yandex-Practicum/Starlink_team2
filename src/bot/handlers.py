@@ -1,4 +1,5 @@
 import aiofiles
+from sqlalchemy import func
 import telebot
 from telebot.states.asyncio.context import StateContext
 from telebot.types import CallbackQuery, Message, ReplyParameters
@@ -44,6 +45,7 @@ async def handle_start(message: Message) -> None:
             constants.FIRST_NAME_KEY: first_name,
             constants.LAST_NAME_KEY: last_name,
             constants.TELEGRAM_ID_KEY: telegram_id,
+            constants.CREATED_AT_KEY: func.now(),
         }
         await telegram_users_crud.create_user(
             data=data,
@@ -137,10 +139,11 @@ async def get_data_from_db(message: Message) -> None:
         parent_id=unique_id,
     )
 
-    if menu_from_db is not None and menu_from_db.content == '':
-        text_to_send = constants.NO_CONTENT_TEXT
-    else:
-        text_to_send = menu_from_db.content
+    text_to_send = (
+        menu_from_db.content
+        if menu_from_db and menu_from_db.content
+        else constants.NO_CONTENT_TEXT
+    )
 
     if menu_child_from_db is not None:
         if unique_id is not None:
@@ -244,11 +247,9 @@ async def email_register(message: Message) -> None:
                 email_id=email_id.unique_id,
             )
             if add_email is not None:
-                menu_items = (
-                    await telegram_users_crud.get_menu_for_user_roles(
-                        session=async_session,
-                        username=message.from_user.username,
-                    )
+                menu_items = await telegram_users_crud.get_menu_for_user_roles(
+                    session=async_session,
+                    username=message.from_user.username,
                 )
                 reply_markup = await build_keyboard(
                     menu_items=menu_items,
