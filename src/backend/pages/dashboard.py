@@ -25,7 +25,8 @@ async def dashboard(
     request: Request,
     user: Admin = Depends(get_current_user_from_token),
 ) -> HTMLResponse:
-    """Обрабатывает запрос на страницу управления ботом.
+    """
+    Обрабатывает запрос на страницу управления ботом.
     Функция получает информацию о пользователях Telegram,
         ролях и статистике регистрации
     для их последующего отображения на панели управления.
@@ -38,6 +39,7 @@ async def dashboard(
             включающим информацию о пользователях,
                 ролях и статистике регистрации.
     """
+    
     try:
         user = await get_current_user_from_cookie(request)
     except Exception as _:
