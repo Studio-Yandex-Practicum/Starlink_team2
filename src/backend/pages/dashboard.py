@@ -1,17 +1,15 @@
 import os
-
-from datetime import date
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
-from backend.crud import role_crud, telegramuser_crud
 from backend.core.auth import (
     get_current_user_from_cookie,
     get_current_user_from_token,
 )
+from backend.crud import role_crud, telegramuser_crud
 from backend.models import Admin
 
 router = APIRouter()
