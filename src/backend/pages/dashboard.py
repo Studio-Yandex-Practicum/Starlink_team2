@@ -16,6 +16,7 @@ from backend.models import Admin
 
 router = APIRouter()
 
+
 base_dir = os.path.dirname(os.path.abspath(__file__))
 template_dir = os.path.join(base_dir, '..', 'templates')
 templates = Jinja2Templates(directory=template_dir)
@@ -27,7 +28,7 @@ async def dashboard(
     user: Admin = Depends(get_current_user_from_token),
 ) -> HTMLResponse:
     """Обрабатывает запрос на страницу управления ботом.
-    
+
     Функция получает информацию о пользователях Telegram,
         ролях и статистике регистрации
             для их последующего отображения на панели управления.
