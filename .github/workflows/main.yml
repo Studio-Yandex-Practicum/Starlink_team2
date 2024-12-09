@@ -63,24 +63,24 @@ jobs:
             cd /opt/starlink/
             rm .env
             touch .env
-            sed -i "BOT_TOKEN=%s\n" "${{ secrets.BOT_TOKEN }}" >> .env
-            sed -i "APP_TITLE='%s'\n" "Административная панель Starlink бот" >> .env
-            sed -i "APP_DESCRIPTION='%s'\n" "Управление справочным чат ботом для сотрудников" >> .env
-            sed -i "APP_VERSION='%s'\n" "1.0.0" >> .env
-            sed -i "POSTGRES_USER=%s\n" "user" >> .env
-            sed -i "POSTGRES_PASSWORD=%s\n" "${{ secrets.POSTGRES_PASSWORD }}" >> .env
-            sed -i "POSTGRES_HOST=%s\n" "127.0.0.1" >> .env
-            sed -i "POSTGRES_PORT=%s\n" "5432" >> .env
-            sed -i "POSTGRES_DB=%s\n" "${{ secrets.POSTGRES_DB }}" >> .env
-            sed -i "POSTGRES_DB_NAME=%s\n" "yourdbname" >> .env
-            sed -i "SECRET_KEY=%s\n" "${{ secrets.SECRET_KEY }}" >> .env
-            sed -i "ALGORITHM=%s\n" "HS256" >> .env
-            sed -i "ACCESS_TOKEN_EXPIRE_MINUTES=%s\n" "30" >> .env
-            sed -i "NOT_AUTHENTICATED='%s'\n" "Not authenticated" >> .env
-            sed -i "ADMIN1_EMAIL=%s\n" "user1@gmail.com" >> .env
-            sed -i "ADMIN1_PASSWORD=%s\n" "${{ secrets.ADMIN1_PASSWORD }}" >> .env
-            sed -i "ADMIN2_EMAIL=%s\n" "user2@gmail.com" >> .env
-            sed -i "ADMIN2_PASSWORD=%s\n" "${{ secrets.ADMIN2_PASSWORD }}" >> .env
+            echo "BOT_TOKEN=%s\n" "${{ secrets.BOT_TOKEN }}" >> .env
+            echo "APP_TITLE='%s'\n" "Административная панель Starlink бот" >> .env
+            echo "APP_DESCRIPTION='%s'\n" "Управление справочным чат ботом для сотрудников" >> .env
+            echo "APP_VERSION='%s'\n" "1.0.0" >> .env
+            echo "POSTGRES_USER=%s\n" "user" >> .env
+            echo "POSTGRES_PASSWORD=%s\n" "${{ secrets.POSTGRES_PASSWORD }}" >> .env
+            echo "POSTGRES_HOST=%s\n" "127.0.0.1" >> .env
+            echo "POSTGRES_PORT=%s\n" "5432" >> .env
+            echo "POSTGRES_DB=%s\n" "${{ secrets.POSTGRES_DB }}" >> .env
+            echo "POSTGRES_DB_NAME=%s\n" "yourdbname" >> .env
+            echo "SECRET_KEY=%s\n" "${{ secrets.SECRET_KEY }}" >> .env
+            echo "ALGORITHM=%s\n" "HS256" >> .env
+            echo "ACCESS_TOKEN_EXPIRE_MINUTES=%s\n" "30" >> .env
+            echo "NOT_AUTHENTICATED='%s'\n" "Not authenticated" >> .env
+            echo "ADMIN1_EMAIL=%s\n" "user1@gmail.com" >> .env
+            echo "ADMIN1_PASSWORD=%s\n" "${{ secrets.ADMIN1_PASSWORD }}" >> .env
+            echo "ADMIN2_EMAIL=%s\n" "user2@gmail.com" >> .env
+            echo "ADMIN2_PASSWORD=%s\n" "${{ secrets.ADMIN2_PASSWORD }}" >> .env
             chmod 600 .env
 
       - name: Deploy to server
