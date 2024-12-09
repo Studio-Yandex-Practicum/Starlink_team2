@@ -60,7 +60,9 @@ jobs:
           passphrase: ${{ secrets.SSH_PASSPHRASE}}
           script: |
             mkdir -p /opt/starlink/
-            touch /opt/starlink/.env
+            cd /opt/starlink/
+            touch .env
+            echo ADMIN_USERNAME=${{ secrets.ADMIN_USERNAME }} >> .env
             sed -i "BOT_TOKEN=%s\n" "${{ secrets.BOT_TOKEN }}" >> /opt/starlink/.env
             sed -i "APP_TITLE='%s'\n" "Административная панель Starlink бот" >> /opt/starlink/.env
             sed -i "APP_DESCRIPTION='%s'\n" "Управление справочным чат ботом для сотрудников" >> /opt/starlink/.env
