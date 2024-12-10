@@ -15,6 +15,7 @@ async def run_fastapi() -> None:
         app='backend.app:app',
         host='0.0.0.0',
         port=8000,
+        forwarded_allow_ips='*',
     )
     server = uvicorn.Server(config=config)
     await server.serve()
