@@ -1,7 +1,7 @@
 version: "3.9"
 
 volumes:
-  pg_data:
+  pg_data_:
   static:
   media:
 
@@ -14,7 +14,7 @@ services:
         TZ: 'GMT+3'
         PGTZ: 'GMT+3'
     volumes:
-      - pg_data:/var/lib/postgresql/data
+      - pg_data_:/var/lib/postgresql/data
     ports:
       - 5432:5432
     healthcheck:
