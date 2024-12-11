@@ -66,6 +66,9 @@ POSTGRES_HOST = postgres
 
 Для деплоя проекта на сервер в репозиторий на GitHub необходимо добавить 
 ```
+APP_TITLE - Устанавливает название приложения.
+APP_DESCRIPTION - Описывает функционал или роль приложения.
+APP_VERSION - Указывает текущую версию приложения.
 DOCKER_USERNAME - Имя аккауна dockerHub
 DOCKER_PASSWORD - Пароль от аккауна dockerHub
 SERVER_HOST - Адрес сервера, где будет разворачиваться проект
@@ -73,11 +76,19 @@ SERVER_USERNAME - User yf cthdtht
 SSH_PRIVATE_KEY - SSH ключ для достпа на сервер
 SSH_PASSPHRASE - Пароль от SSH ключа
 BOT_TOKEN - Токен для Telegram бота
+POSTGRES_USER - Имя пользователя для подключения к базе данных PostgreSQL.
+POSTGRES_HOST - Адрес хоста базы данных PostgreSQL (по умолчанию в приложениее - "postgres")
+POSTGRES_PORT - Порт для подключения к базе данных 
 POSTGRES_PASSWORD - Пароль от Базы данных
 POSTGRES_DB - Имя Базы данных
 SECRET_KEY - Секретный ключ для авторизации на сайте
+ADMIN1_EMAIL - Адрес электронной почты первого администратора user1@gmail.com
 ADMIN1_PASSWORD - Пароль для первого администратора с логином: user1@gmail.com
+ADMIN2_EMAIL - Адрес электронной почты второго администратора user2@gmail.com
 ADMIN2_PASSWORD - Пароль для первого администратора с логином: user2@gmail.com
+NOT_AUTHENTICATED - Сообщение, которое будет выводиться при попытке неавторизованного доступа к определенным ресурсам.
+ACCESS_TOKEN_EXPIRE_MINUTES - Определяет срок действия токена доступа в минутах. (по умолчанию в приложениее - "30")
+ALGORITHM - Указывает алгоритм шифрования для токенов аутентификации. (по умолчанию в приложениее - "HS256")
 ```
 
 Далее необходимо произвести обновление проекта в ветку "develop".
