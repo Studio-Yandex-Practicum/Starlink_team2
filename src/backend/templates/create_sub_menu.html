@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block content %}
+<div>
+    {% if user %}
+    <form action="{{ url_for('create_menu_item_page') }}" method="post" class="mx-auto w-50" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="name" class="form-label">Название</label>
+            <input type="text" class="form-control" name="item_name">
+        </div>
+        <div class="mb-3">
+            <label for="parent" class="form-label">Родитель</label>
+            <select class="form-select" name="parent">
+                <option value="{{  parent_id.unique_id  }}" selected>{{ parent_id.title }}</option>
+            </select>
+        </div>
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" name="is_folder">
+            <label for="is_folder" class="form-check-label">Является папкой</label>
+        </div>
+        <div class="mb-3">
+            <label for="formFile" class="form-label">Картинка для отображения контента</label>
+            <input class="form-control" type="file" accept=".jpg, .jpeg, .png" name="menu_image">
+        </div>
+        <div class="mb-3">
+            <p>Выберите Роли, кому будет предоставлен доступ:</p>
+            {% if not roles %}
+                <p>Не создано ни одной Роли</p>
+            {% else %}
+                <fieldset>
+                    <legend>Роли</legend>
+                {% for role in roles %}
+                    <div class="form-check">                    
+                        <input class="form-check-input" type="checkbox" name="roles" value="{{ role.unique_id }}">
+                        <label class="form-check-label">{{ role.title }}</label>
+                    </div>
+                {% endfor %}
+                </fieldset>
+            {% endif %}
+        </div>
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" name="for_quest">
+            <label for="is_folder" class="form-check-label">Доступно для гостя</label>
+        </div>
+        <div class="mb-3">
+            <label for="content" class="form-label">Текст сообщения</label>
+            <textarea class="form-control" name="content" rows="5"></textarea>
+          </div>
+        <div class="mb-3">
+            <button type="submit" class="btn btn-primary">Создать</button>
+        </div>
+    </form>
+{% endif %}
+{% endblock content %}
