@@ -59,7 +59,7 @@ async def menu_item_page(
     return templates.TemplateResponse('create_menu_item.html', context)
 
 
-@router.post('/create', response_class=HTMLResponse)
+@router.post('/create', response_class=RedirectResponse)
 async def create_menu_item_page(
     request: Request,
     menu_image: UploadFile = Form(),
@@ -70,9 +70,8 @@ async def create_menu_item_page(
     for_quest: Optional[bool] = Form(default=False),
     content: Optional[str] = Form(default=''),
     user: Admin = Depends(get_current_user_from_token),
-) -> HTMLResponse:
+) -> Response:
     """Отображение страницы с формой для создания меню."""
-    get_folders_items = await menu_builder_crud.menus_folders()
     roles_ = roles
     roles = await menu_builder_crud.get_roles()
     if parent == 'none':
