@@ -11,6 +11,15 @@
     <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', path='/images/16.png') }}">
     <link href="{{ url_for('static', path='/css/cssfromheader.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', path='/css/sign-in.css') }}" rel="stylesheet">
+    <style>
+      body {
+          background-image: url('{{ url_for('static', path='/images/bg.png') }}');
+          background-repeat: no-repeat;
+          background-size: cover;
+          backdrop-filter: blur(0px);
+          background-position: center bottom;
+      }
+      </style>
 </head>
 
 <body class="d-flex align-items-center py-4 bg-body-tertiary">
