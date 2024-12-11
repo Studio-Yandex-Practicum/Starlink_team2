@@ -16,7 +16,7 @@ from fastapi.templating import Jinja2Templates
 
 from backend.core.auth import get_current_user_from_token
 from backend.crud import menu_builder_crud
-from backend.models.admin import Admin
+from backend.models import Admin, Menu, Role
 
 router = APIRouter()
 BASE_DIR = Path(__file__).parent.parent
@@ -59,7 +59,7 @@ async def menu_item_page(
     return templates.TemplateResponse('create_menu_item.html', context)
 
 
-@router.post('/create', response_class=HTMLResponse)
+@router.post('/create', response_class=RedirectResponse)
 async def create_menu_item_page(
     request: Request,
     menu_image: UploadFile = Form(),
@@ -70,9 +70,8 @@ async def create_menu_item_page(
     for_quest: Optional[bool] = Form(default=False),
     content: Optional[str] = Form(default=''),
     user: Admin = Depends(get_current_user_from_token),
-) -> HTMLResponse:
+) -> Response:
     """Отображение страницы с формой для создания меню."""
-    get_folders_items = await menu_builder_crud.menus_folders()
     roles_ = roles
     roles = await menu_builder_crud.get_roles()
     if parent == 'none':
@@ -100,13 +99,10 @@ async def create_menu_item_page(
             'wb',
         ) as f:
             await f.write(contents)
-    context = {
-        'request': request,
-        'user': user,
-        'folders': get_folders_items,
-        'roles': roles,
-    }
-    return templates.TemplateResponse('create_menu_item.html', context)
+    return RedirectResponse(
+        '/menu',
+        status_code=status.HTTP_302_FOUND,
+    )
 
 
 @router.get(
@@ -169,11 +165,7 @@ async def edit_menu_item(
     print(roles)
     if menu_image.filename:
         item.image_link = menu_image.filename
-    # try:
     await menu_builder_crud.update(item, roles)
-    # except Exception as e:
-    #     errors.append(e)
-    # print(errors)
     if menu_image.filename:
         contents = await menu_image.read()
         async with aiofiles.open(
@@ -189,3 +181,26 @@ async def delete_menu_item(request: Request, unique_id: str) -> Response:
     """Удаление меню."""
     await menu_builder_crud.delete(unique_id)
     return RedirectResponse('/menu')
+
+
+@router.get('/create_subfolder_menu/{unique_id}', response_class=HTMLResponse)
+async def create_subfolder_page(
+    request: Request,
+    unique_id: str,
+    user: Admin = Depends(get_current_user_from_token),
+) -> Response:
+    """Создание подменю."""
+    parent_id: Optional[Menu] = await menu_builder_crud.get(unique_id)
+    if not parent_id:
+        return templates.TemplateResponse(
+            '404.html',
+            context={'request': request},
+        )
+    roles: list[Role] = await menu_builder_crud.get_roles()
+    context: dict = {
+        'request': request,
+        'user': user,
+        'parent_id': parent_id,
+        'roles': roles,
+    }
+    return templates.TemplateResponse('create_sub_menu.html', context)
