@@ -80,7 +80,7 @@ POSTGRES_USER - Имя пользователя для подключения к
 POSTGRES_HOST - Адрес хоста базы данных PostgreSQL (по умолчанию в приложениее - "postgres")
 POSTGRES_PORT - Порт для подключения к базе данных 
 POSTGRES_PASSWORD - Пароль от Базы данных
-POSTGRES_DB - Имя Базы данных
+POSTGRES_DB - Имя Базы данных.
 SECRET_KEY - Секретный ключ для авторизации на сайте
 ADMIN1_EMAIL - Адрес электронной почты первого администратора user1@gmail.com
 ADMIN1_PASSWORD - Пароль для первого администратора с логином: user1@gmail.com
